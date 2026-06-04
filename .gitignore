@@ -6,6 +6,7 @@ dist/
 .output/
 .vinxi/
 .tanstack/
+.vercel/
 
 # Environment variables (secrets)
 .env
