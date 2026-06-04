@@ -25,7 +25,7 @@ export const Route = createFileRoute("/menu/$slug")({
   }),
   component: MenuPage,
   errorComponent: ({ error }) => <div className="p-8">{error.message}</div>,
-  notFoundComponent: () => <div className="min-h-screen flex items-center justify-center text-muted-foreground">Menu not found</div>,
+  notFoundComponent: () => <div className="min-h-dvh flex items-center justify-center text-muted-foreground">Menu not found</div>,
 });
 
 function MenuPage() {
@@ -75,7 +75,7 @@ function MenuPage() {
   }, [prods.data, activeCat, search]);
 
   return (
-    <div className="min-h-screen bg-background pb-32">
+    <div className="min-h-dvh bg-background pb-32">
       {/* Hero */}
       <div className="relative h-56 sm:h-72">
         <div className="absolute inset-0 bg-muted">
@@ -183,7 +183,7 @@ function CartDrawer({ slug, currency, lang, onClose }: { slug: string; currency:
   const cart = useCart(slug);
   return (
     <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-end sm:items-center justify-center" onClick={onClose}>
-      <div className="bg-card w-full sm:max-w-md sm:rounded-2xl rounded-t-2xl p-6 max-h-[80vh] flex flex-col" onClick={(e) => e.stopPropagation()}>
+      <div className="bg-card w-full sm:max-w-md sm:rounded-2xl rounded-t-2xl p-6 max-h-[80dvh] flex flex-col" onClick={(e) => e.stopPropagation()}>
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-display font-bold">{t("menu.cart")}</h2>
           <button onClick={onClose}><X className="size-5" /></button>

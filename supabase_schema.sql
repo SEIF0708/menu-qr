@@ -195,8 +195,18 @@ AS $$
 BEGIN NEW.updated_at = now(); RETURN NEW; END;
 $$;
 
+-- Create Storage Bucket
+INSERT INTO storage.buckets (id, name, public)
+VALUES ('restaurant-assets', 'restaurant-assets', true)
+ON CONFLICT (id) DO NOTHING;
+
 -- Storage policies for restaurant-assets bucket
 -- Path convention: {owner_id}/{kind}/{filename}
+DROP POLICY IF EXISTS "public_read_restaurant_assets" ON storage.objects;
+DROP POLICY IF EXISTS "owner_upload_restaurant_assets" ON storage.objects;
+DROP POLICY IF EXISTS "owner_update_restaurant_assets" ON storage.objects;
+DROP POLICY IF EXISTS "owner_delete_restaurant_assets" ON storage.objects;
+
 CREATE POLICY "public_read_restaurant_assets" ON storage.objects FOR SELECT TO anon, authenticated
   USING (bucket_id = 'restaurant-assets');
 CREATE POLICY "owner_upload_restaurant_assets" ON storage.objects FOR INSERT TO authenticated
@@ -218,6 +228,7 @@ DROP POLICY IF EXISTS auth_read_restaurants ON public.restaurants;
 
 REVOKE SELECT ON public.restaurants FROM anon;
 
+DROP POLICY IF EXISTS owner_read_restaurant ON public.restaurants;
 CREATE POLICY owner_read_restaurant ON public.restaurants
   FOR SELECT TO authenticated
   USING (auth.uid() = owner_id);
@@ -236,6 +247,7 @@ GRANT SELECT (id, name, slug, description, logo_url, cover_image_url,
               currency, default_language, created_at, updated_at)
   ON public.restaurants TO anon;
 
+DROP POLICY IF EXISTS anon_read_restaurants_safe ON public.restaurants;
 CREATE POLICY anon_read_restaurants_safe ON public.restaurants
   FOR SELECT TO anon
   USING (true);

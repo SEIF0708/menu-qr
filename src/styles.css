@@ -138,6 +138,13 @@
 
   .no-scrollbar::-webkit-scrollbar { display: none; }
   .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+  /* Prevent iOS Safari auto-zoom on inputs */
+  @media (max-width: 768px) {
+    input, textarea, select {
+      font-size: 16px !important;
+    }
+  }
 }
 
 @keyframes fadeUp {

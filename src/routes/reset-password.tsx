@@ -24,7 +24,7 @@ function ResetPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4">
+    <div className="min-h-dvh flex items-center justify-center p-4">
       <form onSubmit={onSubmit} className="w-full max-w-sm bg-card border border-border rounded-2xl p-8">
         <h1 className="text-2xl font-display font-bold mb-6">{t("auth.resetPassword")}</h1>
         <input

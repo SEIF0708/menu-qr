@@ -16,7 +16,7 @@ export const Route = createFileRoute("/")({
 function Landing() {
   const { t } = useTranslation();
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-dvh bg-background text-foreground">
       <nav className="sticky top-0 z-20 bg-background/80 backdrop-blur-md border-b border-border px-6 py-3 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="size-8 bg-primary rounded flex items-center justify-center">

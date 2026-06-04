@@ -39,7 +39,7 @@ function DashboardLayout() {
     exact ? pathname === to : pathname === to || pathname.startsWith(to + "/");
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div className="min-h-dvh bg-background flex flex-col">
       <nav className="sticky top-0 z-30 bg-background/85 backdrop-blur-md border-b border-border px-4 md:px-6 py-3 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <button onClick={() => setMobileOpen(!mobileOpen)} className="md:hidden p-1 -ml-1">

@@ -67,7 +67,7 @@ function Onboarding() {
   const origin = typeof window !== "undefined" ? window.location.origin : "";
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-4">
+    <div className="min-h-dvh bg-background flex items-center justify-center p-4">
       <div className="w-full max-w-xl">
         <div className="mb-6 text-center">
           <p className="text-xs font-mono text-muted-foreground uppercase tracking-widest mb-1">{t("onboarding.step", { n: step, total })}</p>

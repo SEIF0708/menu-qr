@@ -186,7 +186,7 @@ function ProductDialog({ restaurantId, product, categories, onClose }: { restaur
 
   return (
     <div className="fixed inset-0 z-50 bg-background/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto" onClick={onClose}>
-      <form onSubmit={submit} onClick={(e) => e.stopPropagation()} className="bg-card border border-border rounded-2xl p-6 max-w-2xl w-full shadow-2xl my-8 max-h-[90vh] overflow-y-auto">
+      <form onSubmit={submit} onClick={(e) => e.stopPropagation()} className="bg-card border border-border rounded-2xl p-6 max-w-2xl w-full shadow-2xl my-8 max-h-[85dvh] overflow-y-auto">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-2xl font-display font-bold">{product ? t("products.edit") : t("products.new")}</h2>
           <button type="button" onClick={onClose} className="p-1 hover:bg-muted rounded"><X className="size-5" /></button>

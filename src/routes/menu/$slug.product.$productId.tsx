@@ -24,7 +24,7 @@ export const Route = createFileRoute("/menu/$slug/product/$productId")({
   }),
   component: ProductPage,
   errorComponent: ({ error }) => <div className="p-8">{error.message}</div>,
-  notFoundComponent: () => <div className="min-h-screen grid place-items-center text-muted-foreground">Not found</div>,
+  notFoundComponent: () => <div className="min-h-dvh grid place-items-center text-muted-foreground">Not found</div>,
 });
 
 function ProductPage() {
@@ -50,7 +50,7 @@ function ProductPage() {
   const desc = pickLocalized(product, "description", lang);
 
   return (
-    <div className="min-h-screen bg-background pb-24">
+    <div className="min-h-dvh bg-background pb-24">
       <div className="relative aspect-square sm:aspect-[16/9] bg-muted">
         {img && <img src={img} alt={name} className="size-full object-cover" />}
         <div className="absolute top-4 inset-x-4 flex items-center justify-between">

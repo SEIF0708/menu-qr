@@ -19,8 +19,8 @@ function CategoriesPage() {
   const [showNew, setShowNew] = useState(false);
 
   const cats = useQuery({
-    enabled: !!restaurant?.id,
     queryKey: ["categories", restaurant?.id],
+    enabled: !!restaurant?.id,
     queryFn: async () => {
       const { data } = await supabase.from("categories").select("*, products(id)").eq("restaurant_id", restaurant!.id).order("display_order");
       return data ?? [];
@@ -147,7 +147,7 @@ function CategoryDialog({ restaurantId, category, nextOrder, onClose }: { restau
 
   return (
     <div className="fixed inset-0 z-50 bg-background/60 backdrop-blur-sm flex items-center justify-center p-4" onClick={onClose}>
-      <form onSubmit={submit} onClick={(e) => e.stopPropagation()} className="bg-card border border-border rounded-2xl p-6 max-w-md w-full shadow-2xl">
+      <form onSubmit={submit} onClick={(e) => e.stopPropagation()} className="bg-card border border-border rounded-2xl p-6 max-w-md w-full shadow-2xl max-h-[85dvh] overflow-y-auto">
         <h2 className="text-2xl font-display font-bold mb-6">{category ? t("categories.edit") : t("categories.new")}</h2>
         <div className="space-y-4">
           <LangField label={t("categories.nameEn")} value={name_en} onChange={setEn} />
