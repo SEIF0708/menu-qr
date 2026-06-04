@@ -1,4 +1,4 @@
-import { i18n } from '@/lib/i18n';
+
 
 /**
  * Resolve the initial language for both server‑side rendering and the browser.
