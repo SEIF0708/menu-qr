@@ -11,7 +11,8 @@ import { useCart } from "@/lib/cart";
 
 export const Route = createFileRoute("/menu/$slug")({
   loader: async ({ params }) => {
-    const { data: restaurant } = await supabase.from("restaurants").select("*").eq("slug", params.slug).maybeSingle();
+    // We must query the public view because anon role cannot select('*') on the base table due to column-level security.
+    const { data: restaurant } = await supabase.from("restaurants_public").select("*").eq("slug", params.slug).maybeSingle();
     if (!restaurant) throw notFound();
     return { restaurant };
   },

@@ -10,7 +10,7 @@ import { LangSwitcher } from "@/components/LangSwitcher";
 
 export const Route = createFileRoute("/menu/$slug/product/$productId")({
   loader: async ({ params }) => {
-    const { data: restaurant } = await supabase.from("restaurants").select("*").eq("slug", params.slug).maybeSingle();
+    const { data: restaurant } = await supabase.from("restaurants_public").select("*").eq("slug", params.slug).maybeSingle();
     if (!restaurant) throw notFound();
     const { data: product } = await supabase.from("products").select("*").eq("id", params.productId).eq("restaurant_id", restaurant.id).maybeSingle();
     if (!product) throw notFound();
