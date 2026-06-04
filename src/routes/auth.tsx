@@ -35,7 +35,7 @@ function AuthPage() {
     setLoading(true);
     try {
       if (mode === "signup") {
-        const { error } = await supabase.auth.signUp({
+        const { data, error } = await supabase.auth.signUp({
           email,
           password,
           options: {
@@ -44,7 +44,12 @@ function AuthPage() {
           },
         });
         if (error) throw error;
-        toast.success(t("auth.checkEmail"));
+        
+        if (data.session) {
+          navigate({ to: "/dashboard" });
+        } else {
+          toast.success(t("auth.checkEmail"));
+        }
       } else if (mode === "reset") {
         const { error } = await supabase.auth.resetPasswordForEmail(email, {
           redirectTo: `${window.location.origin}/reset-password`,
