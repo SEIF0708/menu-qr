@@ -1,0 +1,251 @@
+import { createFileRoute } from "@tanstack/react-router";
+import { useTranslation } from "react-i18next";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { useMyRestaurant } from "@/lib/use-restaurant";
+import { useSignedImage } from "@/lib/use-signed-image";
+import { useState, useMemo } from "react";
+import { Plus, Pencil, Trash2, Copy, Search, UtensilsCrossed, Upload, X } from "lucide-react";
+import { toast } from "sonner";
+import { uploadAsset } from "@/lib/storage";
+import { formatPrice, pickLocalized } from "@/lib/format";
+
+export const Route = createFileRoute("/_authenticated/dashboard/products")({ component: ProductsPage });
+
+function ProductsPage() {
+  const { t, i18n } = useTranslation();
+  const lang = i18n.language?.split("-")[0] || "en";
+  const { data: restaurant } = useMyRestaurant();
+  const qc = useQueryClient();
+  const [editing, setEditing] = useState<any | null>(null);
+  const [showNew, setShowNew] = useState(false);
+  const [search, setSearch] = useState("");
+  const [filterCat, setFilterCat] = useState<string>("");
+
+  const products = useQuery({
+    enabled: !!restaurant?.id,
+    queryKey: ["products", restaurant?.id],
+    queryFn: async () => {
+      const { data } = await supabase.from("products").select("*").eq("restaurant_id", restaurant!.id).order("display_order").order("created_at", { ascending: false });
+      return data ?? [];
+    },
+  });
+
+  const cats = useQuery({
+    enabled: !!restaurant?.id,
+    queryKey: ["categories-simple", restaurant?.id],
+    queryFn: async () => {
+      const { data } = await supabase.from("categories").select("id, name_en, name_fr, name_ar").eq("restaurant_id", restaurant!.id).order("display_order");
+      return data ?? [];
+    },
+  });
+
+  const filtered = useMemo(() => {
+    let list = products.data ?? [];
+    if (filterCat) list = list.filter((p) => p.category_id === filterCat);
+    if (search) {
+      const q = search.toLowerCase();
+      list = list.filter((p) => [p.name_en, p.name_fr, p.name_ar].some((n) => n?.toLowerCase().includes(q)));
+    }
+    return list;
+  }, [products.data, search, filterCat]);
+
+  const del = useMutation({
+    mutationFn: async (id: string) => { await supabase.from("products").delete().eq("id", id); },
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ["products"] }); toast.success(t("common.saved")); },
+  });
+  const dup = useMutation({
+    mutationFn: async (p: any) => {
+      const { id, created_at, updated_at, ...rest } = p;
+      await supabase.from("products").insert({ ...rest, name_en: (rest.name_en || "") + " (copy)" });
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["products"] }),
+  });
+  const toggle = useMutation({
+    mutationFn: async ({ id, available }: { id: string; available: boolean }) => {
+      await supabase.from("products").update({ is_available: available }).eq("id", id);
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["products"] }),
+  });
+
+  return (
+    <div className="max-w-6xl">
+      <header className="mb-6 flex flex-col md:flex-row md:items-end justify-between gap-4">
+        <div>
+          <p className="text-xs font-mono text-muted-foreground uppercase tracking-widest mb-1">{t("nav.products")}</p>
+          <h1 className="text-3xl font-display font-bold">{t("products.title")}</h1>
+          <p className="text-sm text-muted-foreground mt-1">{t("products.subtitle")}</p>
+        </div>
+        <button onClick={() => setShowNew(true)} className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-4 py-2.5 rounded-full font-medium text-sm shadow-lg shadow-primary/20">
+          <Plus className="size-4" /> {t("products.new")}
+        </button>
+      </header>
+
+      <div className="flex flex-col sm:flex-row gap-3 mb-6">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+          <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder={t("products.searchPlaceholder")}
+            className="w-full pl-10 pr-3 py-2.5 border border-border rounded-lg bg-card text-sm" />
+        </div>
+        <select value={filterCat} onChange={(e) => setFilterCat(e.target.value)} className="px-3 py-2.5 border border-border rounded-lg bg-card text-sm min-w-[180px]">
+          <option value="">{t("common.all")}</option>
+          {cats.data?.map((c) => <option key={c.id} value={c.id}>{pickLocalized(c, "name", lang) || "—"}</option>)}
+        </select>
+      </div>
+
+      {filtered.length === 0 ? (
+        <div className="text-center py-20 bg-card border border-dashed border-border rounded-2xl">
+          <UtensilsCrossed className="size-12 text-muted-foreground mx-auto mb-4" />
+          <h3 className="font-display text-xl font-semibold mb-1">{t("products.empty")}</h3>
+          <p className="text-sm text-muted-foreground mb-6">{t("products.emptyHint")}</p>
+          <button onClick={() => setShowNew(true)} className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-5 py-2.5 rounded-full text-sm font-medium">
+            <Plus className="size-4" /> {t("products.new")}
+          </button>
+        </div>
+      ) : (
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {filtered.map((p) => (
+            <ProductCard key={p.id} product={p} lang={lang} currency={restaurant?.currency || "USD"}
+              onEdit={() => setEditing(p)} onDelete={() => confirm(t("common.confirmDelete")) && del.mutate(p.id)}
+              onDup={() => dup.mutate(p)} onToggle={(v) => toggle.mutate({ id: p.id, available: v })} />
+          ))}
+        </div>
+      )}
+
+      {(showNew || editing) && (
+        <ProductDialog restaurantId={restaurant!.id} product={editing} categories={cats.data ?? []}
+          onClose={() => { setShowNew(false); setEditing(null); qc.invalidateQueries({ queryKey: ["products"] }); }} />
+      )}
+    </div>
+  );
+}
+
+function ProductCard({ product, lang, currency, onEdit, onDelete, onDup, onToggle }: any) {
+  const img = useSignedImage(product.image_url);
+  return (
+    <div className="bg-card border border-border rounded-2xl overflow-hidden hover:shadow-md transition-shadow group">
+      <div className="aspect-[4/3] bg-muted relative">
+        {img && <img src={img} alt="" className="size-full object-cover" />}
+        <button onClick={() => onToggle(!product.is_available)}
+          className={`absolute top-2 right-2 px-2 py-1 rounded text-[10px] font-bold uppercase ${product.is_available ? "bg-emerald-100 text-emerald-700" : "bg-stone-200 text-stone-700"}`}>
+          {product.is_available ? "●" : "○"}
+        </button>
+      </div>
+      <div className="p-4">
+        <h3 className="font-semibold truncate">{pickLocalized(product, "name", lang) || "—"}</h3>
+        <p className="text-sm font-display font-bold text-primary mt-1">{formatPrice(product.price, currency, lang)}</p>
+        <div className="flex gap-1 mt-3 opacity-60 group-hover:opacity-100 transition-opacity">
+          <button onClick={onEdit} className="flex-1 py-1.5 hover:bg-muted rounded flex items-center justify-center"><Pencil className="size-3.5" /></button>
+          <button onClick={onDup} className="flex-1 py-1.5 hover:bg-muted rounded flex items-center justify-center"><Copy className="size-3.5" /></button>
+          <button onClick={onDelete} className="flex-1 py-1.5 hover:bg-destructive/10 text-destructive rounded flex items-center justify-center"><Trash2 className="size-3.5" /></button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ProductDialog({ restaurantId, product, categories, onClose }: { restaurantId: string; product: any | null; categories: any[]; onClose: () => void }) {
+  const { t, i18n } = useTranslation();
+  const lang = i18n.language?.split("-")[0] || "en";
+  const [form, setForm] = useState({
+    name_en: product?.name_en ?? "", name_fr: product?.name_fr ?? "", name_ar: product?.name_ar ?? "",
+    description_en: product?.description_en ?? "", description_fr: product?.description_fr ?? "", description_ar: product?.description_ar ?? "",
+    price: product?.price ?? 0,
+    category_id: product?.category_id ?? "",
+    is_available: product?.is_available ?? true,
+    image_url: product?.image_url ?? "",
+  });
+  const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const img = useSignedImage(form.image_url);
+
+  const upload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]; if (!file) return;
+    setUploading(true);
+    try {
+      const { data: u } = await supabase.auth.getUser();
+      const path = await uploadAsset(file, u.user!.id, "product");
+      setForm({ ...form, image_url: path });
+    } catch (e: any) { toast.error(e.message); } finally { setUploading(false); }
+  };
+
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSaving(true);
+    try {
+      const payload = { ...form, price: Number(form.price), category_id: form.category_id || null, restaurant_id: restaurantId };
+      if (product) {
+        await supabase.from("products").update(payload).eq("id", product.id);
+      } else {
+        await supabase.from("products").insert(payload);
+      }
+      toast.success(t("common.saved"));
+      onClose();
+    } catch (e: any) { toast.error(e.message); } finally { setSaving(false); }
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 bg-background/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto" onClick={onClose}>
+      <form onSubmit={submit} onClick={(e) => e.stopPropagation()} className="bg-card border border-border rounded-2xl p-6 max-w-2xl w-full shadow-2xl my-8 max-h-[90vh] overflow-y-auto">
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-2xl font-display font-bold">{product ? t("products.edit") : t("products.new")}</h2>
+          <button type="button" onClick={onClose} className="p-1 hover:bg-muted rounded"><X className="size-5" /></button>
+        </div>
+
+        <div className="space-y-4">
+          <div>
+            <span className="block text-xs font-medium text-muted-foreground mb-1.5">{t("products.image")}</span>
+            <div className="flex gap-3 items-start">
+              <div className="size-24 bg-muted rounded-lg overflow-hidden flex-shrink-0">
+                {img && <img src={img} alt="" className="size-full object-cover" />}
+              </div>
+              <label className="flex-1 cursor-pointer border border-dashed border-border rounded-lg p-4 text-sm text-muted-foreground hover:bg-muted transition-colors text-center">
+                <Upload className="size-4 mx-auto mb-1" />
+                {uploading ? t("common.uploading") : t("products.uploadImage")}
+                <input type="file" accept="image/*" onChange={upload} className="hidden" />
+              </label>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <Field label={t("products.price")}>
+              <input type="number" step="0.01" min="0" required value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value as any })} className="w-full px-3 py-2 border border-border rounded-lg text-sm bg-background" />
+            </Field>
+            <Field label={t("products.category")}>
+              <select value={form.category_id} onChange={(e) => setForm({ ...form, category_id: e.target.value })} className="w-full px-3 py-2 border border-border rounded-lg text-sm bg-background">
+                <option value="">—</option>
+                {categories.map((c) => <option key={c.id} value={c.id}>{pickLocalized(c, "name", lang) || "—"}</option>)}
+              </select>
+            </Field>
+          </div>
+
+          <div className="grid sm:grid-cols-3 gap-3">
+            <Field label={t("products.nameEn")}><input value={form.name_en} onChange={(e) => setForm({ ...form, name_en: e.target.value })} className="input2" /></Field>
+            <Field label={t("products.nameFr")}><input value={form.name_fr} onChange={(e) => setForm({ ...form, name_fr: e.target.value })} className="input2" /></Field>
+            <Field label={t("products.nameAr")}><input dir="rtl" value={form.name_ar} onChange={(e) => setForm({ ...form, name_ar: e.target.value })} className="input2" /></Field>
+          </div>
+          <div className="grid sm:grid-cols-3 gap-3">
+            <Field label={t("products.descriptionEn")}><textarea rows={3} value={form.description_en} onChange={(e) => setForm({ ...form, description_en: e.target.value })} className="input2" /></Field>
+            <Field label={t("products.descriptionFr")}><textarea rows={3} value={form.description_fr} onChange={(e) => setForm({ ...form, description_fr: e.target.value })} className="input2" /></Field>
+            <Field label={t("products.descriptionAr")}><textarea dir="rtl" rows={3} value={form.description_ar} onChange={(e) => setForm({ ...form, description_ar: e.target.value })} className="input2" /></Field>
+          </div>
+
+          <label className="flex items-center gap-2 text-sm">
+            <input type="checkbox" checked={form.is_available} onChange={(e) => setForm({ ...form, is_available: e.target.checked })} />
+            {t("products.available")}
+          </label>
+        </div>
+
+        <div className="flex gap-2 mt-6">
+          <button type="button" onClick={onClose} className="flex-1 py-2.5 border border-border rounded-lg text-sm font-medium">{t("common.cancel")}</button>
+          <button disabled={saving} className="flex-1 py-2.5 bg-primary text-primary-foreground rounded-lg text-sm font-medium disabled:opacity-50">{saving ? t("common.saving") : t("common.save")}</button>
+        </div>
+        <style>{`.input2 { width:100%; padding:0.5rem 0.75rem; border:1px solid var(--color-border); border-radius:0.5rem; font-size:0.875rem; background:var(--color-background); }`}</style>
+      </form>
+    </div>
+  );
+}
+
+function Field({ label, children }: { label: string; children: React.ReactNode }) {
+  return <label className="block"><span className="block text-xs font-medium text-muted-foreground mb-1.5">{label}</span>{children}</label>;
+}
