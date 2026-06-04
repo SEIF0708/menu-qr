@@ -1,19 +1,7 @@
-/**
- * Vercel Build Output API assembler.
- *
- * After `vite build` produces:
- *   dist/client/  – static assets
- *   dist/server/  – SSR server (server.js entry)
- *
- * This script creates:
- *   .vercel/output/static/       – copied from dist/client
- *   .vercel/output/functions/    – serverless function wrapping dist/server
- *   .vercel/output/config.json   – routing rules
- */
-
 import { cpSync, mkdirSync, writeFileSync, existsSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import esbuild from 'esbuild';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, '..');
@@ -31,22 +19,21 @@ if (existsSync(outputDir)) {
 mkdirSync(staticDir, { recursive: true });
 cpSync(join(root, 'dist', 'client'), staticDir, { recursive: true });
 
-// 2. Create serverless function
+// 2. Create serverless function wrapper
 mkdirSync(funcDir, { recursive: true });
-cpSync(join(root, 'dist', 'server'), funcDir, { recursive: true });
 
-// Write the function entry point that wraps the fetch handler
+// We write the Vercel handler wrapper to a temporary file, then bundle it
+const wrapperTemp = join(root, 'dist', 'server', 'vercel-wrapper.mjs');
 writeFileSync(
-  join(funcDir, 'index.mjs'),
+  wrapperTemp,
   `
 import server from './server.js';
 
 export default async function handler(req, res) {
   try {
-    // Build a standard Request from the Node.js IncomingMessage
     const protocol = req.headers['x-forwarded-proto'] || 'https';
     const host = req.headers['x-forwarded-host'] || req.headers.host || 'localhost';
-    const url = new URL(req.url, \`\${protocol}://\${host}\`);
+    const url = new URL(req.url || '/', \`\${protocol}://\${host}\`);
 
     const headers = new Headers();
     for (const [key, value] of Object.entries(req.headers)) {
@@ -69,7 +56,6 @@ export default async function handler(req, res) {
 
     const response = await server.fetch(request, {}, {});
 
-    // Write the Response back to the Node.js ServerResponse
     res.statusCode = response.status;
     response.headers.forEach((value, key) => {
       res.setHeader(key, value);
@@ -90,8 +76,20 @@ export default async function handler(req, res) {
     res.end('Internal Server Error');
   }
 }
-`.trim()
+`
 );
+
+// Bundle the wrapper and the entire server into a single file
+console.log('Bundling server for Vercel...');
+await esbuild.build({
+  entryPoints: [wrapperTemp],
+  bundle: true,
+  outfile: join(funcDir, 'index.mjs'),
+  format: 'esm',
+  platform: 'node',
+  target: 'node20',
+  external: [], // bundle everything including node_modules
+});
 
 // Write the function config
 writeFileSync(
@@ -115,15 +113,12 @@ writeFileSync(
     {
       version: 3,
       routes: [
-        // Serve static assets directly (they have hashed filenames)
         {
           src: '/assets/(.*)',
           headers: { 'Cache-Control': 'public, max-age=31536000, immutable' },
           continue: true,
         },
-        // Try static files first, then fall through to the function
         { handle: 'filesystem' },
-        // All other requests go to the SSR function
         { src: '/(.*)', dest: '/__nitro' },
       ],
     },
