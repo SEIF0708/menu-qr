@@ -21,7 +21,11 @@ function SettingsPage() {
   const logoUrl = useSignedImage(form.logo_url);
   const coverUrl = useSignedImage(form.cover_image_url);
 
-  useEffect(() => { if (restaurant) setForm(restaurant); }, [restaurant]);
+  useEffect(() => { 
+    if (restaurant) {
+      setForm({ ...restaurant, social_links: restaurant.social_links || {} });
+    }
+  }, [restaurant]);
 
   const uploadField = async (e: React.ChangeEvent<HTMLInputElement>, field: "logo_url" | "cover_image_url", kind: "logo" | "cover") => {
     const file = e.target.files?.[0]; if (!file) return;
@@ -84,7 +88,18 @@ function SettingsPage() {
               {LANGS.map((l) => <option key={l.code} value={l.code}>{l.label}</option>)}
             </select>
           </Field>
+          <Field label="Cuisine Type"><input value={form.cuisine_type ?? ""} onChange={(e) => setForm({ ...form, cuisine_type: e.target.value })} placeholder="e.g. Italian, Sushi, Cafe" className="input3" /></Field>
+          <Field label="Email"><input type="email" value={form.email ?? ""} onChange={(e) => setForm({ ...form, email: e.target.value })} className="input3" /></Field>
+          <Field label="Website"><input type="url" value={form.website ?? ""} onChange={(e) => setForm({ ...form, website: e.target.value })} className="input3" /></Field>
+          <Field label="Opening Hours (e.g. Mon-Fri 9am-10pm)"><input value={form.opening_hours ?? ""} onChange={(e) => setForm({ ...form, opening_hours: e.target.value })} className="input3" /></Field>
+          <Field label="Instagram URL"><input type="url" value={form.social_links?.instagram ?? ""} onChange={(e) => setForm({ ...form, social_links: { ...form.social_links, instagram: e.target.value } })} className="input3" /></Field>
+          <Field label="Facebook URL"><input type="url" value={form.social_links?.facebook ?? ""} onChange={(e) => setForm({ ...form, social_links: { ...form.social_links, facebook: e.target.value } })} className="input3" /></Field>
         </div>
+
+        <label className="flex items-center gap-2 text-sm bg-card border border-border p-3 rounded-lg">
+          <input type="checkbox" checked={form.is_open ?? true} onChange={(e) => setForm({ ...form, is_open: e.target.checked })} />
+          <span className="font-medium text-foreground">Restaurant is currently open for business</span>
+        </label>
 
         <Field label={t("settings.description")}>
           <textarea rows={3} value={form.description ?? ""} onChange={(e) => setForm({ ...form, description: e.target.value })} className="input3" />

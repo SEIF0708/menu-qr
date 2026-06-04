@@ -23,6 +23,12 @@ CREATE TABLE public.restaurants (
   logo_url TEXT,
   cover_image_url TEXT,
   phone TEXT,
+  cuisine_type TEXT,
+  is_open BOOLEAN NOT NULL DEFAULT true,
+  opening_hours TEXT,
+  website TEXT,
+  email TEXT,
+  social_links JSONB DEFAULT '{}'::jsonb,
   currency TEXT NOT NULL DEFAULT 'USD',
   default_language TEXT NOT NULL DEFAULT 'en',
   onboarding_completed BOOLEAN NOT NULL DEFAULT false,
@@ -77,6 +83,14 @@ CREATE TABLE public.products (
   price NUMERIC(10,2) NOT NULL DEFAULT 0,
   image_url TEXT,
   is_available BOOLEAN NOT NULL DEFAULT true,
+  featured BOOLEAN NOT NULL DEFAULT false,
+  popular BOOLEAN NOT NULL DEFAULT false,
+  chef_recommendation BOOLEAN NOT NULL DEFAULT false,
+  badges TEXT[] DEFAULT '{}'::text[],
+  prep_time_minutes INT,
+  calories INT,
+  ingredients TEXT,
+  allergens TEXT,
   display_order INT NOT NULL DEFAULT 0,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
@@ -236,6 +250,7 @@ CREATE POLICY owner_read_restaurant ON public.restaurants
 -- Public-safe view: excludes phone, owner_id, onboarding_completed
 CREATE OR REPLACE VIEW public.restaurants_public AS
   SELECT id, name, slug, description, logo_url, cover_image_url,
+         cuisine_type, is_open, opening_hours, website, email, social_links,
          currency, default_language, created_at, updated_at
   FROM public.restaurants;
 
@@ -244,6 +259,7 @@ ALTER VIEW public.restaurants_public SET (security_invoker = on);
 
 -- Allow anon to read only the safe columns of restaurants (needed for the view)
 GRANT SELECT (id, name, slug, description, logo_url, cover_image_url,
+              cuisine_type, is_open, opening_hours, website, email, social_links,
               currency, default_language, created_at, updated_at)
   ON public.restaurants TO anon;
 
@@ -251,3 +267,40 @@ DROP POLICY IF EXISTS anon_read_restaurants_safe ON public.restaurants;
 CREATE POLICY anon_read_restaurants_safe ON public.restaurants
   FOR SELECT TO anon
   USING (true);
+
+-- ==========================================
+-- MIGRATION COMMANDS FOR MENU V2 (Copy and run in SQL Editor)
+-- ==========================================
+/*
+ALTER TABLE public.restaurants 
+  ADD COLUMN IF NOT EXISTS cuisine_type TEXT,
+  ADD COLUMN IF NOT EXISTS is_open BOOLEAN NOT NULL DEFAULT true,
+  ADD COLUMN IF NOT EXISTS opening_hours TEXT,
+  ADD COLUMN IF NOT EXISTS website TEXT,
+  ADD COLUMN IF NOT EXISTS email TEXT,
+  ADD COLUMN IF NOT EXISTS social_links JSONB DEFAULT '{}'::jsonb;
+
+ALTER TABLE public.products 
+  ADD COLUMN IF NOT EXISTS featured BOOLEAN NOT NULL DEFAULT false,
+  ADD COLUMN IF NOT EXISTS popular BOOLEAN NOT NULL DEFAULT false,
+  ADD COLUMN IF NOT EXISTS chef_recommendation BOOLEAN NOT NULL DEFAULT false,
+  ADD COLUMN IF NOT EXISTS badges TEXT[] DEFAULT '{}'::text[],
+  ADD COLUMN IF NOT EXISTS prep_time_minutes INT,
+  ADD COLUMN IF NOT EXISTS calories INT,
+  ADD COLUMN IF NOT EXISTS ingredients TEXT,
+  ADD COLUMN IF NOT EXISTS allergens TEXT;
+
+-- Recreate view and grants
+DROP VIEW IF EXISTS public.restaurants_public;
+
+CREATE VIEW public.restaurants_public AS
+  SELECT id, name, slug, description, logo_url, cover_image_url,
+         cuisine_type, is_open, opening_hours, website, email, social_links,
+         currency, default_language, created_at, updated_at
+  FROM public.restaurants;
+
+GRANT SELECT (id, name, slug, description, logo_url, cover_image_url,
+              cuisine_type, is_open, opening_hours, website, email, social_links,
+              currency, default_language, created_at, updated_at)
+  ON public.restaurants TO anon;
+*/

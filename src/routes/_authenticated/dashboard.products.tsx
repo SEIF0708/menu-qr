@@ -154,6 +154,14 @@ function ProductDialog({ restaurantId, product, categories, onClose }: { restaur
     category_id: product?.category_id ?? "",
     is_available: product?.is_available ?? true,
     image_url: product?.image_url ?? "",
+    featured: product?.featured ?? false,
+    popular: product?.popular ?? false,
+    chef_recommendation: product?.chef_recommendation ?? false,
+    prep_time_minutes: product?.prep_time_minutes ?? "",
+    calories: product?.calories ?? "",
+    ingredients: product?.ingredients ?? "",
+    allergens: product?.allergens ?? "",
+    badges: product?.badges ?? [],
   });
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -173,7 +181,14 @@ function ProductDialog({ restaurantId, product, categories, onClose }: { restaur
     e.preventDefault();
     setSaving(true);
     try {
-      const payload = { ...form, price: Number(form.price), category_id: form.category_id || null, restaurant_id: restaurantId };
+      const payload = { 
+        ...form, 
+        price: Number(form.price), 
+        category_id: form.category_id || null, 
+        restaurant_id: restaurantId,
+        prep_time_minutes: form.prep_time_minutes ? Number(form.prep_time_minutes) : null,
+        calories: form.calories ? Number(form.calories) : null
+      };
       if (product) {
         await supabase.from("products").update(payload).eq("id", product.id);
       } else {
@@ -234,6 +249,37 @@ function ProductDialog({ restaurantId, product, categories, onClose }: { restaur
             <input type="checkbox" checked={form.is_available} onChange={(e) => setForm({ ...form, is_available: e.target.checked })} />
             {t("products.available")}
           </label>
+
+          <div className="grid sm:grid-cols-2 gap-4">
+            <Field label="Prep Time (mins)"><input type="number" value={form.prep_time_minutes} onChange={(e) => setForm({ ...form, prep_time_minutes: e.target.value })} className="input2" /></Field>
+            <Field label="Calories (kcal)"><input type="number" value={form.calories} onChange={(e) => setForm({ ...form, calories: e.target.value })} className="input2" /></Field>
+          </div>
+
+          <Field label="Ingredients (Comma separated)"><textarea rows={2} value={form.ingredients} onChange={(e) => setForm({ ...form, ingredients: e.target.value })} className="input2" /></Field>
+          <Field label="Allergens (Comma separated)"><textarea rows={2} value={form.allergens} onChange={(e) => setForm({ ...form, allergens: e.target.value })} className="input2" /></Field>
+
+          <div className="space-y-3 pt-4 border-t border-border">
+            <h3 className="text-sm font-semibold">Product Badges & Highlights</h3>
+            <div className="flex flex-wrap gap-4">
+              <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={form.featured} onChange={(e) => setForm({ ...form, featured: e.target.checked })} /> Featured</label>
+              <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={form.popular} onChange={(e) => setForm({ ...form, popular: e.target.checked })} /> Popular</label>
+              <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={form.chef_recommendation} onChange={(e) => setForm({ ...form, chef_recommendation: e.target.checked })} /> Chef Recommendation</label>
+            </div>
+            
+            <div className="flex flex-wrap gap-3 mt-3">
+              {["Vegetarian", "Vegan", "Halal", "Spicy", "Gluten Free"].map(badge => (
+                <label key={badge} className="flex items-center gap-2 text-sm bg-muted px-3 py-1.5 rounded-full cursor-pointer hover:bg-muted/80">
+                  <input type="checkbox" 
+                    checked={form.badges.includes(badge)}
+                    onChange={(e) => {
+                      if (e.target.checked) setForm({ ...form, badges: [...form.badges, badge] });
+                      else setForm({ ...form, badges: form.badges.filter((b: string) => b !== badge) });
+                    }} 
+                  /> {badge}
+                </label>
+              ))}
+            </div>
+          </div>
         </div>
 
         <div className="flex gap-2 mt-6">

@@ -21,7 +21,6 @@ import { Route as AuthenticatedDashboardSettingsRouteImport } from './routes/_au
 import { Route as AuthenticatedDashboardQrRouteImport } from './routes/_authenticated/dashboard.qr'
 import { Route as AuthenticatedDashboardProductsRouteImport } from './routes/_authenticated/dashboard.products'
 import { Route as AuthenticatedDashboardCategoriesRouteImport } from './routes/_authenticated/dashboard.categories'
-import { Route as MenuSlugProductProductIdRouteImport } from './routes/menu/$slug.product.$productId'
 
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
   id: '/reset-password',
@@ -87,12 +86,6 @@ const AuthenticatedDashboardCategoriesRoute =
     path: '/categories',
     getParentRoute: () => AuthenticatedDashboardRoute,
   } as any)
-const MenuSlugProductProductIdRoute =
-  MenuSlugProductProductIdRouteImport.update({
-    id: '/product/$productId',
-    path: '/product/$productId',
-    getParentRoute: () => MenuSlugRoute,
-  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -100,26 +93,24 @@ export interface FileRoutesByFullPath {
   '/reset-password': typeof ResetPasswordRoute
   '/dashboard': typeof AuthenticatedDashboardRouteWithChildren
   '/onboarding': typeof AuthenticatedOnboardingRoute
-  '/menu/$slug': typeof MenuSlugRouteWithChildren
+  '/menu/$slug': typeof MenuSlugRoute
   '/dashboard/categories': typeof AuthenticatedDashboardCategoriesRoute
   '/dashboard/products': typeof AuthenticatedDashboardProductsRoute
   '/dashboard/qr': typeof AuthenticatedDashboardQrRoute
   '/dashboard/settings': typeof AuthenticatedDashboardSettingsRoute
   '/dashboard/': typeof AuthenticatedDashboardIndexRoute
-  '/menu/$slug/product/$productId': typeof MenuSlugProductProductIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/reset-password': typeof ResetPasswordRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
-  '/menu/$slug': typeof MenuSlugRouteWithChildren
+  '/menu/$slug': typeof MenuSlugRoute
   '/dashboard/categories': typeof AuthenticatedDashboardCategoriesRoute
   '/dashboard/products': typeof AuthenticatedDashboardProductsRoute
   '/dashboard/qr': typeof AuthenticatedDashboardQrRoute
   '/dashboard/settings': typeof AuthenticatedDashboardSettingsRoute
   '/dashboard': typeof AuthenticatedDashboardIndexRoute
-  '/menu/$slug/product/$productId': typeof MenuSlugProductProductIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -129,13 +120,12 @@ export interface FileRoutesById {
   '/reset-password': typeof ResetPasswordRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRouteWithChildren
   '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
-  '/menu/$slug': typeof MenuSlugRouteWithChildren
+  '/menu/$slug': typeof MenuSlugRoute
   '/_authenticated/dashboard/categories': typeof AuthenticatedDashboardCategoriesRoute
   '/_authenticated/dashboard/products': typeof AuthenticatedDashboardProductsRoute
   '/_authenticated/dashboard/qr': typeof AuthenticatedDashboardQrRoute
   '/_authenticated/dashboard/settings': typeof AuthenticatedDashboardSettingsRoute
   '/_authenticated/dashboard/': typeof AuthenticatedDashboardIndexRoute
-  '/menu/$slug/product/$productId': typeof MenuSlugProductProductIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -151,7 +141,6 @@ export interface FileRouteTypes {
     | '/dashboard/qr'
     | '/dashboard/settings'
     | '/dashboard/'
-    | '/menu/$slug/product/$productId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -164,7 +153,6 @@ export interface FileRouteTypes {
     | '/dashboard/qr'
     | '/dashboard/settings'
     | '/dashboard'
-    | '/menu/$slug/product/$productId'
   id:
     | '__root__'
     | '/'
@@ -179,7 +167,6 @@ export interface FileRouteTypes {
     | '/_authenticated/dashboard/qr'
     | '/_authenticated/dashboard/settings'
     | '/_authenticated/dashboard/'
-    | '/menu/$slug/product/$productId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -187,7 +174,7 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
-  MenuSlugRoute: typeof MenuSlugRouteWithChildren
+  MenuSlugRoute: typeof MenuSlugRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -276,13 +263,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardCategoriesRouteImport
       parentRoute: typeof AuthenticatedDashboardRoute
     }
-    '/menu/$slug/product/$productId': {
-      id: '/menu/$slug/product/$productId'
-      path: '/product/$productId'
-      fullPath: '/menu/$slug/product/$productId'
-      preLoaderRoute: typeof MenuSlugProductProductIdRouteImport
-      parentRoute: typeof MenuSlugRoute
-    }
   }
 }
 
@@ -322,24 +302,12 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
 const AuthenticatedRouteRouteWithChildren =
   AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
 
-interface MenuSlugRouteChildren {
-  MenuSlugProductProductIdRoute: typeof MenuSlugProductProductIdRoute
-}
-
-const MenuSlugRouteChildren: MenuSlugRouteChildren = {
-  MenuSlugProductProductIdRoute: MenuSlugProductProductIdRoute,
-}
-
-const MenuSlugRouteWithChildren = MenuSlugRoute._addFileChildren(
-  MenuSlugRouteChildren,
-)
-
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
   ResetPasswordRoute: ResetPasswordRoute,
-  MenuSlugRoute: MenuSlugRouteWithChildren,
+  MenuSlugRoute: MenuSlugRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

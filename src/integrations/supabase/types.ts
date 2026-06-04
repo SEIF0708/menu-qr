@@ -83,52 +83,76 @@ export type Database = {
       }
       products: {
         Row: {
+          allergens: string | null
+          badges: string[] | null
+          calories: number | null
           category_id: string | null
+          chef_recommendation: boolean
           created_at: string
           description_ar: string | null
           description_en: string | null
           description_fr: string | null
           display_order: number
+          featured: boolean
           id: string
           image_url: string | null
+          ingredients: string | null
           is_available: boolean
           name_ar: string | null
           name_en: string | null
           name_fr: string | null
+          popular: boolean
+          prep_time_minutes: number | null
           price: number
           restaurant_id: string
           updated_at: string
         }
         Insert: {
+          allergens?: string | null
+          badges?: string[] | null
+          calories?: number | null
           category_id?: string | null
+          chef_recommendation?: boolean
           created_at?: string
           description_ar?: string | null
           description_en?: string | null
           description_fr?: string | null
           display_order?: number
+          featured?: boolean
           id?: string
           image_url?: string | null
+          ingredients?: string | null
           is_available?: boolean
           name_ar?: string | null
           name_en?: string | null
           name_fr?: string | null
+          popular?: boolean
+          prep_time_minutes?: number | null
           price?: number
           restaurant_id: string
           updated_at?: string
         }
         Update: {
+          allergens?: string | null
+          badges?: string[] | null
+          calories?: number | null
           category_id?: string | null
+          chef_recommendation?: boolean
           created_at?: string
           description_ar?: string | null
           description_en?: string | null
           description_fr?: string | null
           display_order?: number
+          featured?: boolean
           id?: string
           image_url?: string | null
+          ingredients?: string | null
           is_available?: boolean
           name_ar?: string | null
           name_en?: string | null
           name_fr?: string | null
+          popular?: boolean
+          prep_time_minutes?: number | null
           price?: number
           restaurant_id?: string
           updated_at?: string
@@ -175,53 +199,127 @@ export type Database = {
         Row: {
           cover_image_url: string | null
           created_at: string
+          cuisine_type: string | null
           currency: string
           default_language: string
           description: string | null
+          email: string | null
           id: string
+          is_open: boolean
           logo_url: string | null
           name: string
           onboarding_completed: boolean
+          opening_hours: string | null
           owner_id: string
           phone: string | null
           slug: string
+          social_links: Json | null
           updated_at: string
+          website: string | null
         }
         Insert: {
           cover_image_url?: string | null
           created_at?: string
+          cuisine_type?: string | null
           currency?: string
           default_language?: string
           description?: string | null
+          email?: string | null
           id?: string
+          is_open?: boolean
           logo_url?: string | null
           name?: string
           onboarding_completed?: boolean
+          opening_hours?: string | null
           owner_id: string
           phone?: string | null
           slug: string
+          social_links?: Json | null
           updated_at?: string
+          website?: string | null
         }
         Update: {
           cover_image_url?: string | null
           created_at?: string
+          cuisine_type?: string | null
           currency?: string
           default_language?: string
           description?: string | null
+          email?: string | null
           id?: string
+          is_open?: boolean
           logo_url?: string | null
           name?: string
           onboarding_completed?: boolean
+          opening_hours?: string | null
           owner_id?: string
           phone?: string | null
           slug?: string
+          social_links?: Json | null
           updated_at?: string
+          website?: string | null
         }
         Relationships: []
       }
     }
     Views: {
-      [_ in never]: never
+      restaurants_public: {
+        Row: {
+          cover_image_url: string | null
+          created_at: string
+          cuisine_type: string | null
+          currency: string
+          default_language: string
+          description: string | null
+          email: string | null
+          id: string
+          is_open: boolean
+          logo_url: string | null
+          name: string
+          opening_hours: string | null
+          slug: string
+          social_links: Json | null
+          updated_at: string
+          website: string | null
+        }
+        Insert: {
+          cover_image_url?: string | null
+          created_at?: string
+          cuisine_type?: string | null
+          currency?: string
+          default_language?: string
+          description?: string | null
+          email?: string | null
+          id?: string
+          is_open?: boolean
+          logo_url?: string | null
+          name?: string
+          opening_hours?: string | null
+          slug?: string
+          social_links?: Json | null
+          updated_at?: string
+          website?: string | null
+        }
+        Update: {
+          cover_image_url?: string | null
+          created_at?: string
+          cuisine_type?: string | null
+          currency?: string
+          default_language?: string
+          description?: string | null
+          email?: string | null
+          id?: string
+          is_open?: boolean
+          logo_url?: string | null
+          name?: string
+          opening_hours?: string | null
+          slug?: string
+          social_links?: Json | null
+          updated_at?: string
+          website?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       [_ in never]: never
