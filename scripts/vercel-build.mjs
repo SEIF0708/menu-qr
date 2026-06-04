@@ -1,4 +1,4 @@
-import { cpSync, mkdirSync, writeFileSync, existsSync } from 'node:fs';
+import { rmSync, cpSync, mkdirSync, writeFileSync, existsSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import esbuild from 'esbuild';
@@ -12,7 +12,7 @@ const funcDir = join(outputDir, 'functions', '__nitro.func');
 
 // Clean previous output
 if (existsSync(outputDir)) {
-  cpSync(outputDir, outputDir, { recursive: true }); // no-op, just ensure
+  rmSync(outputDir, { recursive: true, force: true });
 }
 
 // 1. Copy static assets
@@ -29,7 +29,7 @@ writeFileSync(
   `
 import server from './server.js';
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   try {
     const protocol = req.headers['x-forwarded-proto'] || 'https';
     const host = req.headers['x-forwarded-host'] || req.headers.host || 'localhost';
@@ -84,11 +84,15 @@ console.log('Bundling server for Vercel...');
 await esbuild.build({
   entryPoints: [wrapperTemp],
   bundle: true,
-  outfile: join(funcDir, 'index.mjs'),
-  format: 'esm',
+  outfile: join(funcDir, 'index.cjs'),
+  format: 'cjs',
   platform: 'node',
   target: 'node20',
-  external: [], // bundle everything including node_modules
+  external: [
+    'node:*',
+    'stream', 'http', 'https', 'fs', 'path', 'os', 'crypto', 'events', 
+    'url', 'util', 'zlib', 'buffer', 'net', 'tls', 'assert', 'child_process'
+  ],
 });
 
 // Write the function config
@@ -97,7 +101,7 @@ writeFileSync(
   JSON.stringify(
     {
       runtime: 'nodejs20.x',
-      handler: 'index.mjs',
+      handler: 'index.cjs',
       launcherType: 'Nodejs',
       shouldAddHelpers: true,
     },
