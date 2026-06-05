@@ -70,10 +70,16 @@ function AuthPage() {
 
   const onGoogle = async () => {
     setLoading(true);
-    const result = await lovable.auth.signInWithOAuth("google", { redirect_uri: `${window.location.origin}/dashboard` });
-    if (result.error) toast.error(result.error.message || "Error");
-    if (!result.redirected && !result.error) navigate({ to: "/dashboard" });
-    setLoading(false);
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo: `${window.location.origin}/dashboard`,
+      },
+    });
+    if (error) {
+      toast.error(error.message || "Error");
+      setLoading(false);
+    }
   };
 
   return (
