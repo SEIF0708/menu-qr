@@ -286,7 +286,7 @@ function ProductDrawer({ product, lang, currency, cart, onClose }: any) {
   return (
     <BottomSheet onClose={onClose}>
       <div className="overflow-y-auto pb-24">
-         {img && <div className="w-full h-64 sm:h-80 bg-muted/30 flex items-center justify-center p-4"><img src={img} alt="" className="max-w-full max-h-full object-contain rounded-xl shadow-sm" /></div>}
+         {img && <div className="aspect-[4/3] sm:aspect-video bg-muted w-full"><img src={img} alt="" className="size-full object-cover" /></div>}
          <div className="p-6">
             <div className="flex justify-between items-start gap-4">
                <div>
