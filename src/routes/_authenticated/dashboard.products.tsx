@@ -105,7 +105,7 @@ function ProductsPage() {
       ) : (
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {filtered.map((p) => (
-            <ProductCard key={p.id} product={p} lang={lang} currency={restaurant?.currency || "USD"}
+            <ProductCard key={p.id} product={p} lang={lang} currency={restaurant?.currency || "TND"}
               onEdit={() => setEditing(p)} onDelete={() => confirm(t("common.confirmDelete")) && del.mutate(p.id)}
               onDup={() => dup.mutate(p)} onToggle={(v) => toggle.mutate({ id: p.id, available: v })} />
           ))}

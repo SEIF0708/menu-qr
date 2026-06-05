@@ -71,7 +71,7 @@ function Overview() {
           <div className="p-8 text-center text-sm text-muted-foreground">{t("overview.emptyRecent")}</div>
         ) : (
           <div className="divide-y divide-border">
-            {stats.data?.recent.map((p: any) => <RecentRow key={p.id} product={p} lang={lang} currency={restaurant?.currency || "USD"} />)}
+            {stats.data?.recent.map((p: any) => <RecentRow key={p.id} product={p} lang={lang} currency={restaurant?.currency || "TND"} />)}
           </div>
         )}
       </div>

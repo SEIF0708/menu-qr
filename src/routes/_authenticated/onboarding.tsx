@@ -18,7 +18,7 @@ function Onboarding() {
   const [step, setStep] = useState(1);
   const total = 6;
 
-  const [info, setInfo] = useState({ name: "", description: "", phone: "", currency: "USD" });
+  const [info, setInfo] = useState({ name: "", description: "", phone: "", currency: "TND" });
   const [logo, setLogo] = useState<string | null>(null);
   const [cover, setCover] = useState<string | null>(null);
   const [cat, setCat] = useState({ name_en: "", name_fr: "", name_ar: "" });
@@ -89,7 +89,7 @@ function Onboarding() {
               <div className="grid grid-cols-2 gap-3">
                 <input placeholder={t("settings.phone")} value={info.phone} onChange={(e) => setInfo({ ...info, phone: e.target.value })} className="inp" />
                 <select value={info.currency} onChange={(e) => setInfo({ ...info, currency: e.target.value })} className="inp">
-                  {["USD", "EUR", "GBP", "AED", "SAR", "MAD"].map((c) => <option key={c}>{c}</option>)}
+                  {["TND", "USD", "EUR", "GBP", "AED", "SAR", "MAD"].map((c) => <option key={c}>{c}</option>)}
                 </select>
               </div>
             </div>

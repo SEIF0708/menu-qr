@@ -79,7 +79,7 @@ function SettingsPage() {
           <Field label={t("settings.name")}><input required value={form.name ?? ""} onChange={(e) => setForm({ ...form, name: e.target.value })} className="input3" /></Field>
           <Field label={t("settings.phone")}><input value={form.phone ?? ""} onChange={(e) => setForm({ ...form, phone: e.target.value })} className="input3" /></Field>
           <Field label={t("settings.currency")}>
-            <select value={form.currency ?? "USD"} onChange={(e) => setForm({ ...form, currency: e.target.value })} className="input3">
+            <select value={form.currency ?? "TND"} onChange={(e) => setForm({ ...form, currency: e.target.value })} className="input3">
               {["USD", "EUR", "GBP", "AED", "SAR", "MAD", "TND", "DZD", "EGP"].map((c) => <option key={c}>{c}</option>)}
             </select>
           </Field>

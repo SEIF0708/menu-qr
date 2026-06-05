@@ -29,7 +29,7 @@ CREATE TABLE public.restaurants (
   website TEXT,
   email TEXT,
   social_links JSONB DEFAULT '{}'::jsonb,
-  currency TEXT NOT NULL DEFAULT 'USD',
+  currency TEXT NOT NULL DEFAULT 'TND',
   default_language TEXT NOT NULL DEFAULT 'en',
   onboarding_completed BOOLEAN NOT NULL DEFAULT false,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
