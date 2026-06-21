@@ -139,8 +139,12 @@ function MenuPage() {
     }
   }
 
+  const searchParams = Route.useSearch() as any;
+  const isIframe = searchParams.iframe === "true";
+
   return (
-    <div className="min-h-dvh bg-background pb-32">
+    <div className={cn("min-h-dvh bg-background pb-32", isIframe && "no-scrollbar")}>
+      {isIframe && <style>{`::-webkit-scrollbar { display: none; } * { scrollbar-width: none; -ms-overflow-style: none; }`}</style>}
       {restaurant.subscription_status === "unpaid" && isOwner && (
         <div className="bg-orange-500 text-white text-xs sm:text-sm font-bold text-center py-2 px-4 sticky top-0 z-[60] shadow-md flex items-center justify-center gap-2">
           <Lock className="size-4" /> PREVIEW MODE — This menu is hidden from the public until you activate your subscription.

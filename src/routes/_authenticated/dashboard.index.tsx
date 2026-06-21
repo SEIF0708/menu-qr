@@ -82,8 +82,8 @@ function Overview() {
             <h3 className="font-semibold flex items-center gap-2"><Eye className="size-4 text-accent" /> Live Preview</h3>
           </div>
           <div className="bg-muted p-6 flex justify-center items-center flex-1">
-             <div className="w-[320px] h-[600px] bg-background border-[8px] border-zinc-800 rounded-[2.5rem] overflow-hidden shadow-xl relative">
-                {restaurant?.slug && <iframe src={`/menu/${restaurant?.slug}`} className="w-full h-full border-0" />}
+             <div className="w-[320px] h-[600px] bg-background border-[8px] border-zinc-800 rounded-[2.5rem] shadow-xl relative" style={{ clipPath: "inset(0 round 2.5rem)" }}>
+                {restaurant?.slug && <iframe src={`/menu/${restaurant?.slug}?iframe=true`} className="w-full h-full border-0" />}
              </div>
           </div>
         </div>
