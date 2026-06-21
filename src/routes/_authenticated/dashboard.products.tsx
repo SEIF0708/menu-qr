@@ -125,7 +125,7 @@ function ProductCard({ product, lang, currency, onEdit, onDelete, onDup, onToggl
   return (
     <div className="bg-card border border-border rounded-2xl overflow-hidden hover:shadow-md transition-shadow group">
       <div className="aspect-[4/3] bg-muted relative">
-        {img && <img src={img} alt="" className="size-full object-cover" />}
+        {img && <img src={img} alt="" loading="lazy" className="size-full object-cover" />}
         <button onClick={() => onToggle(!product.is_available)}
           className={`absolute top-2 right-2 px-2 py-1 rounded text-[10px] font-bold uppercase ${product.is_available ? "bg-emerald-100 text-emerald-700" : "bg-stone-200 text-stone-700"}`}>
           {product.is_available ? "●" : "○"}
@@ -212,7 +212,7 @@ function ProductDialog({ restaurantId, product, categories, onClose }: { restaur
             <span className="block text-xs font-medium text-muted-foreground mb-1.5">{t("products.image")}</span>
             <div className="flex gap-3 items-start">
               <div className="size-24 bg-muted rounded-lg overflow-hidden flex-shrink-0">
-                {img && <img src={img} alt="" className="size-full object-cover" />}
+                {img && <img src={img} alt="" loading="lazy" className="size-full object-cover" />}
               </div>
               <label className="flex-1 cursor-pointer border border-dashed border-border rounded-lg p-4 text-sm text-muted-foreground hover:bg-muted transition-colors text-center">
                 <Upload className="size-4 mx-auto mb-1" />

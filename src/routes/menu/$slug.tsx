@@ -34,6 +34,7 @@ function MenuPage() {
   const lang = i18n.language?.split("-")[0] || "en";
   const [search, setSearch] = useState("");
   const [activeCat, setActiveCat] = useState<string | null>(null);
+  const [visibleCount, setVisibleCount] = useState(8);
   
   const [cartOpen, setCartOpen] = useState(false);
   const [infoOpen, setInfoOpen] = useState(false);
@@ -78,6 +79,13 @@ function MenuPage() {
     }
     return list;
   }, [prods.data, activeCat, search]);
+
+  const displayedProducts = useMemo(() => {
+    if (!activeCat && !search) {
+      return filtered.slice(0, visibleCount);
+    }
+    return filtered;
+  }, [filtered, activeCat, search, visibleCount]);
 
   return (
     <div className="min-h-dvh bg-background pb-32">
@@ -155,10 +163,18 @@ function MenuPage() {
         </div>
 
         <div className="py-6 flex flex-col gap-6">
-          {filtered.length === 0 && <p className="text-center text-sm text-muted-foreground py-12">{t("menu.noProducts")}</p>}
-          {filtered.map((p) => (
+          {displayedProducts.length === 0 && <p className="text-center text-sm text-muted-foreground py-12">{t("menu.noProducts")}</p>}
+          {displayedProducts.map((p) => (
             <ProductRow key={p.id} product={p} lang={lang} currency={restaurant.currency} onClick={() => setSelectedProduct(p)} onAdd={(e: any) => { e.stopPropagation(); cart.add({ id: p.id, name: pickLocalized(p, "name", lang) || "—", price: Number(p.price), image: p.image_url }); }} />
           ))}
+          
+          {!activeCat && !search && filtered.length > visibleCount && (
+            <div className="flex justify-center pt-4">
+              <button onClick={() => setVisibleCount(v => v + 8)} className="px-6 py-3 bg-muted text-foreground rounded-full font-medium text-sm hover:bg-muted/80 active:scale-95 transition-all shadow-sm">
+                Show more products
+              </button>
+            </div>
+          )}
         </div>
       </div>
 
@@ -202,7 +218,7 @@ function FeaturedCard({ product, lang, currency, onClick }: any) {
   return (
     <div onClick={onClick} className="w-40 sm:w-48 flex-shrink-0 cursor-pointer group">
       <div className="aspect-square bg-muted rounded-2xl overflow-hidden mb-3 relative">
-        {img ? <img src={img} alt="" className="size-full object-cover group-hover:scale-105 transition-transform duration-500" /> : null}
+        {img ? <img src={img} alt="" loading="lazy" className="size-full object-cover group-hover:scale-105 transition-transform duration-500" /> : null}
         {product.chef_recommendation && (
           <div className="absolute top-2 left-2 bg-yellow-400 text-yellow-950 text-[10px] font-bold px-2 py-1 rounded-md flex items-center gap-1 shadow-sm">
             <Star className="size-3 fill-current" /> Chef's Choice
@@ -286,7 +302,7 @@ function ProductDrawer({ product, lang, currency, cart, onClose }: any) {
   return (
     <BottomSheet onClose={onClose}>
       <div className="overflow-y-auto pb-24">
-         {img && <div className="aspect-[4/3] sm:aspect-video bg-muted w-full"><img src={img} alt="" className="size-full object-cover" /></div>}
+         {img && <div className="aspect-[4/3] sm:aspect-video bg-muted w-full"><img src={img} alt="" loading="lazy" className="size-full object-cover" /></div>}
          <div className="p-6">
             <div className="flex justify-between items-start gap-4">
                <div>

@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useSignedImage } from "@/lib/use-signed-image";
 import { uploadAsset } from "@/lib/storage";
+import imageCompression from "browser-image-compression";
 import { Upload } from "lucide-react";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
@@ -20,6 +21,55 @@ function SettingsPage() {
   const [saving, setSaving] = useState(false);
   const logoUrl = useSignedImage(form.logo_url);
   const coverUrl = useSignedImage(form.cover_image_url);
+  const [compressing, setCompressing] = useState(false);
+  const [compressProgress, setCompressProgress] = useState(0);
+  const [compressTotal, setCompressTotal] = useState(0);
+
+  const compressExistingImages = async () => {
+    if (!confirm(t("common.confirmCompress", "This will download, compress, and re-upload all product images. It might take a while. Continue?"))) return;
+    setCompressing(true);
+    try {
+      const { data: products } = await supabase.from("products").select("*").eq("restaurant_id", restaurant!.id).not("image_url", "is", null);
+      if (!products) return;
+      
+      setCompressTotal(products.length);
+      let done = 0;
+      
+      for (const p of products) {
+        if (!p.image_url) continue;
+        try {
+           const { data: signed } = await supabase.storage.from("restaurant-assets").createSignedUrl(p.image_url, 60);
+           if (!signed?.signedUrl) continue;
+           
+           const res = await fetch(signed.signedUrl);
+           const blob = await res.blob();
+           
+           if (blob.size < 300 * 1024) {
+              done++; setCompressProgress(done); continue;
+           }
+           
+           const file = new File([blob], "image.jpg", { type: blob.type });
+           const compressed = await imageCompression(file, { maxSizeMB: 0.3, maxWidthOrHeight: 800, useWebWorker: true });
+           
+           const { data: u } = await supabase.auth.getUser();
+           const newPath = await uploadAsset(compressed, u.user!.id, "product");
+           
+           await supabase.from("products").update({ image_url: newPath }).eq("id", p.id);
+           await supabase.storage.from("restaurant-assets").remove([p.image_url]);
+        } catch (err) {
+           console.error("Failed to compress image for product", p.id, err);
+        }
+        done++;
+        setCompressProgress(done);
+      }
+      toast.success("Finished compressing images!");
+    } catch (err: any) {
+      toast.error(err.message);
+    } finally {
+      setCompressing(false);
+      setCompressProgress(0);
+    }
+  };
 
   useEffect(() => { 
     if (restaurant) {
@@ -115,6 +165,14 @@ function SettingsPage() {
         <button disabled={saving} className="w-full sm:w-auto px-6 py-2.5 bg-primary text-primary-foreground rounded-full font-medium text-sm disabled:opacity-50">
           {saving ? t("common.saving") : t("common.save")}
         </button>
+
+        <div className="mt-12 p-6 bg-red-50/50 border border-red-100 rounded-2xl">
+          <h3 className="font-semibold text-red-900 mb-2">Admin Tools</h3>
+          <p className="text-sm text-red-800/80 mb-4">Compress all existing product images to save space and improve loading times. Only run this once if you have uncompressed images.</p>
+          <button type="button" onClick={compressExistingImages} disabled={compressing} className="px-4 py-2 bg-red-100 text-red-900 rounded-lg text-sm font-medium hover:bg-red-200 transition-colors disabled:opacity-50">
+            {compressing ? `Compressing (${compressProgress}/${compressTotal})...` : "Compress Existing Images"}
+          </button>
+        </div>
         <style>{`.input3 { width:100%; padding:0.5rem 0.75rem; border:1px solid var(--color-border); border-radius:0.5rem; font-size:0.875rem; background:var(--color-background); }`}</style>
       </form>
     </div>
