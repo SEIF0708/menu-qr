@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useMyRestaurant } from "@/lib/use-restaurant";
 import { QRCodeCanvas } from "qrcode.react";
 import { useRef } from "react";
-import { Download, Printer, Copy } from "lucide-react";
+import { Download, Printer, Copy, Lock } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/dashboard/qr")({ component: QrPage });
