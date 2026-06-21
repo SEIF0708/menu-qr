@@ -175,29 +175,29 @@ function RestaurantManager() {
         <table className="w-full text-sm text-left">
           <thead className="text-xs text-muted-foreground uppercase bg-muted/50">
             <tr>
-              <th className="px-4 py-3 rounded-tl-lg">Restaurant</th>
-              <th className="px-4 py-3">Status</th>
-              <th className="px-4 py-3">Referrer</th>
-              <th className="px-4 py-3 rounded-tr-lg">Actions</th>
+              <th className="px-4 py-3 rounded-tl-lg whitespace-nowrap">Restaurant</th>
+              <th className="px-4 py-3 whitespace-nowrap">Status</th>
+              <th className="px-4 py-3 whitespace-nowrap">Referrer</th>
+              <th className="px-4 py-3 rounded-tr-lg whitespace-nowrap">Actions</th>
             </tr>
           </thead>
           <tbody>
             {restaurants.data?.map(r => (
               <tr key={r.id} className="border-b border-border last:border-0">
-                <td className="px-4 py-3 font-medium">{r.name}</td>
-                <td className="px-4 py-3">
+                <td className="px-4 py-3 font-medium whitespace-nowrap">{r.name}</td>
+                <td className="px-4 py-3 whitespace-nowrap">
                   {r.subscription_status === "active" ? (
                     <span className="px-2 py-1 bg-emerald-500/10 text-emerald-600 rounded text-xs font-bold uppercase">Active</span>
                   ) : (
                     <span className="px-2 py-1 bg-destructive/10 text-destructive rounded text-xs font-bold uppercase">Unpaid</span>
                   )}
                 </td>
-                <td className="px-4 py-3">
+                <td className="px-4 py-3 whitespace-nowrap">
                   {r.referral_code ? (
                     <span className="font-mono text-xs">{r.referral_code.code} ({r.referral_code.referrer_name})</span>
                   ) : <span className="text-muted-foreground opacity-50">—</span>}
                 </td>
-                <td className="px-4 py-3">
+                <td className="px-4 py-3 whitespace-nowrap">
                   {r.subscription_status === "unpaid" ? (
                     <button onClick={() => confirm("Mark as paid and activate?") && activate.mutate(r)} className="text-emerald-600 font-medium hover:underline inline-flex items-center gap-1"><Power className="size-3.5" /> Activate</button>
                   ) : (
