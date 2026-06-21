@@ -127,8 +127,8 @@ function Landing() {
         </div>
       </header>
 
-      <main className="relative z-10 mx-auto max-w-7xl px-6 pb-24 pt-10 lg:px-8">
-        <section className="grid items-center gap-14 py-14 lg:grid-cols-[1.04fr_0.96fr] lg:py-20">
+      <main className="relative z-10 mx-auto max-w-7xl px-4 pb-12 pt-6 sm:px-6 sm:pb-24 sm:pt-10 lg:px-8">
+        <section className="grid items-center gap-8 py-8 sm:gap-14 sm:py-14 lg:grid-cols-[1.04fr_0.96fr] lg:py-20">
           <motion.div
             initial={{ opacity: 0, y: 28 }}
             animate={{ opacity: 1, y: 0 }}
@@ -139,7 +139,7 @@ function Landing() {
               {t("landing.heroBadge")}
             </div>
 
-            <h1 className="mt-7 max-w-3xl text-balance font-display text-5xl font-bold leading-[0.95] tracking-[-0.03em] text-foreground md:text-6xl lg:text-7xl">
+            <h1 className="mt-5 max-w-3xl text-balance font-display text-4xl font-bold leading-[1.05] tracking-[-0.03em] text-foreground sm:mt-7 sm:text-5xl md:text-6xl lg:text-7xl">
               {t("landing.heroTitle")}
             </h1>
 
@@ -163,7 +163,7 @@ function Landing() {
               </a>
             </div>
 
-            <div className="mt-12 grid max-w-2xl gap-4 sm:grid-cols-3">
+            <div className="mt-10 grid max-w-2xl grid-cols-3 gap-2 sm:mt-12 sm:gap-4">
               {[
                 { value: t("landing.heroStat1Value"), label: t("landing.heroStat1Label") },
                 { value: t("landing.heroStat2Value"), label: t("landing.heroStat2Label") },
@@ -172,10 +172,10 @@ function Landing() {
                 <motion.div
                   key={stat.label}
                   whileHover={{ y: -4 }}
-                  className="rounded-2xl border border-border bg-card p-4 shadow-sm"
+                  className="rounded-xl border border-border bg-card p-3 shadow-sm sm:rounded-2xl sm:p-4"
                 >
-                  <div className="font-display text-2xl font-semibold text-foreground">{stat.value}</div>
-                  <div className="mt-1 text-sm text-muted-foreground">{stat.label}</div>
+                  <div className="font-display text-lg font-semibold text-foreground sm:text-2xl">{stat.value}</div>
+                  <div className="mt-1 text-[10px] text-muted-foreground sm:text-sm">{stat.label}</div>
                 </motion.div>
               ))}
             </div>
@@ -254,21 +254,21 @@ function Landing() {
                       ))}
                     </div>
 
-                    <div className="mt-5 space-y-3">
+                    <div className="mt-4 space-y-2 sm:mt-5 sm:space-y-3">
                       {[
                         { name: t("landing.mockupDish1"), price: "$24" },
                         { name: t("landing.mockupDish2"), price: "$18" },
                         { name: t("landing.mockupDish3"), price: "$31" },
                       ].map((item, index) => (
-                        <div key={item.name} className="flex items-center gap-3 rounded-2xl border border-border bg-card p-3">
-                          <div className="size-16 overflow-hidden rounded-2xl border border-border bg-background">
+                        <div key={item.name} className="flex items-center gap-3 rounded-xl border border-border bg-card p-2 sm:rounded-2xl sm:p-3">
+                          <div className="size-12 overflow-hidden rounded-xl border border-border bg-background sm:size-16 sm:rounded-2xl">
                             <DishArtwork kind={index === 0 ? "ravioli" : index === 1 ? "salade" : "bar"} />
                           </div>
                           <div className="min-w-0 flex-1">
-                            <div className="truncate text-sm font-medium text-foreground">{item.name}</div>
-                            <div className="mt-1 text-xs text-muted-foreground">{t("landing.mockupDishHint")}</div>
+                            <div className="truncate text-xs font-medium text-foreground sm:text-sm">{item.name}</div>
+                            <div className="mt-0.5 text-[10px] text-muted-foreground sm:mt-1 sm:text-xs">{t("landing.mockupDishHint")}</div>
                           </div>
-                          <div className="text-sm font-semibold text-foreground">{item.price}</div>
+                          <div className="text-xs font-semibold text-foreground sm:text-sm">{item.price}</div>
                         </div>
                       ))}
                     </div>
@@ -309,32 +309,32 @@ function Landing() {
                           </div>
                         </div>
 
-                        <div className="mt-4 grid grid-cols-3 gap-3">
+                        <div className="mt-4 grid grid-cols-3 gap-2 sm:gap-3">
                           {[
                             { label: "Scans", value: "100%", tone: "bg-primary/10 text-primary" },
                             { label: "Menu views", value: "42%", tone: "bg-accent/15 text-accent" },
                             { label: "Orders", value: "18.4%", tone: "bg-foreground/5 text-foreground" },
                           ].map((step, index) => (
-                            <div key={step.label} className="rounded-2xl border border-border bg-card p-3 text-center">
-                              <div className={`mx-auto flex size-10 items-center justify-center rounded-xl ${step.tone}`}>{index + 1}</div>
-                              <div className="mt-3 text-xs uppercase tracking-[0.18em] text-muted-foreground">{step.label}</div>
-                              <div className="mt-1 font-display text-lg font-semibold text-foreground">{step.value}</div>
+                            <div key={step.label} className="rounded-xl border border-border bg-card p-2 text-center sm:rounded-2xl sm:p-3">
+                              <div className={`mx-auto flex size-8 items-center justify-center rounded-lg sm:size-10 sm:rounded-xl ${step.tone}`}>{index + 1}</div>
+                              <div className="mt-2 text-[10px] uppercase tracking-[0.18em] text-muted-foreground sm:mt-3 sm:text-xs">{step.label}</div>
+                              <div className="mt-1 font-display text-sm font-semibold text-foreground sm:text-lg">{step.value}</div>
                             </div>
                           ))}
                         </div>
                       </div>
                     </motion.div>
 
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-2 gap-2 sm:gap-4">
                       {[
                         { label: t("landing.mockupDailyViews"), value: "12.8k" },
                         { label: t("landing.mockupScanTime"), value: "7s" },
                         { label: t("landing.mockupShares"), value: "1,304" },
                         { label: t("landing.mockupPeakHours"), value: "7–9 PM" },
                       ].map((item) => (
-                        <div key={item.label} className="rounded-[1.5rem] border border-border bg-card p-4">
-                          <div className="text-xs uppercase tracking-[0.2em] text-muted-foreground">{item.label}</div>
-                          <div className="mt-3 font-display text-xl font-semibold text-foreground">{item.value}</div>
+                        <div key={item.label} className="rounded-[1.25rem] border border-border bg-card p-3 sm:rounded-[1.5rem] sm:p-4">
+                          <div className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground sm:text-xs">{item.label}</div>
+                          <div className="mt-2 font-display text-lg font-semibold text-foreground sm:mt-3 sm:text-xl">{item.value}</div>
                         </div>
                       ))}
                     </div>
@@ -345,9 +345,9 @@ function Landing() {
           </motion.div>
         </section>
 
-        <section id="demo" className="scroll-mt-24 py-20">
+        <section id="demo" className="scroll-mt-24 py-12 lg:py-20">
           <SectionLabel eyebrow={t("landing.demoEyebrow")} title={t("landing.demoTitle")} />
-          <div className="mt-10 grid gap-8 lg:grid-cols-[1.15fr_0.85fr]">
+          <div className="mt-8 grid gap-8 sm:mt-10 lg:grid-cols-[1.15fr_0.85fr]">
             <motion.div
               initial={{ opacity: 0, y: 24 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -400,13 +400,13 @@ function Landing() {
           </div>
         </section>
 
-        <section id="features" className="scroll-mt-24 py-20">
+        <section id="features" className="scroll-mt-24 py-12 lg:py-20">
           <SectionLabel eyebrow={t("landing.featuresEyebrow")} title={t("landing.featuresTitle")} />
-          <p className="mt-4 max-w-2xl text-muted-foreground">
+          <p className="mt-4 max-w-2xl text-sm text-muted-foreground sm:text-base">
             {t("landing.featuresIntro")}
           </p>
 
-          <div className="mt-10 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+          <div className="mt-8 flex snap-x snap-mandatory gap-4 overflow-x-auto pb-4 sm:mt-10 md:grid md:grid-cols-2 md:overflow-visible md:pb-0 xl:grid-cols-3">
             {featureCards.map((card, index) => (
               <motion.article
                 key={card.titleKey}
@@ -415,14 +415,14 @@ function Landing() {
                 viewport={{ once: true, amount: 0.2 }}
                 transition={{ duration: 0.5, delay: index * 0.04 }}
                 whileHover={{ y: -6, scale: 1.01 }}
-                className="group rounded-[1.75rem] border border-border bg-card p-6 shadow-sm transition will-change-transform hover:shadow-[0_18px_60px_rgba(74,29,31,0.10)]"
+                className="group w-[85vw] shrink-0 snap-center rounded-[1.5rem] border border-border bg-card p-5 shadow-sm transition will-change-transform hover:shadow-[0_18px_60px_rgba(74,29,31,0.10)] sm:w-auto sm:rounded-[1.75rem] sm:p-6"
               >
-                <div className="flex size-12 items-center justify-center rounded-2xl border border-border bg-background text-primary transition group-hover:border-primary/20 group-hover:bg-primary/5">
+                <div className="flex size-10 items-center justify-center rounded-xl border border-border bg-background text-primary transition group-hover:border-primary/20 group-hover:bg-primary/5 sm:size-12 sm:rounded-2xl">
                   <card.icon className="size-5" />
                 </div>
-                <h3 className="mt-5 font-display text-2xl font-semibold text-foreground">{t(card.titleKey)}</h3>
-                <p className="mt-3 text-sm leading-7 text-muted-foreground">{t(card.descKey)}</p>
-                <div className="mt-6 flex items-center gap-2 text-xs uppercase tracking-[0.24em] text-muted-foreground/60">
+                <h3 className="mt-4 font-display text-xl font-semibold text-foreground sm:mt-5 sm:text-2xl">{t(card.titleKey)}</h3>
+                <p className="mt-2 text-sm leading-6 text-muted-foreground sm:mt-3 sm:leading-7">{t(card.descKey)}</p>
+                <div className="mt-5 flex items-center gap-2 text-[10px] uppercase tracking-[0.24em] text-muted-foreground/60 sm:mt-6 sm:text-xs">
                   <span className="h-px flex-1 bg-gradient-to-r from-border to-transparent" />
                   {t("landing.featuresHover")}
                   <span className="h-px flex-1 bg-gradient-to-l from-border to-transparent" />
@@ -432,7 +432,7 @@ function Landing() {
           </div>
         </section>
 
-        <section id="analytics" className="scroll-mt-24 py-20">
+        <section id="analytics" className="scroll-mt-24 py-12 lg:py-20">
           <div className="grid gap-8 lg:grid-cols-[0.95fr_1.05fr] lg:items-center">
             <motion.div
               initial={{ opacity: 0, x: -24 }}
@@ -441,11 +441,11 @@ function Landing() {
               transition={{ duration: 0.75 }}
             >
               <SectionLabel eyebrow={t("landing.analyticsEyebrow")} title={t("landing.analyticsTitle")} />
-              <p className="mt-4 max-w-xl text-muted-foreground">
+              <p className="mt-4 max-w-xl text-sm text-muted-foreground sm:text-base">
                 {t("landing.analyticsIntro")}
               </p>
 
-              <div className="mt-8 grid gap-4 sm:grid-cols-2">
+              <div className="mt-8 grid grid-cols-2 gap-3 sm:gap-4">
                 {[
                   { label: t("landing.analyticsStat1Label"), value: t("landing.analyticsStat1Value"), icon: Radar },
                   { label: t("landing.analyticsStat2Label"), value: t("landing.analyticsStat2Value"), icon: ScanLine },
@@ -456,15 +456,15 @@ function Landing() {
                     key={item.label}
                     animate={{ y: [0, -4, 0] }}
                     transition={{ duration: 5, delay: index * 0.2, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut" }}
-                    className="rounded-[1.5rem] border border-border bg-card p-5 shadow-sm"
+                    className="rounded-[1.25rem] border border-border bg-card p-4 shadow-sm sm:rounded-[1.5rem] sm:p-5"
                   >
-                    <div className="flex items-start justify-between gap-4">
+                    <div className="flex flex-col-reverse items-start justify-between gap-3 sm:flex-row sm:gap-4">
                       <div>
-                        <div className="text-xs uppercase tracking-[0.2em] text-muted-foreground">{item.label}</div>
-                        <div className="mt-3 font-display text-3xl font-semibold text-foreground">{item.value}</div>
+                        <div className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground sm:text-xs">{item.label}</div>
+                        <div className="mt-1 font-display text-2xl font-semibold text-foreground sm:mt-3 sm:text-3xl">{item.value}</div>
                       </div>
-                      <div className="grid size-11 place-items-center rounded-2xl bg-primary/10 text-primary">
-                        <item.icon className="size-5" />
+                      <div className="grid size-9 place-items-center rounded-xl bg-primary/10 text-primary sm:size-11 sm:rounded-2xl">
+                        <item.icon className="size-4 sm:size-5" />
                       </div>
                     </div>
                   </motion.div>
@@ -499,8 +499,8 @@ function Landing() {
                       </div>
                       <div className="text-xs text-primary">{t("landing.analyticsLive")}</div>
                     </div>
-                    <div className="mt-4 rounded-2xl border border-border bg-muted/30 p-4">
-                      <svg viewBox="0 0 360 190" className="h-48 w-full" role="img" aria-label={t("landing.analyticsChartTitle") || "Views over time"}>
+                    <div className="mt-4 rounded-2xl border border-border bg-muted/30 p-3 sm:p-4">
+                      <svg viewBox="0 0 360 190" className="h-32 w-full sm:h-48" role="img" aria-label={t("landing.analyticsChartTitle") || "Views over time"}>
                         <defs>
                           <linearGradient id="chartFill" x1="0" y1="0" x2="0" y2="1">
                             <stop offset="0%" stopColor="var(--color-primary)" stopOpacity="0.95" />
@@ -537,15 +537,15 @@ function Landing() {
                     </div>
                   </div>
 
-                  <div className="space-y-4">
+                  <div className="flex snap-x snap-mandatory gap-3 overflow-x-auto pb-4 lg:grid lg:grid-cols-1 lg:gap-4 lg:overflow-visible lg:pb-0">
                     {[
                       { label: t("landing.analyticsSide1Label"), value: t("landing.analyticsSide1Value") },
                       { label: t("landing.analyticsSide2Label"), value: t("landing.analyticsSide2Value") },
                       { label: t("landing.analyticsSide3Label"), value: t("landing.analyticsSide3Value") },
                     ].map((item) => (
-                      <div key={item.label} className="rounded-[1.5rem] border border-border bg-card p-4">
-                        <div className="text-xs uppercase tracking-[0.2em] text-muted-foreground">{item.label}</div>
-                        <div className="mt-3 font-display text-xl font-semibold text-foreground">{item.value}</div>
+                      <div key={item.label} className="w-[140px] shrink-0 snap-center rounded-[1.25rem] border border-border bg-card p-3 sm:w-[180px] sm:rounded-[1.5rem] sm:p-4 lg:w-auto">
+                        <div className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground sm:text-xs">{item.label}</div>
+                        <div className="mt-2 font-display text-lg font-semibold text-foreground sm:mt-3 sm:text-xl">{item.value}</div>
                       </div>
                     ))}
                   </div>
@@ -555,9 +555,9 @@ function Landing() {
           </div>
         </section>
 
-        <section id="partners" className="scroll-mt-24 py-20">
+        <section id="partners" className="scroll-mt-24 py-12 lg:py-20">
           <SectionLabel eyebrow={t("landing.partnersEyebrow")} title={t("landing.partnersTitle")} />
-          <div className="mt-10 grid gap-8 lg:grid-cols-[0.95fr_1.05fr] lg:items-center">
+          <div className="mt-8 grid gap-8 sm:mt-10 lg:grid-cols-[0.95fr_1.05fr] lg:items-center">
             <motion.div
               initial={{ opacity: 0, y: 24 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -568,20 +568,20 @@ function Landing() {
                 {t("landing.partnersIntro")}
               </p>
 
-              <div className="mt-8 space-y-4">
+              <div className="mt-8 space-y-3 sm:space-y-4">
                 {[
                   { label: t("landing.partnersStep1"), hint: t("landing.partnersStep1Hint") },
                   { label: t("landing.partnersStep2"), hint: t("landing.partnersStep2Hint") },
                   { label: t("landing.partnersStep3"), hint: t("landing.partnersStep3Hint") },
                   { label: t("landing.partnersStep4"), hint: t("landing.partnersStep4Hint") },
                 ].map((step, index) => (
-                  <div key={step.label} className="flex items-center gap-4">
-                    <div className="grid size-12 shrink-0 place-items-center rounded-2xl border border-border bg-card font-semibold text-foreground">
+                  <div key={step.label} className="flex items-center gap-3 sm:gap-4">
+                    <div className="grid size-10 shrink-0 place-items-center rounded-xl border border-border bg-card font-semibold text-foreground sm:size-12 sm:rounded-2xl">
                       {index + 1}
                     </div>
-                    <div className="flex-1 rounded-[1.35rem] border border-border bg-card px-5 py-4 shadow-sm">
-                      <div className="font-display text-lg font-semibold text-foreground">{step.label}</div>
-                      <div className="mt-1 text-sm text-muted-foreground">{step.hint}</div>
+                    <div className="flex-1 rounded-[1.25rem] border border-border bg-card px-4 py-3 shadow-sm sm:rounded-[1.35rem] sm:px-5 sm:py-4">
+                      <div className="font-display text-base font-semibold text-foreground sm:text-lg">{step.label}</div>
+                      <div className="mt-0.5 text-xs text-muted-foreground sm:mt-1 sm:text-sm">{step.hint}</div>
                     </div>
                     {index < 3 && <ArrowRightLeft className="hidden size-4 text-muted-foreground lg:block" />}
                   </div>
@@ -615,16 +615,16 @@ function Landing() {
                   </div>
                 </div>
 
-                <div className="mt-6 grid gap-4 sm:grid-cols-2">
+                <div className="mt-6 grid grid-cols-2 gap-3 sm:gap-4">
                   {[
                     { label: t("landing.partnersStat1Label"), value: t("landing.partnersStat1Value") },
                     { label: t("landing.partnersStat2Label"), value: t("landing.partnersStat2Value") },
                     { label: t("landing.partnersStat3Label"), value: t("landing.partnersStat3Value") },
                     { label: t("landing.partnersStat4Label"), value: t("landing.partnersStat4Value") },
                   ].map((item) => (
-                    <div key={item.label} className="rounded-[1.35rem] border border-border bg-card p-4">
-                      <div className="text-xs uppercase tracking-[0.2em] text-muted-foreground">{item.label}</div>
-                      <div className="mt-3 font-display text-xl font-semibold text-foreground">{item.value}</div>
+                    <div key={item.label} className="rounded-[1.25rem] border border-border bg-card p-3 sm:rounded-[1.35rem] sm:p-4">
+                      <div className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground sm:text-xs">{item.label}</div>
+                      <div className="mt-2 font-display text-lg font-semibold text-foreground sm:mt-3 sm:text-xl">{item.value}</div>
                     </div>
                   ))}
                 </div>
@@ -645,13 +645,13 @@ function Landing() {
           </div>
         </section>
 
-        <section className="py-20">
+        <section className="py-12 lg:py-20">
           <motion.div
             initial={{ opacity: 0, y: 28 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.3 }}
             transition={{ duration: 0.8 }}
-            className="relative overflow-hidden rounded-[2.5rem] border border-border bg-[radial-gradient(circle_at_top_left,rgba(74,29,31,0.10),transparent_35%),radial-gradient(circle_at_bottom_right,rgba(197,160,89,0.16),transparent_30%),linear-gradient(180deg,rgba(255,255,255,0.85),rgba(250,249,246,0.9))] p-8 shadow-[0_40px_140px_rgba(74,29,31,0.10)] md:p-12"
+            className="relative overflow-hidden rounded-[2rem] border border-border bg-[radial-gradient(circle_at_top_left,rgba(74,29,31,0.10),transparent_35%),radial-gradient(circle_at_bottom_right,rgba(197,160,89,0.16),transparent_30%),linear-gradient(180deg,rgba(255,255,255,0.85),rgba(250,249,246,0.9))] p-6 shadow-[0_40px_140px_rgba(74,29,31,0.10)] sm:rounded-[2.5rem] md:p-12"
           >
             <div className="absolute -left-24 top-0 h-72 w-72 rounded-full bg-primary/10 blur-3xl animate-float" />
             <div className="absolute -right-24 bottom-0 h-72 w-72 rounded-full bg-accent/15 blur-3xl animate-float-slower" />
@@ -686,7 +686,7 @@ function Landing() {
                 </div>
               </div>
 
-              <div className="grid gap-4 sm:grid-cols-3 lg:grid-cols-1">
+              <div className="mt-8 flex snap-x snap-mandatory gap-3 overflow-x-auto pb-4 sm:mt-0 sm:grid sm:grid-cols-3 sm:gap-4 sm:overflow-visible sm:pb-0 lg:grid-cols-1">
                 {[
                   { title: t("landing.finalCard1Title"), detail: t("landing.finalCard1Copy") },
                   { title: t("landing.finalCard2Title"), detail: t("landing.finalCard2Copy") },
@@ -694,11 +694,11 @@ function Landing() {
                 ].map((item, index) => (
                   <div
                     key={item.title}
-                    className={`rounded-[1.5rem] border border-border bg-card p-5 shadow-sm ${index === 1 ? "sm:translate-y-4 lg:translate-y-0" : ""}`}
+                    className={`w-[85vw] shrink-0 snap-center rounded-[1.25rem] border border-border bg-card p-4 shadow-sm sm:w-auto sm:rounded-[1.5rem] sm:p-5 ${index === 1 ? "sm:translate-y-4 lg:translate-y-0" : ""}`}
                   >
-                    <div className="text-xs uppercase tracking-[0.2em] text-muted-foreground">0{index + 1}</div>
-                    <div className="mt-3 font-display text-xl font-semibold text-foreground">{item.title}</div>
-                    <div className="mt-2 text-sm leading-7 text-muted-foreground">{item.detail}</div>
+                    <div className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground sm:text-xs">0{index + 1}</div>
+                    <div className="mt-2 font-display text-lg font-semibold text-foreground sm:mt-3 sm:text-xl">{item.title}</div>
+                    <div className="mt-1.5 text-xs leading-6 text-muted-foreground sm:mt-2 sm:text-sm sm:leading-7">{item.detail}</div>
                   </div>
                 ))}
               </div>
@@ -765,7 +765,7 @@ function PhoneFrame({ children }: { children: ReactNode }) {
       <div className="absolute left-1/2 top-4 z-10 h-1.5 w-28 -translate-x-1/2 rounded-full bg-foreground/15" />
       <div className="absolute left-1/2 top-7 z-10 h-0.5 w-14 -translate-x-1/2 rounded-full bg-foreground/10" />
       <div className="overflow-hidden rounded-[2rem] border border-border bg-background">
-        <div className="h-[760px] w-full">{children}</div>
+        <div className="h-[450px] w-full sm:h-[600px] md:h-[760px]">{children}</div>
       </div>
     </div>
   );
