@@ -300,5 +300,25 @@
     "finalCard2Copy": "Subtle animations give the product a premium feel.",
     "finalCard3Title": "Luxury SaaS vibe",
     "finalCard3Copy": "Dark glass panels, gradients, and crisp typography."
+  },
+  "subscription": {
+    "title": "Subscription & Plan",
+    "subtitle": "Manage your access and upgrades.",
+    "freeTier": "Free Tier (Limited)",
+    "freeDesc": "Your restaurant is currently on the free tier. Your public QR menu is hidden and you are limited to 3 categories and 9 products.",
+    "maxCats": "Maximum 3 menu categories",
+    "maxProds": "Maximum 9 menu products",
+    "publicQrLocked": "Public QR Code Menu (Locked)",
+    "unlimitedLocked": "Unlimited Products (Locked)",
+    "premiumTitle": "Premium Plan Active",
+    "premiumDesc": "Your menu is fully unlocked! Your QR code is live and you can create unlimited categories and products.",
+    "refTitle": "Have a Referral Code?",
+    "refDesc": "If you were referred by an agent, enter their code below. To upgrade your account and unlock your menu, please contact support to arrange payment.",
+    "refPlaceholder": "e.g. AGENT20",
+    "refBtn": "Apply Code",
+    "refApplying": "Applying...",
+    "refApplied": "Referral code applied. Please contact the platform owner to complete your payment and activate your account.",
+    "invalidCode": "Invalid referral code.",
+    "successApplied": "Referral code applied successfully!"
   }
 }

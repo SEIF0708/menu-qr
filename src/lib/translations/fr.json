@@ -300,5 +300,25 @@
     "finalCard2Copy": "Des animations subtiles pour une sensation premium.",
     "finalCard3Title": "Ambiance SaaS haut de gamme",
     "finalCard3Copy": "Verre sombre, dégradés et typographie nette."
+  },
+  "subscription": {
+    "title": "Abonnement et Plan",
+    "subtitle": "Gérez votre accès et vos mises à niveau.",
+    "freeTier": "Forfait Gratuit (Limité)",
+    "freeDesc": "Votre restaurant est actuellement sur le forfait gratuit. Votre menu QR public est caché et vous êtes limité à 3 catégories et 9 produits.",
+    "maxCats": "Maximum 3 catégories",
+    "maxProds": "Maximum 9 produits",
+    "publicQrLocked": "Menu QR Public (Verrouillé)",
+    "unlimitedLocked": "Produits illimités (Verrouillé)",
+    "premiumTitle": "Plan Premium Actif",
+    "premiumDesc": "Votre menu est entièrement débloqué ! Votre code QR est en ligne et vous pouvez créer des catégories et des produits en illimité.",
+    "refTitle": "Vous avez un code de parrainage ?",
+    "refDesc": "Si vous avez été parrainé par un agent, entrez son code ci-dessous. Pour mettre à niveau votre compte et débloquer votre menu, veuillez contacter le support.",
+    "refPlaceholder": "ex: AGENT20",
+    "refBtn": "Appliquer le code",
+    "refApplying": "Application...",
+    "refApplied": "Code de parrainage appliqué. Veuillez contacter le propriétaire de la plateforme pour finaliser votre paiement et activer votre compte.",
+    "invalidCode": "Code de parrainage invalide.",
+    "successApplied": "Code de parrainage appliqué avec succès !"
   }
 }

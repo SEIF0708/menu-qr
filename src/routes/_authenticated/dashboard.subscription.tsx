@@ -44,11 +44,11 @@ function SubscriptionPage() {
 
       if (updateError) throw updateError;
 
-      toast.success("Referral code applied successfully!");
+      toast.success(t("subscription.successApplied"));
       setCode("");
       qc.invalidateQueries({ queryKey: ["my-restaurant"] });
     } catch (err: any) {
-      toast.error(err.message);
+      toast.error(err.message); // we still use err.message if supabase returns something else, or t("subscription.invalidCode")
     } finally {
       setSaving(false);
     }
@@ -57,8 +57,8 @@ function SubscriptionPage() {
   return (
     <div className="max-w-3xl mx-auto space-y-8">
       <div>
-        <h1 className="text-3xl font-display font-bold">Subscription & Plan</h1>
-        <p className="text-muted-foreground mt-1">Manage your access and upgrades.</p>
+        <h1 className="text-3xl font-display font-bold">{t("subscription.title")}</h1>
+        <p className="text-muted-foreground mt-1">{t("subscription.subtitle")}</p>
       </div>
 
       {isUnpaid ? (
@@ -68,27 +68,27 @@ function SubscriptionPage() {
               <Lock className="size-6" />
             </div>
             <div>
-              <h2 className="text-xl font-bold">Free Tier (Limited)</h2>
+              <h2 className="text-xl font-bold">{t("subscription.freeTier")}</h2>
               <p className="text-muted-foreground mt-2">
-                Your restaurant is currently on the free tier. Your public QR menu is hidden and you are limited to 3 categories and 9 products.
+                {t("subscription.freeDesc")}
               </p>
               
               <ul className="mt-6 space-y-3">
                 <li className="flex items-center gap-3 text-sm">
                   <CheckCircle2 className="size-5 text-muted-foreground" />
-                  <span>Maximum 3 menu categories</span>
+                  <span>{t("subscription.maxCats")}</span>
                 </li>
                 <li className="flex items-center gap-3 text-sm">
                   <CheckCircle2 className="size-5 text-muted-foreground" />
-                  <span>Maximum 9 menu products</span>
+                  <span>{t("subscription.maxProds")}</span>
                 </li>
                 <li className="flex items-center gap-3 text-sm opacity-50">
                   <Lock className="size-4 text-muted-foreground ml-0.5 mr-0.5" />
-                  <span>Public QR Code Menu (Locked)</span>
+                  <span>{t("subscription.publicQrLocked")}</span>
                 </li>
                 <li className="flex items-center gap-3 text-sm opacity-50">
                   <Lock className="size-4 text-muted-foreground ml-0.5 mr-0.5" />
-                  <span>Unlimited Products (Locked)</span>
+                  <span>{t("subscription.unlimitedLocked")}</span>
                 </li>
               </ul>
             </div>
@@ -101,9 +101,9 @@ function SubscriptionPage() {
               <CheckCircle2 className="size-6" />
             </div>
             <div>
-              <h2 className="text-xl font-bold text-emerald-700">Premium Plan Active</h2>
+              <h2 className="text-xl font-bold text-emerald-700">{t("subscription.premiumTitle")}</h2>
               <p className="text-emerald-700/80 mt-2">
-                Your menu is fully unlocked! Your QR code is live and you can create unlimited categories and products.
+                {t("subscription.premiumDesc")}
               </p>
             </div>
           </div>
@@ -117,14 +117,14 @@ function SubscriptionPage() {
                 <Gift className="size-5" />
              </div>
              <div className="flex-1">
-                <h3 className="font-bold">Have a Referral Code?</h3>
+                <h3 className="font-bold">{t("subscription.refTitle")}</h3>
                 <p className="text-sm text-muted-foreground mt-1 mb-4">
-                   If you were referred by an agent, enter their code below. To upgrade your account and unlock your menu, please contact support to arrange payment.
+                   {t("subscription.refDesc")}
                 </p>
                 <form onSubmit={applyCode} className="flex gap-3">
                    <input
                       type="text"
-                      placeholder="e.g. AGENT20"
+                      placeholder={t("subscription.refPlaceholder")}
                       value={code}
                       onChange={(e) => setCode(e.target.value)}
                       className="flex-1 px-4 py-2 border border-border rounded-lg bg-background text-sm"
@@ -134,7 +134,7 @@ function SubscriptionPage() {
                       disabled={saving || !code.trim()}
                       className="px-6 py-2 bg-primary text-primary-foreground font-medium text-sm rounded-lg disabled:opacity-50"
                    >
-                      {saving ? "Applying..." : "Apply Code"}
+                      {saving ? t("subscription.refApplying") : t("subscription.refBtn")}
                    </button>
                 </form>
              </div>
@@ -145,7 +145,7 @@ function SubscriptionPage() {
       {isUnpaid && restaurant?.referral_code_id && (
         <div className="bg-muted border border-border rounded-2xl p-6 text-center">
            <p className="text-sm text-muted-foreground">
-             Referral code applied. Please contact the platform owner to complete your payment and activate your account.
+             {t("subscription.refApplied")}
            </p>
         </div>
       )}
