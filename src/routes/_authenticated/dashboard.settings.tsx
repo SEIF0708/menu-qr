@@ -32,13 +32,20 @@ function SettingsPage() {
       const { data: products } = await supabase.from("products").select("*").eq("restaurant_id", restaurant!.id).not("image_url", "is", null);
       if (!products) return;
       
-      setCompressTotal(products.length);
-      let done = 0;
+      const imagesToCompress: { id: string, type: 'product' | 'logo' | 'cover', url: string }[] = [];
+      if (restaurant!.logo_url) imagesToCompress.push({ id: restaurant!.id, type: 'logo', url: restaurant!.logo_url });
+      if (restaurant!.cover_image_url) imagesToCompress.push({ id: restaurant!.id, type: 'cover', url: restaurant!.cover_image_url });
       
       for (const p of products) {
-        if (!p.image_url) continue;
+         if (p.image_url) imagesToCompress.push({ id: p.id, type: 'product', url: p.image_url });
+      }
+      
+      setCompressTotal(imagesToCompress.length);
+      let done = 0;
+      
+      for (const item of imagesToCompress) {
         try {
-           const { data: signed } = await supabase.storage.from("restaurant-assets").createSignedUrl(p.image_url, 60);
+           const { data: signed } = await supabase.storage.from("restaurant-assets").createSignedUrl(item.url, 60);
            if (!signed?.signedUrl) continue;
            
            const res = await fetch(signed.signedUrl);
@@ -49,15 +56,24 @@ function SettingsPage() {
            }
            
            const file = new File([blob], "image.jpg", { type: blob.type });
-           const compressed = await imageCompression(file, { maxSizeMB: 0.3, maxWidthOrHeight: 800, useWebWorker: true });
+           const options = item.type === 'logo' ? { maxSizeMB: 0.2, maxWidthOrHeight: 500 } : 
+                           item.type === 'cover' ? { maxSizeMB: 0.5, maxWidthOrHeight: 1200 } :
+                           { maxSizeMB: 0.3, maxWidthOrHeight: 800 };
+           const compressed = await imageCompression(file, { ...options, useWebWorker: true });
            
            const { data: u } = await supabase.auth.getUser();
-           const newPath = await uploadAsset(compressed, u.user!.id, "product");
+           const newPath = await uploadAsset(compressed, u.user!.id, item.type);
            
-           await supabase.from("products").update({ image_url: newPath }).eq("id", p.id);
-           await supabase.storage.from("restaurant-assets").remove([p.image_url]);
+           if (item.type === 'product') {
+              await supabase.from("products").update({ image_url: newPath }).eq("id", item.id);
+           } else if (item.type === 'logo') {
+              await supabase.from("restaurants").update({ logo_url: newPath }).eq("id", item.id);
+           } else if (item.type === 'cover') {
+              await supabase.from("restaurants").update({ cover_image_url: newPath }).eq("id", item.id);
+           }
+           await supabase.storage.from("restaurant-assets").remove([item.url]);
         } catch (err) {
-           console.error("Failed to compress image for product", p.id, err);
+           console.error("Failed to compress image", item.id, err);
         }
         done++;
         setCompressProgress(done);
