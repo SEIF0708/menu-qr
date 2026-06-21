@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useState } from "react";
 import { toast } from "sonner";
-import { Copy, Check, Users, Gift, Banknote, Power } from "lucide-react";
+import { Copy, Check, Users, Gift, Banknote, Power, Trash2 } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/admin")({
   component: AdminDashboard,
@@ -87,6 +87,18 @@ function ReferralManager() {
     }
   };
 
+  const delCode = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from("referral_codes").delete().eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["admin-referral-codes"] });
+      toast.success("Code deleted");
+    },
+    onError: (err: any) => toast.error(err.message),
+  });
+
   return (
     <div className="bg-card border border-border rounded-2xl p-6">
       <div className="flex items-center gap-3 mb-6">
@@ -110,7 +122,10 @@ function ReferralManager() {
               <p className="font-bold font-mono text-primary">{c.code}</p>
               <p className="text-xs text-muted-foreground">{c.referrer_name} • {c.commission_rate}% commission</p>
             </div>
-            <button onClick={() => { navigator.clipboard.writeText(c.code); toast.success("Copied"); }} className="p-2 hover:bg-muted rounded text-muted-foreground"><Copy className="size-4" /></button>
+            <div className="flex gap-1">
+              <button onClick={() => { navigator.clipboard.writeText(c.code); toast.success("Copied"); }} className="p-2 hover:bg-muted rounded text-muted-foreground" title="Copy Code"><Copy className="size-4" /></button>
+              <button onClick={() => confirm("Delete this code? Any restaurants using it will lose the reference.") && delCode.mutate(c.id)} className="p-2 hover:bg-destructive/10 text-destructive rounded" title="Delete Code"><Trash2 className="size-4" /></button>
+            </div>
           </div>
         ))}
       </div>
