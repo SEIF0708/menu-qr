@@ -312,6 +312,7 @@ GRANT SELECT (id, name, slug, description, logo_url, cover_image_url,
 -- ==========================================
 CREATE TABLE public.referral_codes (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
   code TEXT NOT NULL UNIQUE,
   referrer_name TEXT NOT NULL,
   commission_rate NUMERIC(5,2) NOT NULL DEFAULT 20.00,
@@ -321,6 +322,7 @@ GRANT SELECT ON public.referral_codes TO authenticated;
 GRANT ALL ON public.referral_codes TO service_role;
 ALTER TABLE public.referral_codes ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "anyone_read_referral_codes" ON public.referral_codes FOR SELECT TO authenticated USING (true);
+CREATE POLICY "users_insert_own_referral_code" ON public.referral_codes FOR INSERT TO authenticated WITH CHECK (auth.uid() = user_id);
 
 ALTER TABLE public.restaurants ADD CONSTRAINT fk_restaurant_referral FOREIGN KEY (referral_code_id) REFERENCES public.referral_codes(id) ON DELETE SET NULL;
 

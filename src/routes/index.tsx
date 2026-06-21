@@ -23,9 +23,14 @@ import {
   Store,
   Layers3,
   Check,
+  X,
+  Loader2,
+  MessageCircle,
 } from "lucide-react";
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 import { LangSwitcher } from "@/components/LangSwitcher";
 import { getInitialLanguage } from "@/utils/i18n-helpers";
@@ -86,8 +91,72 @@ function Landing() {
   const landingCopy = { en: landingEn, fr: landingFr, ar: landingAr }[lang as "en" | "fr" | "ar"] ?? landingEn;
   const t = (key: string) => getNestedValue(landingCopy, key.replace(/^landing\./, "")) as string;
 
+  const [refModalOpen, setRefModalOpen] = useState(false);
+  const [refCode, setRefCode] = useState("");
+  const [validating, setValidating] = useState(false);
+
+  const handleRefSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setValidating(true);
+    try {
+      const { data, error } = await supabase.from("referral_codes").select("code").eq("code", refCode.trim()).maybeSingle();
+      if (error) throw error;
+      if (!data) {
+        toast.error("Invalid referral code.");
+        return;
+      }
+      
+      const message = t("landing.waMsgReferred") || `Hello, I want to subscribe to MenuFlow for my restaurant. I have the referral code ${data.code}, so my price is 250 DT.`;
+      // In case translation doesn't exist, default is used.
+      // But we must interpolate the code.
+      const finalMessage = message.includes("{{code}}") ? message.replace("{{code}}", data.code) : `Hello, I want to subscribe to MenuFlow for my restaurant. I have the referral code ${data.code}, so my price is 250 DT.`;
+      
+      const encoded = encodeURIComponent(finalMessage);
+      window.open(`https://api.whatsapp.com/send?phone=21629710282&text=${encoded}`, "_blank");
+      setRefModalOpen(false);
+      setRefCode("");
+    } catch(err: any) {
+      toast.error(err.message || "Error");
+    } finally {
+      setValidating(false);
+    }
+  };
+
   return (
     <div className="relative min-h-dvh overflow-hidden bg-background text-foreground">
+      {refModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+          <div className="bg-card w-full max-w-sm rounded-3xl p-6 shadow-2xl border border-border relative animate-in fade-in zoom-in duration-200">
+            <button onClick={() => setRefModalOpen(false)} className="absolute top-4 right-4 p-2 bg-muted rounded-full hover:bg-border transition-colors text-muted-foreground hover:text-foreground">
+              <X className="size-4" />
+            </button>
+            <div className="w-12 h-12 bg-accent/10 text-accent rounded-full flex items-center justify-center mb-4">
+              <CircleDollarSign className="size-6" />
+            </div>
+            <h3 className="font-display text-2xl font-bold mb-2">Redeem Code</h3>
+            <p className="text-muted-foreground text-sm mb-6">
+              Enter your referral code to unlock the 250 DT offer and contact us via WhatsApp to activate.
+            </p>
+            <form onSubmit={handleRefSubmit} className="space-y-4">
+              <div>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. PARTNER50"
+                  value={refCode}
+                  onChange={e => setRefCode(e.target.value)}
+                  className="w-full px-4 py-3 bg-muted border border-border rounded-xl font-medium focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent transition-all"
+                />
+              </div>
+              <button disabled={validating} type="submit" className="w-full flex items-center justify-center gap-2 bg-[#25D366] hover:bg-[#20bd5a] text-white px-4 py-3.5 rounded-xl font-bold transition-colors disabled:opacity-50">
+                {validating ? <Loader2 className="size-5 animate-spin" /> : <MessageCircle className="size-5" />}
+                Continue to WhatsApp
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+
       <BackgroundEffects />
 
       <header className="sticky top-0 z-30 border-b border-border/70 bg-background/85 backdrop-blur-xl">
@@ -719,13 +788,12 @@ function Landing() {
                   <span dangerouslySetInnerHTML={{ __html: t("landing.pricingRefFeat3") }} />
                 </li>
               </ul>
-              <Link
-                to="/auth"
-                search={{ mode: "signup" }}
+              <button
+                onClick={() => setRefModalOpen(true)}
                 className="mt-auto block w-full rounded-xl bg-accent px-4 py-3.5 text-center text-sm font-semibold text-accent-foreground shadow-sm hover:brightness-110 transition-all"
               >
                 {t("landing.pricingRefCta")}
-              </Link>
+              </button>
             </div>
 
             {/* Partner Program */}
