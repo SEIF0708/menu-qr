@@ -683,7 +683,7 @@ function Landing() {
                 ))}
               </ul>
               <a
-                href="https://wa.me/21629710282"
+                href={`https://api.whatsapp.com/send?phone=21629710282&text=${encodeURIComponent(t("landing.pricingPlanWaText", { defaultValue: "Hello, I would like to subscribe to MenuFlow for my restaurant." }))}`}
                 target="_blank"
                 rel="noreferrer"
                 className="mt-auto block w-full rounded-xl bg-primary px-4 py-3.5 text-center text-sm font-semibold text-primary-foreground shadow-sm hover:brightness-110 transition-all"

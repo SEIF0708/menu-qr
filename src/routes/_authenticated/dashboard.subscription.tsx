@@ -21,7 +21,7 @@ function SubscriptionPage() {
   const isUnpaid = restaurant?.subscription_status === "unpaid";
   const usedCode = restaurant?.referral_code_id ? (restaurant as any).referral_codes?.code : null;
 
-  const handleWhatsApp = () => {
+  const getWhatsAppLink = () => {
     let message = "";
     if (usedCode) {
       message = t("subscription.waMsgReferred", { name: restaurant?.name || "My Restaurant", code: usedCode });
@@ -29,7 +29,7 @@ function SubscriptionPage() {
       message = t("subscription.waMsgNormal", { name: restaurant?.name || "My Restaurant" });
     }
     const encodedMessage = encodeURIComponent(message);
-    window.open(`https://wa.me/21629710282?text=${encodedMessage}`, "_blank");
+    return `https://api.whatsapp.com/send?phone=21629710282&text=${encodedMessage}`;
   };
 
   const applyCode = async (e: React.FormEvent) => {
@@ -164,10 +164,10 @@ function SubscriptionPage() {
 
       {isUnpaid && (
         <div className="flex justify-center mt-8">
-          <button onClick={handleWhatsApp} className="flex items-center gap-2 bg-[#25D366] hover:bg-[#20bd5a] text-white px-6 py-3 rounded-xl font-medium shadow-sm transition-colors">
+          <a href={getWhatsAppLink()} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 bg-[#25D366] hover:bg-[#20bd5a] text-white px-6 py-3 rounded-xl font-medium shadow-sm transition-colors">
             <MessageCircle className="size-5" />
             {t("subscription.contactSupportBtn")}
-          </button>
+          </a>
         </div>
       )}
     </div>
