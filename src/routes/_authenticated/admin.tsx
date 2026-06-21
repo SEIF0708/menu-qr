@@ -199,9 +199,9 @@ function RestaurantManager() {
                 </td>
                 <td className="px-4 py-3">
                   {r.subscription_status === "unpaid" ? (
-                    <button onClick={() => confirm("Mark as paid and activate?") && activate.mutate(r)} className="text-emerald-600 font-medium hover:underline inline-flex items-center gap-1"><Power className="size-3.5"/> Activate</button>
+                    <button onClick={() => confirm("Mark as paid and activate?") && activate.mutate(r)} className="text-emerald-600 font-medium hover:underline inline-flex items-center gap-1"><Power className="size-3.5" /> Activate</button>
                   ) : (
-                    <button onClick={() => confirm("Deactivate?") && deactivate.mutate(r.id)} className="text-destructive font-medium hover:underline inline-flex items-center gap-1"><Power className="size-3.5"/> Deactivate</button>
+                    <button onClick={() => confirm("Deactivate?") && deactivate.mutate(r.id)} className="text-destructive font-medium hover:underline inline-flex items-center gap-1"><Power className="size-3.5" /> Deactivate</button>
                   )}
                 </td>
               </tr>
@@ -252,7 +252,7 @@ function PayoutManager() {
                 Owed {p.amount} TND for referring <strong>{p.restaurant?.name}</strong>
               </p>
             </div>
-            
+
             {p.status === "pending" ? (
               <button onClick={() => confirm("Did you pay them?") && markPaid.mutate(p.id)} className="px-3 py-1.5 bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-medium rounded transition-colors whitespace-nowrap">
                 Mark as Paid

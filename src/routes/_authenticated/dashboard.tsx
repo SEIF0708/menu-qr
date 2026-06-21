@@ -3,8 +3,9 @@ import { useTranslation } from "react-i18next";
 import { useMyRestaurant } from "@/lib/use-restaurant";
 import { supabase } from "@/integrations/supabase/client";
 import { LangSwitcher } from "@/components/LangSwitcher";
-import { LayoutGrid, FolderKanban, UtensilsCrossed, QrCode, Settings, LogOut, ExternalLink, Menu, X, CreditCard, AlertTriangle } from "lucide-react";
+import { LayoutGrid, FolderKanban, UtensilsCrossed, QrCode, Settings, LogOut, ExternalLink, Menu, X, CreditCard, AlertTriangle, Shield } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({ component: DashboardLayout });
@@ -30,6 +31,18 @@ function DashboardLayout() {
     { to: "/dashboard/subscription", label: "Subscription", icon: CreditCard },
     { to: "/dashboard/settings", label: t("nav.settings"), icon: Settings },
   ];
+
+  const { data: session } = useQuery({
+    queryKey: ["dashboard-session"],
+    queryFn: async () => {
+      const { data } = await supabase.auth.getSession();
+      return data.session;
+    },
+  });
+
+  if (session?.user?.email === "saifdaba19@gmail.com") {
+    navItems.push({ to: "/admin", label: "Admin Panel", icon: Shield } as any);
+  }
 
   const signOut = async () => {
     await supabase.auth.signOut();
