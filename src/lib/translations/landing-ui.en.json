@@ -161,5 +161,6 @@
   "pricingPartnerEx1": "5 referrals = <strong>125 DT</strong>",
   "pricingPartnerEx2": "10 referrals = <strong>500 DT</strong>",
   "pricingPartnerEx3": "20 referrals = <strong>1000 DT</strong>",
-  "pricingPartnerCta": "Become A Partner"
+  "pricingPartnerCta": "Become A Partner",
+  "pricingPlanWaText": "Hello, I would like to subscribe to MenuFlow for my restaurant."
 }

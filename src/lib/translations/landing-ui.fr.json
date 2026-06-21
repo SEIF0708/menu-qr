@@ -161,5 +161,6 @@
   "pricingPartnerEx1": "5 parrainages = <strong>125 DT</strong>",
   "pricingPartnerEx2": "10 parrainages = <strong>500 DT</strong>",
   "pricingPartnerEx3": "20 parrainages = <strong>1000 DT</strong>",
-  "pricingPartnerCta": "Devenir Partenaire"
+  "pricingPartnerCta": "Devenir Partenaire",
+  "pricingPlanWaText": "Bonjour, je voudrais m'abonner à MenuFlow pour mon restaurant."
 }
