@@ -57,10 +57,14 @@ function ProductsPage() {
   });
   const dup = useMutation({
     mutationFn: async (p: any) => {
+      if (restaurant?.subscription_status === "unpaid" && (products.data?.length ?? 0) >= 9) {
+        throw new Error("Free tier limit reached. Maximum 9 products allowed. Please upgrade.");
+      }
       const { id, created_at, updated_at, ...rest } = p;
       await supabase.from("products").insert({ ...rest, name_en: (rest.name_en || "") + " (copy)" });
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ["products"] }),
+    onError: (e: any) => toast.error(e.message),
   });
   const toggle = useMutation({
     mutationFn: async ({ id, available }: { id: string; available: boolean }) => {
@@ -77,7 +81,13 @@ function ProductsPage() {
           <h1 className="text-3xl font-display font-bold">{t("products.title")}</h1>
           <p className="text-sm text-muted-foreground mt-1">{t("products.subtitle")}</p>
         </div>
-        <button onClick={() => setShowNew(true)} className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-4 py-2.5 rounded-full font-medium text-sm shadow-lg shadow-primary/20">
+        <button onClick={() => {
+            if (restaurant?.subscription_status === "unpaid" && (products.data?.length ?? 0) >= 9) {
+              toast.error("Free tier limit reached. Maximum 9 products allowed. Please upgrade.");
+              return;
+            }
+            setShowNew(true);
+          }} className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-4 py-2.5 rounded-full font-medium text-sm shadow-lg shadow-primary/20">
           <Plus className="size-4" /> {t("products.new")}
         </button>
       </header>
@@ -99,7 +109,13 @@ function ProductsPage() {
           <UtensilsCrossed className="size-12 text-muted-foreground mx-auto mb-4" />
           <h3 className="font-display text-xl font-semibold mb-1">{t("products.empty")}</h3>
           <p className="text-sm text-muted-foreground mb-6">{t("products.emptyHint")}</p>
-          <button onClick={() => setShowNew(true)} className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-5 py-2.5 rounded-full text-sm font-medium">
+          <button onClick={() => {
+            if (restaurant?.subscription_status === "unpaid" && (products.data?.length ?? 0) >= 9) {
+              toast.error("Free tier limit reached. Maximum 9 products allowed. Please upgrade.");
+              return;
+            }
+            setShowNew(true);
+          }} className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-5 py-2.5 rounded-full text-sm font-medium">
             <Plus className="size-4" /> {t("products.new")}
           </button>
         </div>

@@ -61,13 +61,25 @@ function CategoriesPage() {
           <h1 className="text-3xl font-display font-bold">{t("categories.title")}</h1>
           <p className="text-sm text-muted-foreground mt-1">{t("categories.subtitle")}</p>
         </div>
-        <button onClick={() => setShowNew(true)} className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-4 py-2.5 rounded-full font-medium text-sm shadow-lg shadow-primary/20">
+        <button onClick={() => {
+            if (restaurant?.subscription_status === "unpaid" && (cats.data?.length ?? 0) >= 3) {
+              toast.error("Free tier limit reached. Maximum 3 categories allowed. Please upgrade.");
+              return;
+            }
+            setShowNew(true);
+          }} className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-4 py-2.5 rounded-full font-medium text-sm shadow-lg shadow-primary/20">
           <Plus className="size-4" /> {t("categories.new")}
         </button>
       </header>
 
       {cats.data?.length === 0 ? (
-        <EmptyState onClick={() => setShowNew(true)} />
+        <EmptyState onClick={() => {
+          if (restaurant?.subscription_status === "unpaid" && (cats.data?.length ?? 0) >= 3) {
+            toast.error("Free tier limit reached. Maximum 3 categories allowed. Please upgrade.");
+            return;
+          }
+          setShowNew(true);
+        }} />
       ) : (
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {cats.data?.map((c: any, i: number) => (

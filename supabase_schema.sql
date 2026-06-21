@@ -32,6 +32,8 @@ CREATE TABLE public.restaurants (
   currency TEXT NOT NULL DEFAULT 'TND',
   default_language TEXT NOT NULL DEFAULT 'en',
   onboarding_completed BOOLEAN NOT NULL DEFAULT false,
+  subscription_status TEXT NOT NULL DEFAULT 'unpaid',
+  referral_code_id UUID,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
@@ -247,11 +249,11 @@ CREATE POLICY owner_read_restaurant ON public.restaurants
   FOR SELECT TO authenticated
   USING (auth.uid() = owner_id);
 
--- Public-safe view: excludes phone, owner_id, onboarding_completed
+-- Public-safe view: excludes phone, owner_id, onboarding_completed, referral_code_id
 CREATE OR REPLACE VIEW public.restaurants_public AS
   SELECT id, name, slug, description, logo_url, cover_image_url,
          cuisine_type, is_open, opening_hours, website, email, social_links,
-         currency, default_language, created_at, updated_at
+         currency, default_language, subscription_status, created_at, updated_at
   FROM public.restaurants;
 
 GRANT SELECT ON public.restaurants_public TO anon, authenticated;
@@ -260,7 +262,7 @@ ALTER VIEW public.restaurants_public SET (security_invoker = on);
 -- Allow anon to read only the safe columns of restaurants (needed for the view)
 GRANT SELECT (id, name, slug, description, logo_url, cover_image_url,
               cuisine_type, is_open, opening_hours, website, email, social_links,
-              currency, default_language, created_at, updated_at)
+              currency, default_language, subscription_status, created_at, updated_at)
   ON public.restaurants TO anon;
 
 DROP POLICY IF EXISTS anon_read_restaurants_safe ON public.restaurants;
@@ -296,11 +298,43 @@ DROP VIEW IF EXISTS public.restaurants_public;
 CREATE VIEW public.restaurants_public AS
   SELECT id, name, slug, description, logo_url, cover_image_url,
          cuisine_type, is_open, opening_hours, website, email, social_links,
-         currency, default_language, created_at, updated_at
+         currency, default_language, subscription_status, created_at, updated_at
   FROM public.restaurants;
 
 GRANT SELECT (id, name, slug, description, logo_url, cover_image_url,
               cuisine_type, is_open, opening_hours, website, email, social_links,
-              currency, default_language, created_at, updated_at)
+              currency, default_language, subscription_status, created_at, updated_at)
   ON public.restaurants TO anon;
 */
+
+-- ==========================================
+-- REFERRALS & PAYMENTS SYSTEM
+-- ==========================================
+CREATE TABLE public.referral_codes (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  code TEXT NOT NULL UNIQUE,
+  referrer_name TEXT NOT NULL,
+  commission_rate NUMERIC(5,2) NOT NULL DEFAULT 20.00,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+GRANT SELECT ON public.referral_codes TO authenticated;
+GRANT ALL ON public.referral_codes TO service_role;
+ALTER TABLE public.referral_codes ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "anyone_read_referral_codes" ON public.referral_codes FOR SELECT TO authenticated USING (true);
+
+ALTER TABLE public.restaurants ADD CONSTRAINT fk_restaurant_referral FOREIGN KEY (referral_code_id) REFERENCES public.referral_codes(id) ON DELETE SET NULL;
+
+CREATE TABLE public.referral_payouts (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  referral_code_id UUID NOT NULL REFERENCES public.referral_codes(id) ON DELETE CASCADE,
+  restaurant_id UUID NOT NULL REFERENCES public.restaurants(id) ON DELETE CASCADE,
+  amount NUMERIC(10,2) NOT NULL DEFAULT 0,
+  status TEXT NOT NULL DEFAULT 'pending',
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  paid_at TIMESTAMPTZ
+);
+GRANT SELECT ON public.referral_payouts TO authenticated;
+GRANT ALL ON public.referral_payouts TO service_role;
+ALTER TABLE public.referral_payouts ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "admin_all_payouts" ON public.referral_payouts FOR ALL TO authenticated USING (true);
+

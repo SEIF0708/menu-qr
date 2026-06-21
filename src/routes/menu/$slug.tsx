@@ -9,6 +9,7 @@ import { LangSwitcher } from "@/components/LangSwitcher";
 import { formatPrice, pickLocalized } from "@/lib/format";
 import { useCart } from "@/lib/cart";
 import { motion, AnimatePresence } from "framer-motion";
+import { Lock } from "lucide-react";
 
 export const Route = createFileRoute("/menu/$slug")({
   loader: async ({ params, context }) => {
@@ -105,6 +106,18 @@ function MenuPage() {
     }
     return filtered;
   }, [filtered, activeCat, search, visibleCount]);
+
+  if (restaurant.subscription_status === "unpaid") {
+    return (
+      <div className="min-h-dvh flex flex-col items-center justify-center p-6 text-center bg-background">
+         <div className="size-20 bg-muted rounded-full flex items-center justify-center mb-6">
+            <Lock className="size-8 text-muted-foreground" />
+         </div>
+         <h1 className="text-2xl font-display font-bold mb-2">Menu Unavailable</h1>
+         <p className="text-muted-foreground max-w-sm">This restaurant's digital menu is currently inactive. Please check back later.</p>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-dvh bg-background pb-32">

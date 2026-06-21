@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useMyRestaurant } from "@/lib/use-restaurant";
 import { supabase } from "@/integrations/supabase/client";
 import { LangSwitcher } from "@/components/LangSwitcher";
-import { LayoutGrid, FolderKanban, UtensilsCrossed, QrCode, Settings, LogOut, ExternalLink, Menu, X } from "lucide-react";
+import { LayoutGrid, FolderKanban, UtensilsCrossed, QrCode, Settings, LogOut, ExternalLink, Menu, X, CreditCard, AlertTriangle } from "lucide-react";
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 
@@ -27,6 +27,7 @@ function DashboardLayout() {
     { to: "/dashboard/categories", label: t("nav.categories"), icon: FolderKanban },
     { to: "/dashboard/products", label: t("nav.products"), icon: UtensilsCrossed },
     { to: "/dashboard/qr", label: t("nav.qr"), icon: QrCode },
+    { to: "/dashboard/subscription", label: "Subscription", icon: CreditCard },
     { to: "/dashboard/settings", label: t("nav.settings"), icon: Settings },
   ];
 
@@ -108,6 +109,20 @@ function DashboardLayout() {
         )}
 
         <main className="flex-1 min-w-0 p-4 md:p-8 animate-fade-up">
+          {restaurant?.subscription_status === "unpaid" && (
+            <div className="mb-6 bg-destructive/10 border border-destructive/20 text-destructive px-4 py-3 rounded-lg flex items-start gap-3">
+              <AlertTriangle className="size-5 mt-0.5 shrink-0" />
+              <div>
+                <p className="font-medium text-sm">Your menu is currently hidden from the public.</p>
+                <p className="text-xs opacity-80 mt-1">
+                  You are on the free tier (max 3 categories, 9 products). Upgrade your plan to unlock unlimited products and make your QR code live.
+                </p>
+                <Link to="/dashboard/subscription" className="inline-block mt-2 text-xs font-bold underline">
+                  View Subscription Options &rarr;
+                </Link>
+              </div>
+            </div>
+          )}
           <Outlet />
         </main>
       </div>
