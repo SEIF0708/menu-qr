@@ -10,6 +10,7 @@ import { formatPrice, pickLocalized } from "@/lib/format";
 import { useCart } from "@/lib/cart";
 import { motion, AnimatePresence } from "framer-motion";
 import { Lock } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/menu/$slug")({
   loader: async ({ params, context }) => {
