@@ -125,6 +125,7 @@
 
 @layer base {
   * { border-color: var(--color-border); }
+  html { scroll-behavior: smooth; }
   html { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
   body {
     background-color: var(--color-background);
@@ -152,3 +153,25 @@
   to { opacity: 1; transform: translateY(0); }
 }
 .animate-fade-up { animation: fadeUp 0.5s var(--ease-out) both; }
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-12px); }
+}
+
+@keyframes floatSlower {
+  0%, 100% { transform: translateY(0px) scale(1); }
+  50% { transform: translateY(-18px) scale(1.01); }
+}
+
+@keyframes scanLine {
+  0% { transform: translateY(-24%); opacity: 0; }
+  15% { opacity: 1; }
+  50% { opacity: 1; }
+  85% { opacity: 0.9; }
+  100% { transform: translateY(120%); opacity: 0; }
+}
+
+.animate-float { animation: float 8s ease-in-out infinite; }
+.animate-float-slower { animation: floatSlower 11s ease-in-out infinite; }
+.scan-line { animation: scanLine 4.5s linear infinite; }

@@ -41,6 +41,9 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 function RootShell({ children }: { children: ReactNode }) {
   // Determine initial language and direction for both server and client
   const initLang = getInitialLanguage();
+  i18n.language = initLang;
+  i18n.resolvedLanguage = initLang;
+  void i18n.changeLanguage(initLang);
   const cfg = LANGS.find((l) => l.code === initLang);
   const dir = cfg?.dir ?? 'ltr';
   return (

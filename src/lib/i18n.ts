@@ -4,6 +4,9 @@ import LanguageDetector from "i18next-browser-languagedetector";
 import en from "./translations/en.json";
 import fr from "./translations/fr.json";
 import ar from "./translations/ar.json";
+import enLanding from "./translations/landing-ui.en.json";
+import frLanding from "./translations/landing-ui.fr.json";
+import arLanding from "./translations/landing-ui.ar.json";
 import { getInitialLanguage } from "@/utils/i18n-helpers";
 
 export const LANGS = [
@@ -13,16 +16,24 @@ export const LANGS = [
 ];
 
 if (!i18n.isInitialized) {
+  const mergeLanding = (base: any, landing: any) => ({
+    ...base,
+    landing: {
+      ...(base?.landing ?? {}),
+      ...landing,
+    },
+  });
+
   i18n
     .use(LanguageDetector)
     .use(initReactI18next)
     .init({
       resources: {
-        en: { translation: en },
-        fr: { translation: fr },
-        ar: { translation: ar },
+        en: { translation: mergeLanding(en, enLanding) },
+        fr: { translation: mergeLanding(fr, frLanding) },
+        ar: { translation: mergeLanding(ar, arLanding) },
       },
-      fallbackLng: "ar",
+      fallbackLng: "en",
       supportedLngs: ["en", "fr", "ar"],
       interpolation: { escapeValue: false },
       detection: {
