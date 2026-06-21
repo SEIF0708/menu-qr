@@ -11,9 +11,28 @@ import { useCart } from "@/lib/cart";
 import { motion, AnimatePresence } from "framer-motion";
 
 export const Route = createFileRoute("/menu/$slug")({
-  loader: async ({ params }) => {
+  loader: async ({ params, context }) => {
     const { data: restaurant } = await supabase.from("restaurants_public").select("*").eq("slug", params.slug).maybeSingle();
     if (!restaurant) throw notFound();
+
+    // Prefetch queries to prevent Layout Shift (CLS) and ensure instant rendering
+    await Promise.all([
+      context.queryClient.ensureQueryData({
+        queryKey: ["public-cats", restaurant.id],
+        queryFn: async () => {
+          const { data } = await supabase.from("categories").select("*").eq("restaurant_id", restaurant.id).eq("is_active", true).order("display_order");
+          return data ?? [];
+        }
+      }),
+      context.queryClient.ensureQueryData({
+        queryKey: ["public-prods", restaurant.id],
+        queryFn: async () => {
+          const { data } = await supabase.from("products").select("*").eq("restaurant_id", restaurant.id).order("display_order");
+          return data ?? [];
+        }
+      })
+    ]);
+
     return { restaurant };
   },
   head: ({ loaderData }) => ({
