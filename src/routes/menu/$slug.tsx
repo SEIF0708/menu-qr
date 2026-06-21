@@ -50,6 +50,9 @@ export const Route = createFileRoute("/menu/$slug")({
 function MenuPage() {
   const { restaurant } = Route.useLoaderData();
   const { slug } = Route.useParams();
+  const searchParams = Route.useSearch() as any;
+  const isIframe = searchParams.iframe === "true";
+
   const { t, i18n } = useTranslation();
   const lang = i18n.language?.split("-")[0] || "en";
   const [search, setSearch] = useState("");
@@ -138,9 +141,6 @@ function MenuPage() {
       );
     }
   }
-
-  const searchParams = Route.useSearch() as any;
-  const isIframe = searchParams.iframe === "true";
 
   return (
     <div className={cn("min-h-dvh bg-background pb-32", isIframe && "no-scrollbar")}>
