@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useMyRestaurant } from "@/lib/use-restaurant";
 import { supabase } from "@/integrations/supabase/client";
 import { LangSwitcher } from "@/components/LangSwitcher";
-import { LayoutGrid, FolderKanban, UtensilsCrossed, QrCode, Settings, LogOut, ExternalLink, Menu, X, CreditCard, AlertTriangle, Shield } from "lucide-react";
+import { LayoutGrid, FolderKanban, UtensilsCrossed, QrCode, Settings, LogOut, ExternalLink, Menu, X, CreditCard, AlertTriangle, Shield, Gift } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { cn } from "@/lib/utils";
@@ -29,6 +29,7 @@ function DashboardLayout() {
     { to: "/dashboard/products", label: t("nav.products"), icon: UtensilsCrossed },
     { to: "/dashboard/qr", label: t("nav.qr"), icon: QrCode },
     { to: "/dashboard/subscription", label: "Subscription", icon: CreditCard },
+    { to: "/dashboard/referrals", label: "Partner Program", icon: Gift },
     { to: "/dashboard/settings", label: t("nav.settings"), icon: Settings },
   ];
 

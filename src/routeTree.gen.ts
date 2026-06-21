@@ -20,6 +20,7 @@ import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/
 import { Route as AuthenticatedDashboardIndexRouteImport } from './routes/_authenticated/dashboard.index'
 import { Route as AuthenticatedDashboardSubscriptionRouteImport } from './routes/_authenticated/dashboard.subscription'
 import { Route as AuthenticatedDashboardSettingsRouteImport } from './routes/_authenticated/dashboard.settings'
+import { Route as AuthenticatedDashboardReferralsRouteImport } from './routes/_authenticated/dashboard.referrals'
 import { Route as AuthenticatedDashboardQrRouteImport } from './routes/_authenticated/dashboard.qr'
 import { Route as AuthenticatedDashboardProductsRouteImport } from './routes/_authenticated/dashboard.products'
 import { Route as AuthenticatedDashboardCategoriesRouteImport } from './routes/_authenticated/dashboard.categories'
@@ -81,6 +82,12 @@ const AuthenticatedDashboardSettingsRoute =
     path: '/settings',
     getParentRoute: () => AuthenticatedDashboardRoute,
   } as any)
+const AuthenticatedDashboardReferralsRoute =
+  AuthenticatedDashboardReferralsRouteImport.update({
+    id: '/referrals',
+    path: '/referrals',
+    getParentRoute: () => AuthenticatedDashboardRoute,
+  } as any)
 const AuthenticatedDashboardQrRoute =
   AuthenticatedDashboardQrRouteImport.update({
     id: '/qr',
@@ -111,6 +118,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/categories': typeof AuthenticatedDashboardCategoriesRoute
   '/dashboard/products': typeof AuthenticatedDashboardProductsRoute
   '/dashboard/qr': typeof AuthenticatedDashboardQrRoute
+  '/dashboard/referrals': typeof AuthenticatedDashboardReferralsRoute
   '/dashboard/settings': typeof AuthenticatedDashboardSettingsRoute
   '/dashboard/subscription': typeof AuthenticatedDashboardSubscriptionRoute
   '/dashboard/': typeof AuthenticatedDashboardIndexRoute
@@ -125,6 +133,7 @@ export interface FileRoutesByTo {
   '/dashboard/categories': typeof AuthenticatedDashboardCategoriesRoute
   '/dashboard/products': typeof AuthenticatedDashboardProductsRoute
   '/dashboard/qr': typeof AuthenticatedDashboardQrRoute
+  '/dashboard/referrals': typeof AuthenticatedDashboardReferralsRoute
   '/dashboard/settings': typeof AuthenticatedDashboardSettingsRoute
   '/dashboard/subscription': typeof AuthenticatedDashboardSubscriptionRoute
   '/dashboard': typeof AuthenticatedDashboardIndexRoute
@@ -142,6 +151,7 @@ export interface FileRoutesById {
   '/_authenticated/dashboard/categories': typeof AuthenticatedDashboardCategoriesRoute
   '/_authenticated/dashboard/products': typeof AuthenticatedDashboardProductsRoute
   '/_authenticated/dashboard/qr': typeof AuthenticatedDashboardQrRoute
+  '/_authenticated/dashboard/referrals': typeof AuthenticatedDashboardReferralsRoute
   '/_authenticated/dashboard/settings': typeof AuthenticatedDashboardSettingsRoute
   '/_authenticated/dashboard/subscription': typeof AuthenticatedDashboardSubscriptionRoute
   '/_authenticated/dashboard/': typeof AuthenticatedDashboardIndexRoute
@@ -159,6 +169,7 @@ export interface FileRouteTypes {
     | '/dashboard/categories'
     | '/dashboard/products'
     | '/dashboard/qr'
+    | '/dashboard/referrals'
     | '/dashboard/settings'
     | '/dashboard/subscription'
     | '/dashboard/'
@@ -173,6 +184,7 @@ export interface FileRouteTypes {
     | '/dashboard/categories'
     | '/dashboard/products'
     | '/dashboard/qr'
+    | '/dashboard/referrals'
     | '/dashboard/settings'
     | '/dashboard/subscription'
     | '/dashboard'
@@ -189,6 +201,7 @@ export interface FileRouteTypes {
     | '/_authenticated/dashboard/categories'
     | '/_authenticated/dashboard/products'
     | '/_authenticated/dashboard/qr'
+    | '/_authenticated/dashboard/referrals'
     | '/_authenticated/dashboard/settings'
     | '/_authenticated/dashboard/subscription'
     | '/_authenticated/dashboard/'
@@ -281,6 +294,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardSettingsRouteImport
       parentRoute: typeof AuthenticatedDashboardRoute
     }
+    '/_authenticated/dashboard/referrals': {
+      id: '/_authenticated/dashboard/referrals'
+      path: '/referrals'
+      fullPath: '/dashboard/referrals'
+      preLoaderRoute: typeof AuthenticatedDashboardReferralsRouteImport
+      parentRoute: typeof AuthenticatedDashboardRoute
+    }
     '/_authenticated/dashboard/qr': {
       id: '/_authenticated/dashboard/qr'
       path: '/qr'
@@ -309,6 +329,7 @@ interface AuthenticatedDashboardRouteChildren {
   AuthenticatedDashboardCategoriesRoute: typeof AuthenticatedDashboardCategoriesRoute
   AuthenticatedDashboardProductsRoute: typeof AuthenticatedDashboardProductsRoute
   AuthenticatedDashboardQrRoute: typeof AuthenticatedDashboardQrRoute
+  AuthenticatedDashboardReferralsRoute: typeof AuthenticatedDashboardReferralsRoute
   AuthenticatedDashboardSettingsRoute: typeof AuthenticatedDashboardSettingsRoute
   AuthenticatedDashboardSubscriptionRoute: typeof AuthenticatedDashboardSubscriptionRoute
   AuthenticatedDashboardIndexRoute: typeof AuthenticatedDashboardIndexRoute
@@ -320,6 +341,7 @@ const AuthenticatedDashboardRouteChildren: AuthenticatedDashboardRouteChildren =
       AuthenticatedDashboardCategoriesRoute,
     AuthenticatedDashboardProductsRoute: AuthenticatedDashboardProductsRoute,
     AuthenticatedDashboardQrRoute: AuthenticatedDashboardQrRoute,
+    AuthenticatedDashboardReferralsRoute: AuthenticatedDashboardReferralsRoute,
     AuthenticatedDashboardSettingsRoute: AuthenticatedDashboardSettingsRoute,
     AuthenticatedDashboardSubscriptionRoute:
       AuthenticatedDashboardSubscriptionRoute,
