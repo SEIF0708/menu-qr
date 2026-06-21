@@ -9,7 +9,7 @@ export function useMyRestaurant() {
       if (!u.user) return null;
       const { data, error } = await supabase
         .from("restaurants")
-        .select("*")
+        .select("*, referral_codes(code)")
         .eq("owner_id", u.user.id)
         .order("created_at", { ascending: true })
         .limit(1)

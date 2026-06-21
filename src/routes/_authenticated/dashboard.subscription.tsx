@@ -4,7 +4,7 @@ import { useMyRestaurant } from "@/lib/use-restaurant";
 import { supabase } from "@/integrations/supabase/client";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
-import { CreditCard, CheckCircle2, Lock, Gift } from "lucide-react";
+import { CreditCard, CheckCircle2, Lock, Gift, MessageCircle } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 
 export const Route = createFileRoute("/_authenticated/dashboard/subscription")({
@@ -19,6 +19,18 @@ function SubscriptionPage() {
   const [saving, setSaving] = useState(false);
 
   const isUnpaid = restaurant?.subscription_status === "unpaid";
+  const usedCode = restaurant?.referral_code_id ? (restaurant as any).referral_codes?.code : null;
+
+  const handleWhatsApp = () => {
+    let message = "";
+    if (usedCode) {
+      message = t("subscription.waMsgReferred", { name: restaurant?.name || "My Restaurant", code: usedCode });
+    } else {
+      message = t("subscription.waMsgNormal", { name: restaurant?.name || "My Restaurant" });
+    }
+    const encodedMessage = encodeURIComponent(message);
+    window.open(`https://wa.me/21629710282?text=${encodedMessage}`, "_blank");
+  };
 
   const applyCode = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -147,6 +159,15 @@ function SubscriptionPage() {
            <p className="text-sm text-muted-foreground">
              {t("subscription.refApplied")}
            </p>
+        </div>
+      )}
+
+      {isUnpaid && (
+        <div className="flex justify-center mt-8">
+          <button onClick={handleWhatsApp} className="flex items-center gap-2 bg-[#25D366] hover:bg-[#20bd5a] text-white px-6 py-3 rounded-xl font-medium shadow-sm transition-colors">
+            <MessageCircle className="size-5" />
+            {t("subscription.contactSupportBtn")}
+          </button>
         </div>
       )}
     </div>

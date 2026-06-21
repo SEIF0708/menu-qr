@@ -319,6 +319,9 @@
     "refApplying": "Applying...",
     "refApplied": "Referral code applied. Please contact the platform owner to complete your payment and activate your account.",
     "invalidCode": "Invalid referral code.",
-    "successApplied": "Referral code applied successfully!"
+    "successApplied": "Referral code applied successfully!",
+    "waMsgNormal": "Hello, I would like to activate my account for my restaurant: {{name}}.",
+    "waMsgReferred": "Hello, I would like to activate my account for my restaurant: {{name}}. I used the referral code {{code}}, so my price is 250 DT.",
+    "contactSupportBtn": "Contact Support via WhatsApp"
   }
 }

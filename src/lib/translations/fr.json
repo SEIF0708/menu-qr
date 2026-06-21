@@ -319,6 +319,9 @@
     "refApplying": "Application...",
     "refApplied": "Code de parrainage appliqué. Veuillez contacter le propriétaire de la plateforme pour finaliser votre paiement et activer votre compte.",
     "invalidCode": "Code de parrainage invalide.",
-    "successApplied": "Code de parrainage appliqué avec succès !"
+    "successApplied": "Code de parrainage appliqué avec succès !",
+    "waMsgNormal": "Bonjour, je voudrais activer mon compte pour mon restaurant : {{name}}.",
+    "waMsgReferred": "Bonjour, je voudrais activer mon compte pour mon restaurant : {{name}}. J'ai utilisé le code de parrainage {{code}}, donc mon prix est de 250 DT.",
+    "contactSupportBtn": "Contacter le support via WhatsApp"
   }
 }
