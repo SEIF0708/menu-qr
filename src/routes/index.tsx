@@ -647,8 +647,6 @@ function Landing() {
           </div>
         </section>
 
-        </section>
-
         <section id="pricing" className="scroll-mt-24 py-12 lg:py-20">
           <SectionLabel eyebrow="Pricing" title="Simple Annual Pricing" />
           <p className="mt-4 max-w-2xl text-sm text-muted-foreground sm:text-base">
