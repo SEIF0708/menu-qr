@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useMyRestaurant } from "@/lib/use-restaurant";
 import { useSignedImage } from "@/lib/use-signed-image";
 import { useState, useMemo } from "react";
+import { createPortal } from "react-dom";
 import { Plus, Pencil, Trash2, Copy, Search, UtensilsCrossed, Upload, X } from "lucide-react";
 import { toast } from "sonner";
 import { uploadAsset } from "@/lib/storage";
@@ -199,7 +200,7 @@ function ProductDialog({ restaurantId, product, categories, onClose }: { restaur
     } catch (e: any) { toast.error(e.message); } finally { setSaving(false); }
   };
 
-  return (
+  return createPortal(
     <div className="fixed inset-0 z-50 bg-background/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto" onClick={onClose}>
       <form onSubmit={submit} onClick={(e) => e.stopPropagation()} className="bg-card border border-border rounded-2xl p-6 max-w-2xl w-full shadow-2xl my-8 max-h-[85dvh] overflow-y-auto">
         <div className="flex items-center justify-between mb-6">
@@ -288,7 +289,8 @@ function ProductDialog({ restaurantId, product, categories, onClose }: { restaur
         </div>
         <style>{`.input2 { width:100%; padding:0.5rem 0.75rem; border:1px solid var(--color-border); border-radius:0.5rem; font-size:0.875rem; background:var(--color-background); }`}</style>
       </form>
-    </div>
+    </div>,
+    document.body
   );
 }
 
