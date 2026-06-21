@@ -16,6 +16,13 @@ export const Route = createFileRoute("/menu/$slug")({
     const { data: restaurant } = await supabase.from("restaurants_public").select("*").eq("slug", params.slug).maybeSingle();
     if (!restaurant) throw notFound();
 
+    const { data: { session } } = await supabase.auth.getSession();
+    let isOwner = false;
+    if (session) {
+      const { data: myRest } = await supabase.from("restaurants").select("id").eq("id", restaurant.id).maybeSingle();
+      if (myRest) isOwner = true;
+    }
+
     // Prefetch queries to prevent Layout Shift (CLS) and ensure instant rendering
     await Promise.all([
       context.queryClient.ensureQueryData({
@@ -34,7 +41,7 @@ export const Route = createFileRoute("/menu/$slug")({
       })
     ]);
 
-    return { restaurant };
+    return { restaurant, isOwner };
   },
   head: ({ loaderData }) => ({
     meta: [
@@ -48,7 +55,7 @@ export const Route = createFileRoute("/menu/$slug")({
 });
 
 function MenuPage() {
-  const { restaurant } = Route.useLoaderData();
+  const { restaurant, isOwner } = Route.useLoaderData();
   const { slug } = Route.useParams();
   const { t, i18n } = useTranslation();
   const lang = i18n.language?.split("-")[0] || "en";
@@ -107,7 +114,7 @@ function MenuPage() {
     return filtered;
   }, [filtered, activeCat, search, visibleCount]);
 
-  if (restaurant.subscription_status === "unpaid") {
+  if (restaurant.subscription_status === "unpaid" && !isOwner) {
     return (
       <div className="min-h-dvh flex flex-col items-center justify-center p-6 text-center bg-background">
          <div className="size-20 bg-muted rounded-full flex items-center justify-center mb-6">
@@ -121,6 +128,11 @@ function MenuPage() {
 
   return (
     <div className="min-h-dvh bg-background pb-32">
+      {restaurant.subscription_status === "unpaid" && isOwner && (
+        <div className="bg-orange-500 text-white text-xs sm:text-sm font-bold text-center py-2 px-4 sticky top-0 z-[60] shadow-md flex items-center justify-center gap-2">
+          <Lock className="size-4" /> PREVIEW MODE — This menu is hidden from the public until you activate your subscription.
+        </div>
+      )}
       <div className="relative h-64 sm:h-80 bg-muted">
         {cover && <img src={cover} alt="" fetchPriority="high" className="size-full object-cover" />}
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />

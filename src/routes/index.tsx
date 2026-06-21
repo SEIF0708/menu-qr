@@ -683,7 +683,7 @@ function Landing() {
                 ))}
               </ul>
               <a
-                href="https://wa.me/21600000000"
+                href="https://wa.me/21629710282"
                 target="_blank"
                 rel="noreferrer"
                 className="mt-auto block w-full rounded-xl bg-primary px-4 py-3.5 text-center text-sm font-semibold text-primary-foreground shadow-sm hover:brightness-110 transition-all"

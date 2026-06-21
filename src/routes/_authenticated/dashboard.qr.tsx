@@ -26,6 +26,22 @@ function QrPage() {
   const print = () => window.print();
   const copy = async () => { await navigator.clipboard.writeText(url); toast.success(t("common.copied")); };
 
+  if (restaurant?.subscription_status === "unpaid") {
+    return (
+      <div className="max-w-4xl">
+        <header className="mb-8">
+          <p className="text-xs font-mono text-muted-foreground uppercase tracking-widest mb-1">{t("nav.qr")}</p>
+          <h1 className="text-3xl font-display font-bold">{t("qr.title")}</h1>
+        </header>
+        <div className="bg-orange-50 border border-orange-200 rounded-2xl p-8 flex flex-col items-center text-center">
+           <Lock className="size-12 mb-4 text-orange-500" />
+           <h2 className="text-xl font-bold mb-2 text-orange-900">QR Code Disabled</h2>
+           <p className="max-w-md text-orange-800">Your menu is currently inactive. Please upgrade your subscription to generate and download your QR code.</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="max-w-4xl">
       <header className="mb-8">
