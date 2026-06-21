@@ -90,7 +90,7 @@ function MenuPage() {
   return (
     <div className="min-h-dvh bg-background pb-32">
       <div className="relative h-64 sm:h-80 bg-muted">
-        {cover && <img src={cover} alt="" className="size-full object-cover" />}
+        {cover && <img src={cover} alt="" fetchPriority="high" className="size-full object-cover" />}
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
         <div className="absolute top-4 inset-x-4 flex items-start justify-between z-10">
           <div className="flex items-center gap-3">
