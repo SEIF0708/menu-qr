@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useMyRestaurant } from "@/lib/use-restaurant";
 import { useSignedImage } from "@/lib/use-signed-image";
-import { Plus, FolderPlus, QrCode, ExternalLink, TrendingUp } from "lucide-react";
+import { Plus, FolderPlus, QrCode, ExternalLink, TrendingUp, Eye } from "lucide-react";
 import { formatPrice, pickLocalized } from "@/lib/format";
 
 export const Route = createFileRoute("/_authenticated/dashboard/")({ component: Overview });
@@ -62,18 +62,31 @@ function Overview() {
         />
       </div>
 
-      <div className="bg-card border border-border rounded-2xl overflow-hidden shadow-sm">
-        <div className="px-6 py-4 border-b border-border flex items-center justify-between">
-          <h3 className="font-semibold flex items-center gap-2"><TrendingUp className="size-4 text-accent" /> {t("overview.recent")}</h3>
-          <Link to="/dashboard/products" className="text-sm text-accent hover:underline">→</Link>
-        </div>
-        {stats.data?.recent.length === 0 ? (
-          <div className="p-8 text-center text-sm text-muted-foreground">{t("overview.emptyRecent")}</div>
-        ) : (
-          <div className="divide-y divide-border">
-            {stats.data?.recent.map((p: any) => <RecentRow key={p.id} product={p} lang={lang} currency={restaurant?.currency || "TND"} />)}
+      <div className="grid lg:grid-cols-2 gap-6">
+        <div className="bg-card border border-border rounded-2xl overflow-hidden shadow-sm h-fit">
+          <div className="px-6 py-4 border-b border-border flex items-center justify-between">
+            <h3 className="font-semibold flex items-center gap-2"><TrendingUp className="size-4 text-accent" /> {t("overview.recent")}</h3>
+            <Link to="/dashboard/products" className="text-sm text-accent hover:underline">→</Link>
           </div>
-        )}
+          {stats.data?.recent.length === 0 ? (
+            <div className="p-8 text-center text-sm text-muted-foreground">{t("overview.emptyRecent")}</div>
+          ) : (
+            <div className="divide-y divide-border">
+              {stats.data?.recent.map((p: any) => <RecentRow key={p.id} product={p} lang={lang} currency={restaurant?.currency || "TND"} />)}
+            </div>
+          )}
+        </div>
+
+        <div className="bg-card border border-border rounded-2xl overflow-hidden shadow-sm h-fit flex flex-col">
+          <div className="px-6 py-4 border-b border-border flex items-center justify-between">
+            <h3 className="font-semibold flex items-center gap-2"><Eye className="size-4 text-accent" /> Live Preview</h3>
+          </div>
+          <div className="bg-muted p-6 flex justify-center items-center flex-1">
+             <div className="w-[320px] h-[600px] bg-background border-[8px] border-zinc-800 rounded-[2.5rem] overflow-hidden shadow-xl relative">
+                {restaurant?.slug && <iframe src={`/menu/${restaurant?.slug}`} className="w-full h-full border-0" />}
+             </div>
+          </div>
+        </div>
       </div>
     </div>
   );

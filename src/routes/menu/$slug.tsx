@@ -16,13 +16,6 @@ export const Route = createFileRoute("/menu/$slug")({
     const { data: restaurant } = await supabase.from("restaurants_public").select("*").eq("slug", params.slug).maybeSingle();
     if (!restaurant) throw notFound();
 
-    const { data: { session } } = await supabase.auth.getSession();
-    let isOwner = false;
-    if (session) {
-      const { data: myRest } = await supabase.from("restaurants").select("id").eq("id", restaurant.id).maybeSingle();
-      if (myRest) isOwner = true;
-    }
-
     // Prefetch queries to prevent Layout Shift (CLS) and ensure instant rendering
     await Promise.all([
       context.queryClient.ensureQueryData({
@@ -41,7 +34,7 @@ export const Route = createFileRoute("/menu/$slug")({
       })
     ]);
 
-    return { restaurant, isOwner };
+    return { restaurant };
   },
   head: ({ loaderData }) => ({
     meta: [
@@ -55,7 +48,7 @@ export const Route = createFileRoute("/menu/$slug")({
 });
 
 function MenuPage() {
-  const { restaurant, isOwner } = Route.useLoaderData();
+  const { restaurant } = Route.useLoaderData();
   const { slug } = Route.useParams();
   const { t, i18n } = useTranslation();
   const lang = i18n.language?.split("-")[0] || "en";
@@ -71,11 +64,26 @@ function MenuPage() {
   const cover = useSignedImage(restaurant.cover_image_url);
   const logo = useSignedImage(restaurant.logo_url);
 
+  const [isOwner, setIsOwner] = useState(false);
+  const [checkingOwner, setCheckingOwner] = useState(true);
+
   useEffect(() => {
     supabase.from("menu_views").insert({ restaurant_id: restaurant.id }).then(() => {});
     if (restaurant.default_language && !localStorage.getItem("menuflow_lang")) {
       i18n.changeLanguage(restaurant.default_language);
     }
+
+    // Client-side owner check
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) {
+        supabase.from("restaurants").select("id").eq("id", restaurant.id).maybeSingle().then(({ data }) => {
+          setIsOwner(!!data);
+          setCheckingOwner(false);
+        });
+      } else {
+        setCheckingOwner(false);
+      }
+    });
   }, [restaurant.id, restaurant.default_language, i18n]);
 
   const cats = useQuery({
@@ -114,16 +122,21 @@ function MenuPage() {
     return filtered;
   }, [filtered, activeCat, search, visibleCount]);
 
-  if (restaurant.subscription_status === "unpaid" && !isOwner) {
-    return (
-      <div className="min-h-dvh flex flex-col items-center justify-center p-6 text-center bg-background">
-         <div className="size-20 bg-muted rounded-full flex items-center justify-center mb-6">
-            <Lock className="size-8 text-muted-foreground" />
-         </div>
-         <h1 className="text-2xl font-display font-bold mb-2">Menu Unavailable</h1>
-         <p className="text-muted-foreground max-w-sm">This restaurant's digital menu is currently inactive. Please check back later.</p>
-      </div>
-    );
+  if (restaurant.subscription_status === "unpaid") {
+    if (checkingOwner) {
+       return <div className="min-h-dvh flex items-center justify-center bg-background"><div className="size-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div></div>;
+    }
+    if (!isOwner) {
+      return (
+        <div className="min-h-dvh flex flex-col items-center justify-center p-6 text-center bg-background">
+           <div className="size-20 bg-muted rounded-full flex items-center justify-center mb-6">
+              <Lock className="size-8 text-muted-foreground" />
+           </div>
+           <h1 className="text-2xl font-display font-bold mb-2">Menu Unavailable</h1>
+           <p className="text-muted-foreground max-w-sm">This restaurant's digital menu is currently inactive. Please check back later.</p>
+        </div>
+      );
+    }
   }
 
   return (
