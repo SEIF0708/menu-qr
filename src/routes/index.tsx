@@ -22,6 +22,7 @@ import {
   Smartphone,
   Store,
   Layers3,
+  Check,
 } from "lucide-react";
 import type { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
@@ -105,6 +106,7 @@ function Landing() {
             <a href="#demo" className="transition-colors hover:text-foreground">{t("landing.navDemo")}</a>
             <a href="#features" className="transition-colors hover:text-foreground">{t("landing.navFeatures")}</a>
             <a href="#analytics" className="transition-colors hover:text-foreground">{t("landing.navAnalytics")}</a>
+            <a href="#pricing" className="transition-colors hover:text-foreground">Pricing</a>
             <a href="#partners" className="transition-colors hover:text-foreground">{t("landing.navPartners")}</a>
           </nav>
 
@@ -642,6 +644,133 @@ function Landing() {
                 </div>
               </div>
             </motion.div>
+          </div>
+        </section>
+
+        </section>
+
+        <section id="pricing" className="scroll-mt-24 py-12 lg:py-20">
+          <SectionLabel eyebrow="Pricing" title="Simple Annual Pricing" />
+          <p className="mt-4 max-w-2xl text-sm text-muted-foreground sm:text-base">
+            Everything you need to run your digital menu, with transparent pricing and referral rewards.
+          </p>
+
+          <div className="mt-8 grid gap-6 lg:grid-cols-3">
+            {/* Standard Plan */}
+            <div className="flex flex-col rounded-[2rem] border border-border bg-card p-6 shadow-sm sm:p-8">
+              <div className="mb-6">
+                <h3 className="font-display text-2xl font-semibold text-foreground">Restaurant Plan</h3>
+                <div className="mt-4 flex items-baseline text-5xl font-extrabold tracking-tight text-foreground">
+                  300 DT
+                  <span className="ml-1 text-xl font-semibold text-muted-foreground">/year</span>
+                </div>
+                <p className="mt-4 text-sm text-muted-foreground">Everything included for one simple price.</p>
+              </div>
+              <ul className="mb-8 flex-1 space-y-3 text-sm text-muted-foreground">
+                {[
+                  "Interactive QR Menu",
+                  "Unlimited Menu Items",
+                  "Food Images",
+                  "Menu Categories",
+                  "Instant Price Updates",
+                  "Mobile Optimized Design",
+                  "QR Code Included",
+                  "WhatsApp Support & Setup",
+                  "Unlimited Scans",
+                ].map((feature) => (
+                  <li key={feature} className="flex items-start gap-3">
+                    <Check className="size-5 shrink-0 text-primary" />
+                    <span>{feature}</span>
+                  </li>
+                ))}
+              </ul>
+              <a
+                href="https://wa.me/21600000000"
+                target="_blank"
+                rel="noreferrer"
+                className="mt-auto block w-full rounded-xl bg-primary px-4 py-3.5 text-center text-sm font-semibold text-primary-foreground shadow-sm hover:brightness-110 transition-all"
+              >
+                Contact Us On WhatsApp
+              </a>
+            </div>
+
+            {/* Referral Discount */}
+            <div className="flex flex-col rounded-[2rem] border-2 border-accent/40 bg-accent/5 p-6 shadow-sm sm:p-8 relative">
+              <div className="absolute -top-4 left-0 right-0 mx-auto w-max rounded-full bg-accent px-4 py-1 text-xs font-bold uppercase tracking-wider text-accent-foreground shadow-sm">
+                🎉 Save 50 DT
+              </div>
+              <div className="mb-6 mt-2">
+                <h3 className="font-display text-2xl font-semibold text-foreground">Referral Discount</h3>
+                <div className="mt-4 flex items-baseline text-5xl font-extrabold tracking-tight text-foreground">
+                  250 DT
+                  <span className="ml-1 text-xl font-semibold text-muted-foreground">/year</span>
+                </div>
+                <p className="mt-4 text-sm text-muted-foreground font-medium text-accent">Were you referred by a partner?</p>
+              </div>
+              <ul className="mb-8 flex-1 space-y-3 text-sm text-muted-foreground">
+                <li className="flex items-start gap-3">
+                  <Check className="size-5 shrink-0 text-accent" />
+                  <span>Full access to all features</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <Check className="size-5 shrink-0 text-accent" />
+                  <span>Same support and setup assistance</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <Check className="size-5 shrink-0 text-accent" />
+                  <span><strong>50 DT discount</strong> on your first year</span>
+                </li>
+              </ul>
+              <Link
+                to="/auth"
+                search={{ mode: "signup" }}
+                className="mt-auto block w-full rounded-xl bg-accent px-4 py-3.5 text-center text-sm font-semibold text-accent-foreground shadow-sm hover:brightness-110 transition-all"
+              >
+                Redeem Referral Code
+              </Link>
+            </div>
+
+            {/* Partner Program */}
+            <div className="flex flex-col rounded-[2rem] border border-border bg-card p-6 shadow-sm sm:p-8">
+              <div className="mb-6">
+                <h3 className="font-display text-2xl font-semibold text-foreground">💰 Partner Program</h3>
+                <p className="mt-4 text-sm font-medium text-foreground">Know restaurant owners?</p>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  Earn commissions for every restaurant that joins through your referral code.
+                </p>
+              </div>
+              
+              <div className="mb-6 rounded-2xl bg-muted/50 p-4">
+                <h4 className="mb-3 text-xs font-bold uppercase tracking-wider text-muted-foreground">Commission Rates</h4>
+                <ul className="space-y-2 text-sm">
+                  <li className="flex justify-between">
+                    <span>1–9 referrals</span>
+                    <span className="font-bold text-foreground">25 DT / ea</span>
+                  </li>
+                  <li className="flex justify-between border-t border-border/50 pt-2">
+                    <span>10+ referrals</span>
+                    <span className="font-bold text-emerald-600">50 DT / ea</span>
+                  </li>
+                </ul>
+              </div>
+
+              <div className="mb-6 flex-1">
+                <h4 className="mb-3 text-xs font-bold uppercase tracking-wider text-muted-foreground">Examples</h4>
+                <ul className="space-y-2 text-sm">
+                  <li className="flex items-center gap-2"><ArrowRight className="size-3 text-muted-foreground"/> 5 referrals = <strong>125 DT</strong></li>
+                  <li className="flex items-center gap-2"><ArrowRight className="size-3 text-muted-foreground"/> 10 referrals = <strong>500 DT</strong></li>
+                  <li className="flex items-center gap-2"><ArrowRight className="size-3 text-muted-foreground"/> 20 referrals = <strong>1000 DT</strong></li>
+                </ul>
+              </div>
+
+              <Link
+                to="/auth"
+                search={{ mode: "signup" }}
+                className="mt-auto block w-full rounded-xl border-2 border-primary/20 bg-transparent px-4 py-3.5 text-center text-sm font-semibold text-primary hover:bg-primary/5 transition-all"
+              >
+                Become A Partner
+              </Link>
+            </div>
           </div>
         </section>
 
