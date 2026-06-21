@@ -94,11 +94,13 @@ function ReferralManager() {
         <h2 className="text-xl font-bold">Referral Codes</h2>
       </div>
 
-      <form onSubmit={create} className="flex gap-2 mb-6">
-        <input required placeholder="Code (e.g. JOHN20)" value={code} onChange={(e) => setCode(e.target.value.toUpperCase())} className="flex-1 min-w-0 px-3 py-2 border rounded-lg text-sm bg-background" />
-        <input required placeholder="Agent Name" value={name} onChange={(e) => setName(e.target.value)} className="flex-1 min-w-0 px-3 py-2 border rounded-lg text-sm bg-background" />
-        <input required type="number" step="1" placeholder="%" value={rate} onChange={(e) => setRate(e.target.value)} className="w-20 px-3 py-2 border rounded-lg text-sm bg-background" />
-        <button disabled={saving} className="px-4 py-2 bg-primary text-primary-foreground rounded-lg font-medium text-sm disabled:opacity-50">Add</button>
+      <form onSubmit={create} className="flex flex-col sm:flex-row gap-3 mb-6">
+        <input required placeholder="Code (e.g. JOHN20)" value={code} onChange={(e) => setCode(e.target.value.toUpperCase())} className="w-full sm:flex-1 px-3 py-2 border rounded-lg text-sm bg-background" />
+        <input required placeholder="Agent Name" value={name} onChange={(e) => setName(e.target.value)} className="w-full sm:flex-1 px-3 py-2 border rounded-lg text-sm bg-background" />
+        <div className="flex gap-2">
+          <input required type="number" step="1" placeholder="%" value={rate} onChange={(e) => setRate(e.target.value)} className="w-24 px-3 py-2 border rounded-lg text-sm bg-background" />
+          <button disabled={saving} className="flex-1 sm:flex-none px-4 py-2 bg-primary text-primary-foreground rounded-lg font-medium text-sm disabled:opacity-50">Add Code</button>
+        </div>
       </form>
 
       <div className="space-y-3 max-h-64 overflow-y-auto">
