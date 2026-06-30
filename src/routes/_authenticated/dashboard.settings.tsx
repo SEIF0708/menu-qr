@@ -88,7 +88,7 @@ function SettingsPage() {
   };
 
   useEffect(() => { 
-    if (restaurant) {
+    if (restaurant && Object.keys(form).length === 0) {
       setForm({ ...restaurant, social_links: restaurant.social_links || {} });
     }
   }, [restaurant]);
@@ -107,8 +107,9 @@ function SettingsPage() {
     e.preventDefault();
     setSaving(true);
     try {
-      const { id, owner_id, created_at, updated_at, ...payload } = form;
-      await supabase.from("restaurants").update(payload).eq("id", restaurant!.id);
+      const { id, owner_id, created_at, updated_at, referral_codes, ...payload } = form;
+      const { error } = await supabase.from("restaurants").update(payload).eq("id", restaurant!.id);
+      if (error) throw error;
       toast.success(t("common.saved"));
       qc.invalidateQueries({ queryKey: ["my-restaurant"] });
     } catch (e: any) { toast.error(e.message); } finally { setSaving(false); }

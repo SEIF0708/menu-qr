@@ -25,8 +25,10 @@ export async function uploadAsset(file: File, userId: string, kind: "logo" | "co
     console.warn("Image compression failed, falling back to original:", err);
   }
 
-  const ext = fileToUpload.name.split(".").pop() || "jpg";
-  const path = `${userId}/${kind}/${crypto.randomUUID()}.${ext}`;
+  const fileName = (fileToUpload as File).name || file.name || "image.jpg";
+  const ext = fileName.split(".").pop() || "jpg";
+  const uuid = typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).substring(2) + Date.now().toString(36);
+  const path = `${userId}/${kind}/${uuid}.${ext}`;
 
   const { error } = await supabase.storage.from(BUCKET).upload(path, fileToUpload, {
     cacheControl: "3600",
