@@ -4,8 +4,9 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useMyRestaurant } from "@/lib/use-restaurant";
 import { useSignedImage } from "@/lib/use-signed-image";
-import { Plus, FolderPlus, QrCode, ExternalLink, TrendingUp } from "lucide-react";
+import { Plus, FolderPlus, QrCode, ExternalLink, TrendingUp, Copy, Check, Eye, Box, LayoutGrid, BarChart3, Settings } from "lucide-react";
 import { formatPrice, pickLocalized } from "@/lib/format";
+import { useState } from "react";
 
 export const Route = createFileRoute("/_authenticated/dashboard/")({ component: Overview });
 
@@ -13,6 +14,7 @@ function Overview() {
   const { t, i18n } = useTranslation();
   const { data: restaurant } = useMyRestaurant();
   const lang = i18n.language?.split("-")[0] || "en";
+  const [copied, setCopied] = useState(false);
 
   const stats = useQuery({
     enabled: !!restaurant?.id,
@@ -36,41 +38,114 @@ function Overview() {
     },
   });
 
+  const menuUrl = typeof window !== 'undefined' && restaurant?.slug 
+    ? `${window.location.origin}/menu/${restaurant.slug}`
+    : `https://menuqr.com/menu/${restaurant?.slug || ''}`;
+
+  const copyLink = () => {
+    navigator.clipboard.writeText(menuUrl);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
   return (
-    <div className="max-w-6xl">
-      <header className="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
+    <div className="max-w-6xl mx-auto space-y-8 animate-fade-up">
+      <header className="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
-          <p className="text-xs font-mono text-muted-foreground uppercase tracking-widest mb-1">{t("overview.subtitle")}</p>
-          <h1 className="text-3xl md:text-4xl font-display font-bold">{t("overview.title")}</h1>
+          <p className="text-xs font-mono text-muted-foreground uppercase tracking-widest mb-1">{t("overview.subtitle") || "Welcome Back"}</p>
+          <h1 className="text-3xl md:text-4xl font-display font-bold">{t("overview.title") || "Dashboard Overview"}</h1>
         </div>
-        <Link to="/dashboard/products" className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-5 py-2.5 rounded-full font-medium text-sm hover:brightness-110 transition-all active:scale-95 shadow-lg shadow-primary/20">
-          <Plus className="size-4" /> {t("overview.addProduct")}
+        <Link to="/dashboard/products" className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-5 py-2.5 rounded-full font-bold text-sm hover:brightness-110 transition-all active:scale-95 shadow-lg shadow-primary/20">
+          <Plus className="size-4" /> {t("overview.addProduct") || "Add Product"}
         </Link>
       </header>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mb-10">
-        <KPI label={t("overview.totalViews")} value={stats.data?.views ?? 0} hint={`+${stats.data?.weekViews ?? 0} ${t("overview.viewsThisWeek").toLowerCase()}`} accent />
-        <KPI label={t("overview.totalProducts")} value={stats.data?.products ?? 0} hint={t("overview.across", { count: stats.data?.categories ?? 0 })} />
-        <KPI label={t("overview.totalCategories")} value={stats.data?.categories ?? 0} />
+      {/* Prominent Live Menu Banner */}
+      <div className="relative overflow-hidden bg-gradient-to-br from-primary/10 via-primary/5 to-background border border-primary/20 rounded-3xl p-6 sm:p-8 shadow-sm">
+        <div className="absolute top-0 right-0 -mt-8 -mr-8 size-40 bg-primary/10 blur-3xl rounded-full pointer-events-none" />
+        <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+          <div className="space-y-2">
+            <h2 className="text-xl sm:text-2xl font-display font-bold text-foreground">Your menu is live!</h2>
+            <p className="text-muted-foreground text-sm max-w-md">
+              Share this link with your customers or print the QR code to let them browse your menu instantly.
+            </p>
+            <div className="flex items-center gap-2 mt-4 bg-background/80 backdrop-blur-sm border border-border/50 rounded-xl p-2 w-fit max-w-full overflow-hidden">
+              <span className="text-sm font-medium text-muted-foreground truncate max-w-[200px] sm:max-w-xs pl-2 select-all">
+                {menuUrl}
+              </span>
+              <button 
+                onClick={copyLink}
+                className="shrink-0 flex items-center justify-center size-8 rounded-lg bg-muted hover:bg-muted/80 text-foreground transition-colors"
+                title="Copy Link"
+              >
+                {copied ? <Check className="size-4 text-emerald-500" /> : <Copy className="size-4" />}
+              </button>
+            </div>
+          </div>
+          
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 shrink-0">
+            <a 
+              href={`/menu/${restaurant?.slug || ''}`} 
+              target="_blank" 
+              rel="noreferrer"
+              className="flex items-center justify-center gap-2 bg-primary text-primary-foreground px-6 py-3 rounded-xl font-bold shadow-lg shadow-primary/25 hover:brightness-110 transition-all active:scale-95"
+            >
+              <ExternalLink className="size-4" /> Preview Menu
+            </a>
+            <Link 
+              to="/dashboard/qr" 
+              className="flex items-center justify-center gap-2 bg-background border-2 border-primary/20 text-foreground px-6 py-3 rounded-xl font-bold hover:bg-primary/5 transition-all active:scale-95"
+            >
+              <QrCode className="size-4 text-primary" /> Get QR Code
+            </Link>
+          </div>
+        </div>
       </div>
 
-      <div className="grid md:grid-cols-3 gap-4 mb-10">
-        <QuickAction to="/dashboard/categories" icon={FolderPlus} label={t("overview.addCategory")} />
-        <QuickAction to="/dashboard/qr" icon={QrCode} label={t("overview.generateQr")} />
-        <QuickAction
-          to={`/menu/${restaurant?.slug ?? ""}` as any} icon={ExternalLink} label={t("overview.openMenu")} external
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
+        <KPI 
+          icon={<Eye className="size-5" />}
+          label={t("overview.totalViews") || "Total Menu Views"} 
+          value={stats.data?.views ?? 0} 
+          hint={`+${stats.data?.weekViews ?? 0} ${t("overview.viewsThisWeek")?.toLowerCase() || "this week"}`} 
+          accent 
+        />
+        <KPI 
+          icon={<Box className="size-5" />}
+          label={t("overview.totalProducts") || "Active Products"} 
+          value={stats.data?.products ?? 0} 
+          hint={t("overview.across", { count: stats.data?.categories ?? 0 }) || `Across ${stats.data?.categories ?? 0} categories`} 
+        />
+        <KPI 
+          icon={<LayoutGrid className="size-5" />}
+          label={t("overview.totalCategories") || "Total Categories"} 
+          value={stats.data?.categories ?? 0} 
         />
       </div>
 
-      <div className="bg-card border border-border rounded-2xl overflow-hidden shadow-sm">
-        <div className="px-6 py-4 border-b border-border flex items-center justify-between">
-          <h3 className="font-semibold flex items-center gap-2"><TrendingUp className="size-4 text-accent" /> {t("overview.recent")}</h3>
-          <Link to="/dashboard/products" className="text-sm text-accent hover:underline">→</Link>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <QuickAction to="/dashboard/categories" icon={FolderPlus} label={t("overview.addCategory") || "Add Category"} />
+        <QuickAction to="/dashboard/qr" icon={QrCode} label={t("overview.generateQr") || "QR Builder"} />
+        <QuickAction to="/dashboard/analytics" icon={BarChart3} label="Analytics" />
+        <QuickAction to="/dashboard/settings" icon={Settings} label="Settings" />
+      </div>
+
+      <div className="bg-card border border-border rounded-3xl overflow-hidden shadow-sm">
+        <div className="px-6 py-5 border-b border-border/50 flex items-center justify-between bg-muted/10">
+          <h3 className="font-display font-bold text-lg flex items-center gap-2">
+            <TrendingUp className="size-5 text-accent" /> {t("overview.recent") || "Recently Added"}
+          </h3>
+          <Link to="/dashboard/products" className="text-sm font-bold text-primary hover:underline flex items-center gap-1">
+            View All &rarr;
+          </Link>
         </div>
         {stats.data?.recent.length === 0 ? (
-          <div className="p-8 text-center text-sm text-muted-foreground">{t("overview.emptyRecent")}</div>
+          <div className="p-12 text-center text-sm text-muted-foreground flex flex-col items-center">
+            <Box className="size-12 opacity-20 mb-3" />
+            {t("overview.emptyRecent") || "No products added yet."}
+          </div>
         ) : (
-          <div className="divide-y divide-border">
+          <div className="divide-y divide-border/50">
             {stats.data?.recent.map((p: any) => <RecentRow key={p.id} product={p} lang={lang} currency={restaurant?.currency || "TND"} />)}
           </div>
         )}
@@ -79,46 +154,56 @@ function Overview() {
   );
 }
 
-function KPI({ label, value, hint, accent }: { label: string; value: number; hint?: string; accent?: boolean }) {
+function KPI({ icon, label, value, hint, accent }: { icon: React.ReactNode; label: string; value: number; hint?: string; accent?: boolean }) {
   return (
-    <div className={`p-6 rounded-2xl border shadow-sm ${accent ? "bg-accent/10 border-accent/20" : "bg-card border-border"}`}>
-      <p className="text-sm text-muted-foreground mb-1">{label}</p>
-      <p className="text-4xl font-display font-bold">{value.toLocaleString()}</p>
-      {hint && <p className="mt-2 text-[10px] font-mono text-muted-foreground uppercase tracking-tight">{hint}</p>}
+    <div className={`p-6 rounded-3xl border shadow-sm transition-all hover:shadow-md ${accent ? "bg-primary/10 border-primary/20" : "bg-card border-border"}`}>
+      <div className={`flex items-center gap-2 text-sm font-medium opacity-80 mb-3 ${accent ? "text-primary" : "text-muted-foreground"}`}>
+        {icon} {label}
+      </div>
+      <p className={`text-4xl font-display font-bold tracking-tight ${accent ? "text-primary" : "text-foreground"}`}>
+        {value.toLocaleString()}
+      </p>
+      {hint && <p className="mt-3 text-[11px] font-mono font-semibold text-muted-foreground uppercase tracking-wider">{hint}</p>}
     </div>
   );
 }
 
-function QuickAction({ to, icon: Icon, label, external }: { to: string; icon: any; label: string; external?: boolean }) {
-  const cls = "group flex items-center gap-3 p-4 rounded-xl bg-card border border-border hover:border-primary/30 hover:shadow-sm transition-all";
-  const content = (
-    <>
-      <div className="size-10 rounded-lg bg-primary/5 grid place-items-center group-hover:bg-primary/10 transition-colors">
-        <Icon className="size-5 text-primary" />
+function QuickAction({ to, icon: Icon, label }: { to: string; icon: any; label: string }) {
+  return (
+    <Link to={to as any} className="group flex flex-col sm:flex-row items-center sm:items-start gap-3 p-4 rounded-2xl bg-card border border-border hover:border-primary/40 hover:bg-primary/5 hover:shadow-md transition-all active:scale-95 text-center sm:text-left">
+      <div className="size-10 sm:size-12 rounded-xl bg-muted/50 group-hover:bg-primary/10 grid place-items-center transition-colors shrink-0">
+        <Icon className="size-5 sm:size-6 text-foreground group-hover:text-primary transition-colors" />
       </div>
-      <span className="font-medium text-sm">{label}</span>
-    </>
+      <span className="font-bold text-sm sm:text-base sm:mt-2.5">{label}</span>
+    </Link>
   );
-  if (external) return <a href={to} target="_blank" rel="noreferrer" className={cls}>{content}</a>;
-  return <Link to={to as any} className={cls}>{content}</Link>;
 }
 
 function RecentRow({ product, lang, currency }: { product: any; lang: string; currency: string }) {
   const img = useSignedImage(product.image_url);
   return (
-    <div className="px-6 py-4 flex items-center gap-4">
-      <div className="size-12 rounded-lg bg-muted overflow-hidden flex-shrink-0">
-        {img && <img src={img} alt="" className="size-full object-cover" />}
+    <div className="px-6 py-4 flex items-center gap-4 hover:bg-muted/20 transition-colors">
+      <div className="size-14 rounded-xl bg-muted overflow-hidden flex-shrink-0 shadow-sm border border-border/50">
+        {img ? (
+          <img src={img} alt="" className="size-full object-cover" />
+        ) : (
+          <div className="size-full flex items-center justify-center bg-muted/50"><Box className="size-5 text-muted-foreground/50" /></div>
+        )}
       </div>
       <div className="flex-1 min-w-0">
-        <p className="font-medium truncate">{pickLocalized(product, "name", lang) || "—"}</p>
-        <p className="text-xs text-muted-foreground">{formatPrice(product.price, currency, lang)}</p>
+        <p className="font-bold truncate text-base">{pickLocalized(product, "name", lang) || "—"}</p>
+        <p className="text-sm font-medium text-muted-foreground mt-0.5">{formatPrice(product.price, currency, lang)}</p>
       </div>
       {product.is_available ? (
-        <span className="px-2 py-1 rounded bg-emerald-100 text-[10px] font-bold text-emerald-700 uppercase">●</span>
+        <span className="px-3 py-1 rounded-full bg-emerald-100 border border-emerald-200 text-[10px] font-bold text-emerald-700 uppercase tracking-wider flex items-center gap-1.5 shrink-0">
+          <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse" /> Active
+        </span>
       ) : (
-        <span className="px-2 py-1 rounded bg-muted text-[10px] font-bold text-muted-foreground uppercase">○</span>
+        <span className="px-3 py-1 rounded-full bg-muted border border-border text-[10px] font-bold text-muted-foreground uppercase tracking-wider shrink-0">
+          Draft
+        </span>
       )}
     </div>
   );
 }
+
