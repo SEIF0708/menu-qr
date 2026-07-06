@@ -91,6 +91,14 @@ function MenuPage() {
   const [activeTable, setActiveTable] = useState<{ id: string; name: string; table_number: number } | null>(null);
   const [tableError, setTableError] = useState<string | null>(null);
   const [checkingTable, setCheckingTable] = useState(!!searchParams.table);
+  
+  // Guarantee a minimum 1.5s splash screen for a premium feel
+  const [showSplash, setShowSplash] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setShowSplash(false), 1500);
+    return () => clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
     trackEvent({ restaurant_id: restaurant.id, event_type: "menu_view" });
@@ -192,6 +200,10 @@ function MenuPage() {
     }
     return filtered;
   }, [filtered, activeCat, search, visibleCount]);
+
+  if (showSplash) {
+    return <MenuLoadingScreen />;
+  }
 
   if (restaurant.subscription_status === "unpaid") {
     if (checkingOwner) {
