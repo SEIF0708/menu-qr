@@ -17,6 +17,92 @@ const MESSAGES = [
   "Welcome to our restaurant..."
 ];
 
+const SliceSVG = ({ index }: { index: number }) => {
+  return (
+    <svg viewBox="0 0 100 100" className="w-full h-full absolute inset-0 overflow-visible drop-shadow-sm">
+      <defs>
+        <filter id="crust-shadow" x="-20%" y="-20%" width="140%" height="140%">
+          <feDropShadow dx="0" dy="2" stdDeviation="2" floodColor="#000" floodOpacity="0.2" />
+        </filter>
+      </defs>
+      <g transform="translate(50, 50)">
+        {/* Crust */}
+        <path d="M 0 0 L -24 -41.57 A 48 48 0 0 1 24 -41.57 Z" fill="#E89B53" stroke="#C47335" strokeWidth="1" strokeLinejoin="round" filter="url(#crust-shadow)" />
+        {/* Cheese */}
+        <path d="M 0 0 L -22 -38.1 A 44 44 0 0 1 22 -38.1 Z" fill="#FFB300" />
+        {/* Cheese highlight */}
+        <path d="M 0 0 L -18 -31.1 A 36 36 0 0 1 18 -31.1 Z" fill="#FFCA28" />
+
+        {/* Toppings based on index */}
+        {index % 2 === 0 ? (
+          <>
+            <circle cx="-8" cy="-28" r="4.5" fill="#D32F2F" />
+            <circle cx="10" cy="-22" r="5" fill="#C62828" />
+            <circle cx="2" cy="-12" r="3.5" fill="#D32F2F" />
+            {/* Basil */}
+            <path d="M -12 -18 Q -16 -16 -12 -12 Q -8 -16 -12 -18 Z" fill="#2E7D32" />
+          </>
+        ) : (
+          <>
+            <circle cx="-10" cy="-20" r="4" fill="#C62828" />
+            <circle cx="6" cy="-28" r="4.5" fill="#D32F2F" />
+            <circle cx="-2" cy="-18" r="3.5" fill="#C62828" />
+            {/* Olive */}
+            <circle cx="12" cy="-14" r="2.5" fill="#212121" />
+            <circle cx="12" cy="-14" r="1" fill="#424242" />
+          </>
+        )}
+      </g>
+    </svg>
+  );
+};
+
+function PizzaSpinner() {
+  const [sliceSlots, setSliceSlots] = useState([1, 2, 3, 4, 5]);
+  const [movingSliceIndex, setMovingSliceIndex] = useState(-1);
+
+  useEffect(() => {
+    let empty = 0;
+    const interval = setInterval(() => {
+      const targetSliceSlot = (empty - 1 + 6) % 6;
+      setSliceSlots(prevSlots => {
+        const nextSlots = [...prevSlots];
+        const sliceToMoveIndex = nextSlots.findIndex(s => ((s % 6) + 6) % 6 === targetSliceSlot);
+        if (sliceToMoveIndex !== -1) {
+          nextSlots[sliceToMoveIndex] += 1;
+          setMovingSliceIndex(sliceToMoveIndex);
+        }
+        return nextSlots;
+      });
+      empty = targetSliceSlot;
+    }, 600);
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <div className="relative size-32 sm:size-40 mb-8 rounded-full shadow-inner p-2">
+      {sliceSlots.map((slot, i) => (
+        <motion.div
+          key={i}
+          className="absolute inset-0 origin-center"
+          initial={false}
+          animate={{ 
+            rotate: slot * 60,
+            scale: movingSliceIndex === i ? [1, 1.15, 1] : 1,
+            zIndex: movingSliceIndex === i ? 10 : 1,
+          }}
+          transition={{ 
+            rotate: { type: "spring", stiffness: 80, damping: 12 },
+            scale: { duration: 0.6, ease: "easeInOut" }
+          }}
+        >
+          <SliceSVG index={i} />
+        </motion.div>
+      ))}
+    </div>
+  );
+}
+
 export function RestaurantLoadingScreen({
   restaurantName = "Our Restaurant",
   restaurantLogo,
@@ -24,26 +110,9 @@ export function RestaurantLoadingScreen({
   accentColor = "hsl(var(--accent))",
 }: RestaurantLoadingScreenProps) {
   const [messageIndex, setMessageIndex] = useState(0);
-  const [isClient, setIsClient] = useState(false);
-  const [animationData, setAnimationData] = useState<any>(null);
-  const [LottieComponent, setLottieComponent] = useState<any>(null);
   const logoUrl = useSignedImage(restaurantLogo);
 
   useEffect(() => {
-    setIsClient(true);
-    
-    // Dynamically import lottie-react strictly on the client to avoid SSR crashes
-    import("lottie-react").then((mod) => {
-      // lottie-react often has a double-nested default depending on the bundler
-      const Lottie = mod?.default?.default || mod?.default || mod;
-      setLottieComponent(() => Lottie);
-    }).catch(console.error);
-
-    fetch("/pizza-animation.json")
-      .then(res => res.json())
-      .then(setAnimationData)
-      .catch(console.error);
-
     const interval = setInterval(() => {
       setMessageIndex((prev) => (prev + 1) % MESSAGES.length);
     }, 2000);
@@ -84,10 +153,8 @@ export function RestaurantLoadingScreen({
           </motion.div>
         )}
 
-        {/* Premium Pizza Lottie Animation */}
-        <div className="relative size-32 sm:size-40 mb-8">
-           {isClient && LottieComponent && animationData && <LottieComponent animationData={animationData} loop={true} className="w-full h-full drop-shadow-2xl" />}
-        </div>
+        {/* Premium Custom Pizza Spinner */}
+        <PizzaSpinner />
 
         {/* Restaurant Name */}
         <h1 className="text-2xl font-display font-bold text-foreground text-center mb-1">
