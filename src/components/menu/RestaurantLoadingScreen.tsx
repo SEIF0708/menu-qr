@@ -34,7 +34,8 @@ export function RestaurantLoadingScreen({
     
     // Dynamically import lottie-react strictly on the client to avoid SSR crashes
     import("lottie-react").then((mod) => {
-      const Lottie = (mod as any).default || mod;
+      // lottie-react often has a double-nested default depending on the bundler
+      const Lottie = mod?.default?.default || mod?.default || mod;
       setLottieComponent(() => Lottie);
     }).catch(console.error);
 
