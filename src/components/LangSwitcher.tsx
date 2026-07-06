@@ -1,42 +1,47 @@
 import { useTranslation } from "react-i18next";
 import { LANGS } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
+import { Globe } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export function LangSwitcher({ variant = "default" }: { variant?: "default" | "subtle" | "dark" }) {
   const { i18n } = useTranslation();
   const current = i18n.language?.split("-")[0] || "en";
 
   return (
-    <div
-      className={cn(
-        "inline-flex p-1 rounded-md text-[11px] font-medium uppercase tracking-wider",
-        variant === "default" && "bg-black/5",
-        variant === "subtle" && "bg-muted",
-        variant === "dark" && "bg-white/15 backdrop-blur-md border border-white/20",
-      )}
-    >
-      {LANGS.map((l) => {
-        const active = current === l.code;
-        return (
-          <button
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <button
+          className={cn(
+            "size-10 rounded-full flex items-center justify-center transition-colors shrink-0",
+            variant === "default" && "bg-black/5 hover:bg-black/10 text-foreground",
+            variant === "subtle" && "bg-muted hover:bg-muted/80 text-foreground",
+            variant === "dark" && "bg-white/20 hover:bg-white/30 backdrop-blur-md text-white border-white/20 shadow-lg"
+          )}
+        >
+          <Globe className="size-5" />
+        </button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="w-32 rounded-xl">
+        {LANGS.map((l) => (
+          <DropdownMenuItem
             key={l.code}
-            type="button"
             onClick={() => i18n.changeLanguage(l.code)}
             className={cn(
-              "px-2 py-1 rounded transition-colors",
-              active
-                ? variant === "dark"
-                  ? "bg-white text-primary shadow-sm"
-                  : "bg-white text-primary shadow-sm"
-                : variant === "dark"
-                  ? "text-white/80 hover:text-white"
-                  : "text-muted-foreground hover:text-foreground",
+              "flex items-center justify-between font-medium cursor-pointer rounded-lg",
+              current === l.code && "bg-primary/10 text-primary"
             )}
           >
-            {l.code === "ar" ? "ع" : l.code.toUpperCase()}
-          </button>
-        );
-      })}
-    </div>
+            <span>{l.label}</span>
+            <span className="text-xs opacity-50 uppercase">{l.code}</span>
+          </DropdownMenuItem>
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }

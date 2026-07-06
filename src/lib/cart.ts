@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
+import { trackEvent } from "./analytics";
 
 export type CartItem = {
   id: string;
@@ -20,7 +21,7 @@ function write(slug: string, items: CartItem[]) {
   window.dispatchEvent(new CustomEvent(`cart:${slug}`));
 }
 
-export function useCart(slug: string) {
+export function useCart(slug: string, restaurantId?: string) {
   const [items, setItems] = useState<CartItem[]>([]);
 
   useEffect(() => {
@@ -35,17 +36,25 @@ export function useCart(slug: string) {
     const existing = cur.find((i) => i.id === item.id);
     if (existing) existing.qty += 1;
     else cur.push({ ...item, qty: 1 });
+    if (restaurantId) trackEvent(restaurantId, "cart_add");
     write(slug, cur);
-  }, [slug]);
+  }, [slug, restaurantId]);
 
   const setQty = useCallback((id: string, qty: number) => {
-    const cur = read(slug).map((i) => (i.id === id ? { ...i, qty } : i)).filter((i) => i.qty > 0);
-    write(slug, cur);
-  }, [slug]);
+    const cur = read(slug);
+    const existing = cur.find((i) => i.id === id);
+    if (existing) {
+      if (qty > existing.qty && restaurantId) trackEvent(restaurantId, "cart_add");
+      if (qty < existing.qty && restaurantId) trackEvent(restaurantId, "cart_remove");
+    }
+    const filtered = cur.map((i) => (i.id === id ? { ...i, qty } : i)).filter((i) => i.qty > 0);
+    write(slug, filtered);
+  }, [slug, restaurantId]);
 
   const remove = useCallback((id: string) => {
+    if (restaurantId) trackEvent(restaurantId, "cart_remove");
     write(slug, read(slug).filter((i) => i.id !== id));
-  }, [slug]);
+  }, [slug, restaurantId]);
 
   const clear = useCallback(() => write(slug, []), [slug]);
 

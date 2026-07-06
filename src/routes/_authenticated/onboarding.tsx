@@ -18,14 +18,14 @@ function Onboarding() {
   const [step, setStep] = useState(1);
   const total = 6;
 
-  const [info, setInfo] = useState({ name: "", description: "", phone: "", currency: "TND" });
+  const [info, setInfo] = useState({ name: "", description: "", phone: "", currency: "TND", table_count: 0 });
   const [logo, setLogo] = useState<string | null>(null);
   const [cover, setCover] = useState<string | null>(null);
   const [cat, setCat] = useState({ name_en: "", name_fr: "", name_ar: "" });
   const [catId, setCatId] = useState<string | null>(null);
   const [prod, setProd] = useState({ name_en: "", price: 0 });
 
-  useEffect(() => { if (restaurant && !info.name) setInfo({ name: restaurant.name, description: restaurant.description || "", phone: restaurant.phone || "", currency: restaurant.currency }); }, [restaurant, info.name]);
+  useEffect(() => { if (restaurant && !info.name) setInfo({ name: restaurant.name, description: restaurant.description || "", phone: restaurant.phone || "", currency: restaurant.currency, table_count: restaurant.table_count || 0 }); }, [restaurant, info.name]);
 
   const logoUrl = useSignedImage(logo);
   const coverUrl = useSignedImage(cover);
@@ -55,6 +55,23 @@ function Onboarding() {
         }
       } else if (step === 6) {
         await supabase.from("restaurants").update({ onboarding_completed: true }).eq("id", restaurant!.id);
+        
+        if (info.table_count > 0) {
+          const tablesToInsert = [];
+          for (let i = 1; i <= info.table_count; i++) {
+            tablesToInsert.push({
+              restaurant_id: restaurant!.id,
+              name: `Table ${i}`,
+              table_number: i,
+              qr_identifier: `${restaurant!.slug}-table-${i}-${Math.random().toString(36).substring(2, 7)}`,
+              is_active: true
+            });
+          }
+          if (tablesToInsert.length > 0) {
+            await supabase.from("restaurant_tables").insert(tablesToInsert);
+          }
+        }
+
         await refetch();
         navigate({ to: "/dashboard" });
         return;
@@ -91,6 +108,10 @@ function Onboarding() {
                 <select value={info.currency} onChange={(e) => setInfo({ ...info, currency: e.target.value })} className="inp">
                   {["TND", "USD", "EUR", "GBP", "AED", "SAR", "MAD"].map((c) => <option key={c}>{c}</option>)}
                 </select>
+              </div>
+              <div className="mt-4 border-t border-border pt-4">
+                <label className="block text-sm font-medium mb-1.5 text-muted-foreground">How many tables do you have? (0 to skip)</label>
+                <input type="number" min="0" placeholder="Number of tables" value={info.table_count || ""} onChange={(e) => setInfo({ ...info, table_count: Number(e.target.value) })} className="inp" />
               </div>
             </div>
           )}

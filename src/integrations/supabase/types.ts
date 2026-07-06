@@ -14,6 +14,80 @@ export type Database = {
   }
   public: {
     Tables: {
+      analytics_events: {
+        Row: {
+          id: string
+          restaurant_id: string
+          event_type: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          restaurant_id: string
+          event_type: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          restaurant_id?: string
+          event_type?: string
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "analytics_events_restaurant_id_fkey"
+            columns: ["restaurant_id"]
+            isOneToOne: false
+            referencedRelation: "restaurants"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      orders: {
+        Row: {
+          id: string
+          restaurant_id: string
+          table_id: string | null
+          items_json: Json
+          total_amount: number
+          whatsapp_sent: boolean
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          restaurant_id: string
+          table_id?: string | null
+          items_json: Json
+          total_amount: number
+          whatsapp_sent?: boolean
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          restaurant_id?: string
+          table_id?: string | null
+          items_json?: Json
+          total_amount?: number
+          whatsapp_sent?: boolean
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "orders_restaurant_id_fkey"
+            columns: ["restaurant_id"]
+            isOneToOne: false
+            referencedRelation: "restaurants"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "orders_table_id_fkey"
+            columns: ["table_id"]
+            isOneToOne: false
+            referencedRelation: "restaurant_tables"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
       categories: {
         Row: {
           created_at: string
@@ -195,6 +269,47 @@ export type Database = {
         }
         Relationships: []
       }
+      restaurant_tables: {
+        Row: {
+          id: string
+          restaurant_id: string
+          name: string
+          table_number: number
+          qr_identifier: string
+          is_active: boolean
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          restaurant_id: string
+          name: string
+          table_number: number
+          qr_identifier: string
+          is_active?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          restaurant_id?: string
+          name?: string
+          table_number?: number
+          qr_identifier?: string
+          is_active?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "restaurant_tables_restaurant_id_fkey"
+            columns: ["restaurant_id"]
+            isOneToOne: false
+            referencedRelation: "restaurants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       restaurants: {
         Row: {
           cover_image_url: string | null
@@ -216,6 +331,8 @@ export type Database = {
           social_links: Json | null
           updated_at: string
           website: string | null
+          table_count: number
+          whatsapp_phone: string | null
         }
         Insert: {
           cover_image_url?: string | null
@@ -237,6 +354,8 @@ export type Database = {
           social_links?: Json | null
           updated_at?: string
           website?: string | null
+          table_count?: number
+          whatsapp_phone?: string | null
         }
         Update: {
           cover_image_url?: string | null
@@ -258,6 +377,8 @@ export type Database = {
           social_links?: Json | null
           updated_at?: string
           website?: string | null
+          table_count?: number
+          whatsapp_phone?: string | null
         }
         Relationships: []
       }
@@ -281,6 +402,8 @@ export type Database = {
           social_links: Json | null
           updated_at: string
           website: string | null
+          table_count: number
+          whatsapp_phone: string | null
         }
         Insert: {
           cover_image_url?: string | null
@@ -299,6 +422,8 @@ export type Database = {
           social_links?: Json | null
           updated_at?: string
           website?: string | null
+          table_count?: number
+          whatsapp_phone?: string | null
         }
         Update: {
           cover_image_url?: string | null
@@ -317,6 +442,8 @@ export type Database = {
           social_links?: Json | null
           updated_at?: string
           website?: string | null
+          table_count?: number
+          whatsapp_phone?: string | null
         }
         Relationships: []
       }

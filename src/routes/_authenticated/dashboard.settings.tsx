@@ -110,6 +110,36 @@ function SettingsPage() {
       const { id, owner_id, created_at, updated_at, referral_codes, ...payload } = form;
       const { error } = await supabase.from("restaurants").update(payload).eq("id", restaurant!.id);
       if (error) throw error;
+      
+      const newTableCount = Number(payload.table_count || 0);
+      const oldTableCount = Number(restaurant!.table_count || 0);
+      
+      if (newTableCount > oldTableCount) {
+        const tablesToInsert = [];
+        for (let i = oldTableCount + 1; i <= newTableCount; i++) {
+          tablesToInsert.push({
+            restaurant_id: restaurant!.id,
+            name: `Table ${i}`,
+            table_number: i,
+            qr_identifier: `${restaurant!.slug}-table-${i}-${Math.random().toString(36).substring(2, 7)}`,
+            is_active: true
+          });
+        }
+        await supabase.from("restaurant_tables").insert(tablesToInsert);
+      } else if (newTableCount < oldTableCount) {
+        const { data: tablesToDelete } = await supabase
+          .from("restaurant_tables")
+          .select("id")
+          .eq("restaurant_id", restaurant!.id)
+          .order("table_number", { ascending: false })
+          .limit(oldTableCount - newTableCount);
+          
+        if (tablesToDelete && tablesToDelete.length > 0) {
+          const idsToDelete = tablesToDelete.map((t: any) => t.id);
+          await supabase.from("restaurant_tables").delete().in("id", idsToDelete);
+        }
+      }
+
       toast.success(t("common.saved"));
       qc.invalidateQueries({ queryKey: ["my-restaurant"] });
     } catch (e: any) { toast.error(e.message); } finally { setSaving(false); }
@@ -145,6 +175,7 @@ function SettingsPage() {
         <div className="grid sm:grid-cols-2 gap-4">
           <Field label={t("settings.name")}><input required value={form.name ?? ""} onChange={(e) => setForm({ ...form, name: e.target.value })} className="input3" /></Field>
           <Field label={t("settings.phone")}><input value={form.phone ?? ""} onChange={(e) => setForm({ ...form, phone: e.target.value })} className="input3" /></Field>
+          <Field label="WhatsApp Phone Number (with country code)"><input type="tel" placeholder="e.g. 216XXXXXXXX" value={form.whatsapp_phone ?? ""} onChange={(e) => setForm({ ...form, whatsapp_phone: e.target.value })} className="input3" /></Field>
           <Field label={t("settings.currency")}>
             <select value={form.currency ?? "TND"} onChange={(e) => setForm({ ...form, currency: e.target.value })} className="input3">
               {["USD", "EUR", "GBP", "AED", "SAR", "MAD", "TND", "DZD", "EGP"].map((c) => <option key={c}>{c}</option>)}
@@ -158,6 +189,7 @@ function SettingsPage() {
           <Field label="Cuisine Type"><input value={form.cuisine_type ?? ""} onChange={(e) => setForm({ ...form, cuisine_type: e.target.value })} placeholder="e.g. Italian, Sushi, Cafe" className="input3" /></Field>
           <Field label="Email"><input type="email" value={form.email ?? ""} onChange={(e) => setForm({ ...form, email: e.target.value })} className="input3" /></Field>
           <Field label="Website"><input type="url" value={form.website ?? ""} onChange={(e) => setForm({ ...form, website: e.target.value })} className="input3" /></Field>
+          <Field label="Number of Tables"><input type="number" min="0" value={form.table_count ?? 0} onChange={(e) => setForm({ ...form, table_count: Number(e.target.value) })} className="input3" /></Field>
           <Field label="Opening Hours (e.g. Mon-Fri 9am-10pm)"><input value={form.opening_hours ?? ""} onChange={(e) => setForm({ ...form, opening_hours: e.target.value })} className="input3" /></Field>
           <Field label="Instagram URL"><input type="url" value={form.social_links?.instagram ?? ""} onChange={(e) => setForm({ ...form, social_links: { ...form.social_links, instagram: e.target.value } })} className="input3" /></Field>
           <Field label="Facebook URL"><input type="url" value={form.social_links?.facebook ?? ""} onChange={(e) => setForm({ ...form, social_links: { ...form.social_links, facebook: e.target.value } })} className="input3" /></Field>
