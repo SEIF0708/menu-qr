@@ -63,7 +63,6 @@ export const Route = createFileRoute("/menu/$slug")({
   component: MenuPage,
   pendingComponent: MenuLoadingScreen,
   pendingMs: 0,
-  pendingMinMs: 1500,
   errorComponent: ({ error }) => <div className="p-8">{error.message}</div>,
   notFoundComponent: () => <div className="min-h-dvh flex items-center justify-center text-muted-foreground">Menu not found</div>,
 });
