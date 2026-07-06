@@ -22,6 +22,7 @@ import { ComboSection } from "@/components/menu/ComboSection";
 import { ProductCard } from "@/components/menu/ProductCard";
 import { ProductModal, BottomSheet } from "@/components/menu/ProductModal";
 import { StickyCart } from "@/components/menu/StickyCart";
+import { RestaurantLoadingScreen } from "@/components/menu/RestaurantLoadingScreen";
 
 export const Route = createFileRoute("/menu/$slug")({
   loader: async ({ params, context }) => {
@@ -61,7 +62,7 @@ export const Route = createFileRoute("/menu/$slug")({
     ],
   }),
   component: MenuPage,
-  pendingComponent: MenuLoadingScreen,
+  pendingComponent: () => <RestaurantLoadingScreen />,
   pendingMs: 0,
   errorComponent: ({ error }) => <div className="p-8">{error.message}</div>,
   notFoundComponent: () => <div className="min-h-dvh flex items-center justify-center text-muted-foreground">Menu not found</div>,
@@ -92,11 +93,12 @@ function MenuPage() {
   const [tableError, setTableError] = useState<string | null>(null);
   const [checkingTable, setCheckingTable] = useState(!!searchParams.table);
   
-  // Fast 1.3s animated pizza splash screen
+  // Fast animated splash screen guaranteed for a premium feel
   const [showSplash, setShowSplash] = useState(true);
 
   useEffect(() => {
-    const timer = setTimeout(() => setShowSplash(false), 1300);
+    // Show splash for at least 2.5 seconds to allow the progress bar and messages to be appreciated
+    const timer = setTimeout(() => setShowSplash(false), 2500);
     return () => clearTimeout(timer);
   }, []);
 
@@ -201,13 +203,11 @@ function MenuPage() {
     return filtered;
   }, [filtered, activeCat, search, visibleCount]);
 
-  if (showSplash) {
-    return <MenuLoadingScreen />;
-  }
+  // We render the splash screen inside the main return with AnimatePresence for a smooth fade out.
 
   if (restaurant.subscription_status === "unpaid") {
     if (checkingOwner) {
-       return <MenuLoadingScreen />;
+       return <RestaurantLoadingScreen restaurantName={restaurant.name} restaurantLogo={restaurant.logo_url} />;
     }
     if (!isOwner) {
       return (
@@ -223,7 +223,7 @@ function MenuPage() {
   }
 
   if (checkingTable) {
-    return <MenuLoadingScreen />;
+    return <RestaurantLoadingScreen restaurantName={restaurant.name} restaurantLogo={restaurant.logo_url} />;
   }
 
   if (tableError) {
@@ -248,6 +248,14 @@ function MenuPage() {
 
   return (
     <RestaurantThemeProvider restaurant={restaurant}>
+      <AnimatePresence mode="wait">
+        {showSplash && (
+          <RestaurantLoadingScreen 
+            restaurantName={restaurant.name}
+            restaurantLogo={restaurant.logo_url}
+          />
+        )}
+      </AnimatePresence>
       <div className={cn("min-h-dvh bg-background pb-32", isIframe && "no-scrollbar")}>
         {isIframe && <style>{`::-webkit-scrollbar { display: none; } * { scrollbar-width: none; -ms-overflow-style: none; }`}</style>}
         {restaurant.subscription_status === "unpaid" && isOwner && (
@@ -447,74 +455,5 @@ function InfoDrawer({ restaurant, onClose }: any) {
         </div>
       </div>
     </BottomSheet>
-  );
-}
-
-function MenuLoadingScreen() {
-  return (
-    <div className="min-h-dvh flex flex-col items-center justify-center bg-background relative overflow-hidden">
-      <div className="relative z-10 flex flex-col items-center">
-        {/* Animated Pizza Container */}
-        <motion.div 
-          initial={{ scale: 0.5, opacity: 0, rotate: -30 }}
-          animate={{ scale: [1, 1, 1, 1.15, 1], opacity: 1, rotate: 0 }}
-          transition={{ 
-            scale: { duration: 1.2, times: [0, 0.7, 0.9, 0.95, 1] },
-            opacity: { duration: 0.3 },
-            rotate: { type: "spring", bounce: 0.5, duration: 0.6 }
-          }}
-          className="relative mb-6"
-        >
-          <svg viewBox="0 0 100 100" className="size-24 sm:size-32 drop-shadow-xl">
-            {/* Crust */}
-            <circle cx="50" cy="50" r="45" fill="#e6a15c" />
-            {/* Cheese */}
-            <circle cx="50" cy="50" r="39" fill="#ffd54f" />
-            {/* Pepperoni */}
-            <circle cx="35" cy="25" r="5" fill="#e53935" />
-            <circle cx="65" cy="35" r="6" fill="#e53935" />
-            <circle cx="45" cy="70" r="5" fill="#e53935" />
-            <circle cx="25" cy="55" r="4" fill="#e53935" />
-            <circle cx="75" cy="65" r="5" fill="#e53935" />
-            <circle cx="55" cy="20" r="4" fill="#e53935" />
-
-            {/* Slicing Lines (darker cheese/crust color) */}
-            <motion.line x1="50" y1="5" x2="50" y2="95" stroke="#db8c2c" strokeWidth="2.5" strokeLinecap="round" 
-              initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 0.2, delay: 0.3 }} />
-            <motion.line x1="11" y1="27.5" x2="89" y2="72.5" stroke="#db8c2c" strokeWidth="2.5" strokeLinecap="round" 
-              initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 0.2, delay: 0.5 }} />
-            <motion.line x1="11" y1="72.5" x2="89" y2="27.5" stroke="#db8c2c" strokeWidth="2.5" strokeLinecap="round" 
-              initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 0.2, delay: 0.7 }} />
-          </svg>
-        </motion.div>
-        
-        {/* Loading Text */}
-        <div className="flex flex-col items-center">
-          <motion.h2 
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2, duration: 0.4 }}
-            className="text-xl sm:text-2xl font-display font-bold text-foreground"
-          >
-            Preparing your menu...
-          </motion.h2>
-          
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.5, duration: 0.4, type: "spring" }}
-            className="mt-8 flex flex-col items-center gap-2"
-          >
-            <p className="text-[10px] sm:text-xs font-mono uppercase tracking-widest text-muted-foreground font-bold">Powered by</p>
-            <div className="flex items-center gap-2 px-3 py-1.5 bg-muted rounded-xl border border-border shadow-sm">
-               <div className="size-5 sm:size-6 bg-primary rounded-[0.4rem] grid place-items-center shadow-sm">
-                 <span className="text-[10px] sm:text-xs font-bold text-primary-foreground">M</span>
-               </div>
-               <span className="text-sm sm:text-base font-display font-bold tracking-tight text-foreground pr-1">MenuQR</span>
-            </div>
-          </motion.div>
-        </div>
-      </div>
-    </div>
   );
 }
