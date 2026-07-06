@@ -38,7 +38,7 @@ export function CategoryNavigation({
   }, [activeCat]);
 
   return (
-    <div className="sticky top-[72px] z-30 bg-background/95 backdrop-blur-md py-3 border-b border-border shadow-sm">
+    <div className="sticky top-0 z-30 bg-background/95 backdrop-blur-md py-3 border-b border-border shadow-sm transition-all">
       <div 
         ref={scrollContainerRef}
         className="flex gap-2 overflow-x-auto no-scrollbar px-4 sm:px-6 snap-x"
