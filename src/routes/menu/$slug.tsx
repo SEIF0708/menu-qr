@@ -8,7 +8,7 @@ import { useCart } from "@/lib/cart";
 import { useActivePromotions } from "@/lib/promotions-service";
 import { pickLocalized } from "@/lib/format";
 import { cn } from "@/lib/utils";
-import { Lock, X } from "lucide-react";
+import { Lock, X, Utensils } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 
 // New Components
@@ -61,6 +61,7 @@ export const Route = createFileRoute("/menu/$slug")({
     ],
   }),
   component: MenuPage,
+  pendingComponent: MenuLoadingScreen,
   errorComponent: ({ error }) => <div className="p-8">{error.message}</div>,
   notFoundComponent: () => <div className="min-h-dvh flex items-center justify-center text-muted-foreground">Menu not found</div>,
 });
@@ -193,7 +194,7 @@ function MenuPage() {
 
   if (restaurant.subscription_status === "unpaid") {
     if (checkingOwner) {
-       return <div className="min-h-dvh flex items-center justify-center bg-background"><div className="size-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div></div>;
+       return <MenuLoadingScreen />;
     }
     if (!isOwner) {
       return (
@@ -209,7 +210,7 @@ function MenuPage() {
   }
 
   if (checkingTable) {
-    return <div className="min-h-dvh flex items-center justify-center bg-background"><div className="size-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div></div>;
+    return <MenuLoadingScreen />;
   }
 
   if (tableError) {
@@ -433,5 +434,45 @@ function InfoDrawer({ restaurant, onClose }: any) {
         </div>
       </div>
     </BottomSheet>
+  );
+}
+
+function MenuLoadingScreen() {
+  return (
+    <div className="min-h-dvh flex flex-col items-center justify-center bg-background relative overflow-hidden">
+      {/* Ambient background pulse */}
+      <motion.div 
+        animate={{ scale: [1, 1.2, 1], opacity: [0.1, 0.2, 0.1] }} 
+        transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute w-[150vw] h-[150vw] sm:w-[50vw] sm:h-[50vw] bg-primary rounded-full blur-[100px] pointer-events-none"
+      />
+      
+      <div className="relative z-10 flex flex-col items-center">
+        {/* Filling Icon Container */}
+        <div className="relative size-20 sm:size-24 bg-muted/50 rounded-[2rem] sm:rounded-[2.5rem] overflow-hidden mb-8 shadow-inner border border-border/50">
+          <motion.div
+            initial={{ y: "100%" }}
+            animate={{ y: ["100%", "0%", "100%"] }}
+            transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+            className="absolute inset-0 bg-primary"
+          />
+          <div className="absolute inset-0 flex items-center justify-center mix-blend-overlay">
+            <Utensils className="size-8 sm:size-10 text-white drop-shadow-md" />
+          </div>
+          <div className="absolute inset-0 flex items-center justify-center">
+            <Utensils className="size-8 sm:size-10 text-background/80 drop-shadow-md" />
+          </div>
+        </div>
+        
+        <motion.div
+          animate={{ opacity: [0.5, 1, 0.5] }}
+          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+          className="flex flex-col items-center"
+        >
+          <h2 className="text-xl sm:text-2xl font-display font-bold text-foreground">Loading Menu</h2>
+          <p className="text-sm text-muted-foreground mt-2 font-medium">Preparing something delicious...</p>
+        </motion.div>
+      </div>
+    </div>
   );
 }
