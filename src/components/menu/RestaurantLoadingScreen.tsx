@@ -124,7 +124,7 @@ export function RestaurantLoadingScreen({
             "Fresh food, just a moment away."
           </p>
         </div>
-      </div>
+      </motion.div>
     </motion.div>
   );
 }
