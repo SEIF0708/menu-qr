@@ -55,52 +55,23 @@ function Overview() {
           <p className="text-xs font-mono text-muted-foreground uppercase tracking-widest mb-1">{t("overview.subtitle") || "Welcome Back"}</p>
           <h1 className="text-3xl md:text-4xl font-display font-bold">{t("overview.title") || "Dashboard Overview"}</h1>
         </div>
-        <Link to="/dashboard/products" className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-5 py-2.5 rounded-full font-bold text-sm hover:brightness-110 transition-all active:scale-95 shadow-lg shadow-primary/20">
-          <Plus className="size-4" /> {t("overview.addProduct") || "Add Product"}
-        </Link>
-      </header>
-
-      {/* Prominent Live Menu Banner */}
-      <div className="relative overflow-hidden bg-gradient-to-br from-primary/10 via-primary/5 to-background border border-primary/20 rounded-3xl p-6 sm:p-8 shadow-sm">
-        <div className="absolute top-0 right-0 -mt-8 -mr-8 size-40 bg-primary/10 blur-3xl rounded-full pointer-events-none" />
-        <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-          <div className="space-y-2">
-            <h2 className="text-xl sm:text-2xl font-display font-bold text-foreground">Your menu is live!</h2>
-            <p className="text-muted-foreground text-sm max-w-md">
-              Share this link with your customers or print the QR code to let them browse your menu instantly.
-            </p>
-            <div className="flex items-center gap-2 mt-4 bg-background/80 backdrop-blur-sm border border-border/50 rounded-xl p-2 w-fit max-w-full overflow-hidden">
-              <span className="text-sm font-medium text-muted-foreground truncate max-w-[200px] sm:max-w-xs pl-2 select-all">
-                {menuUrl}
-              </span>
-              <button 
-                onClick={copyLink}
-                className="shrink-0 flex items-center justify-center size-8 rounded-lg bg-muted hover:bg-muted/80 text-foreground transition-colors"
-                title="Copy Link"
-              >
-                {copied ? <Check className="size-4 text-emerald-500" /> : <Copy className="size-4" />}
-              </button>
-            </div>
-          </div>
-          
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 shrink-0">
-            <a 
-              href={`/menu/${restaurant?.slug || ''}`} 
-              target="_blank" 
-              rel="noreferrer"
-              className="flex items-center justify-center gap-2 bg-primary text-primary-foreground px-6 py-3 rounded-xl font-bold shadow-lg shadow-primary/25 hover:brightness-110 transition-all active:scale-95"
-            >
-              <ExternalLink className="size-4" /> Preview Menu
-            </a>
-            <Link 
-              to="/dashboard/qr" 
-              className="flex items-center justify-center gap-2 bg-background border-2 border-primary/20 text-foreground px-6 py-3 rounded-xl font-bold hover:bg-primary/5 transition-all active:scale-95"
-            >
-              <QrCode className="size-4 text-primary" /> Get QR Code
-            </Link>
-          </div>
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+          <a 
+            href={`/menu/${restaurant?.slug || ''}`} 
+            target="_blank" 
+            rel="noreferrer"
+            className="group relative flex items-center justify-center gap-2 px-6 py-2.5 rounded-full font-bold overflow-hidden shadow-lg hover:shadow-primary/25 transition-all active:scale-95"
+          >
+            <div className="absolute inset-0 bg-gradient-to-r from-primary to-accent opacity-90 group-hover:opacity-100 transition-opacity" />
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 ease-in-out" />
+            <ExternalLink className="size-4 relative z-10 text-white" /> 
+            <span className="relative z-10 text-white drop-shadow-sm">View Live Menu</span>
+          </a>
+          <Link to="/dashboard/products" className="inline-flex items-center justify-center gap-2 bg-muted text-foreground border border-border px-5 py-2.5 rounded-full font-bold text-sm hover:bg-muted/80 transition-all active:scale-95">
+            <Plus className="size-4" /> {t("overview.addProduct") || "Add Product"}
+          </Link>
         </div>
-      </div>
+      </header>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
         <KPI 
