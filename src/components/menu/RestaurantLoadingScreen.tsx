@@ -1,10 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useSignedImage } from "@/lib/use-signed-image";
-import LottieLib from "lottie-react";
-
-// Safe interop for Vite/CommonJS default exports
-const Lottie = (LottieLib as any).default || LottieLib;
 
 interface RestaurantLoadingScreenProps {
   restaurantName?: string;
@@ -30,10 +26,18 @@ export function RestaurantLoadingScreen({
   const [messageIndex, setMessageIndex] = useState(0);
   const [isClient, setIsClient] = useState(false);
   const [animationData, setAnimationData] = useState<any>(null);
+  const [LottieComponent, setLottieComponent] = useState<any>(null);
   const logoUrl = useSignedImage(restaurantLogo);
 
   useEffect(() => {
     setIsClient(true);
+    
+    // Dynamically import lottie-react strictly on the client to avoid SSR crashes
+    import("lottie-react").then((mod) => {
+      const Lottie = (mod as any).default || mod;
+      setLottieComponent(() => Lottie);
+    }).catch(console.error);
+
     fetch("/pizza-animation.json")
       .then(res => res.json())
       .then(setAnimationData)
@@ -81,7 +85,7 @@ export function RestaurantLoadingScreen({
 
         {/* Premium Pizza Lottie Animation */}
         <div className="relative size-32 sm:size-40 mb-8">
-           {isClient && animationData && <Lottie animationData={animationData} loop={true} className="w-full h-full drop-shadow-2xl" />}
+           {isClient && LottieComponent && animationData && <LottieComponent animationData={animationData} loop={true} className="w-full h-full drop-shadow-2xl" />}
         </div>
 
         {/* Restaurant Name */}
