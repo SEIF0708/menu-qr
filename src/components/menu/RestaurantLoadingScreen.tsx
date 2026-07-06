@@ -26,9 +26,11 @@ export function RestaurantLoadingScreen({
   accentColor = "hsl(var(--accent))",
 }: RestaurantLoadingScreenProps) {
   const [messageIndex, setMessageIndex] = useState(0);
+  const [isClient, setIsClient] = useState(false);
   const logoUrl = useSignedImage(restaurantLogo);
 
   useEffect(() => {
+    setIsClient(true);
     const interval = setInterval(() => {
       setMessageIndex((prev) => (prev + 1) % MESSAGES.length);
     }, 2000);
@@ -67,7 +69,7 @@ export function RestaurantLoadingScreen({
 
         {/* Premium Pizza Lottie Animation */}
         <div className="relative size-32 sm:size-40 mb-8">
-           <Lottie animationData={pizzaAnimation} loop={true} className="w-full h-full drop-shadow-2xl" />
+           {isClient && <Lottie animationData={pizzaAnimation} loop={true} className="w-full h-full drop-shadow-2xl" />}
         </div>
 
         {/* Restaurant Name */}
