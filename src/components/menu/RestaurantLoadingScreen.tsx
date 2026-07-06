@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useSignedImage } from "@/lib/use-signed-image";
-import Lottie from "lottie-react";
+import LottieLib from "lottie-react";
 import pizzaAnimation from "@/assets/pizza-animation.json";
+
+// Safe interop for Vite/CommonJS default exports
+const Lottie = (LottieLib as any).default || LottieLib;
 
 interface RestaurantLoadingScreenProps {
   restaurantName?: string;
