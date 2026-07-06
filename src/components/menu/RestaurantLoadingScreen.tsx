@@ -42,13 +42,17 @@ export function RestaurantLoadingScreen({
 
   return (
     <motion.div 
-      initial={{ opacity: 0, scale: 0.98 }}
-      animate={{ opacity: 1, scale: 1 }}
-      exit={{ opacity: 0, scale: 1.02 }}
+      exit={{ opacity: 0 }}
       transition={{ duration: 0.5, ease: "easeInOut" }}
       className="min-h-dvh flex flex-col items-center justify-center bg-background fixed inset-0 z-[100] px-6"
     >
-      <div className="flex flex-col items-center max-w-sm w-full">
+      <motion.div 
+        initial={{ opacity: 0, scale: 0.98 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 1.02 }}
+        transition={{ duration: 0.5, ease: "easeInOut" }}
+        className="flex flex-col items-center max-w-sm w-full"
+      >
         {/* Restaurant Logo */}
         {logoUrl ? (
           <motion.img 
