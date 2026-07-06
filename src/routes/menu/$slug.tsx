@@ -92,11 +92,11 @@ function MenuPage() {
   const [tableError, setTableError] = useState<string | null>(null);
   const [checkingTable, setCheckingTable] = useState(!!searchParams.table);
   
-  // Guarantee a minimum 1.5s splash screen for a premium feel
+  // Fast 1.3s animated pizza splash screen
   const [showSplash, setShowSplash] = useState(true);
 
   useEffect(() => {
-    const timer = setTimeout(() => setShowSplash(false), 1500);
+    const timer = setTimeout(() => setShowSplash(false), 1300);
     return () => clearTimeout(timer);
   }, []);
 
@@ -453,38 +453,67 @@ function InfoDrawer({ restaurant, onClose }: any) {
 function MenuLoadingScreen() {
   return (
     <div className="min-h-dvh flex flex-col items-center justify-center bg-background relative overflow-hidden">
-      {/* Ambient background pulse */}
-      <motion.div 
-        animate={{ scale: [1, 1.2, 1], opacity: [0.1, 0.2, 0.1] }} 
-        transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute w-[150vw] h-[150vw] sm:w-[50vw] sm:h-[50vw] bg-primary rounded-full blur-[100px] pointer-events-none"
-      />
-      
       <div className="relative z-10 flex flex-col items-center">
-        {/* Filling Icon Container */}
-        <div className="relative size-20 sm:size-24 bg-muted/50 rounded-[2rem] sm:rounded-[2.5rem] overflow-hidden mb-8 shadow-inner border border-border/50">
-          <motion.div
-            initial={{ y: "100%" }}
-            animate={{ y: ["100%", "0%", "100%"] }}
-            transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-            className="absolute inset-0 bg-primary"
-          />
-          <div className="absolute inset-0 flex items-center justify-center mix-blend-overlay">
-            <Utensils className="size-8 sm:size-10 text-white drop-shadow-md" />
-          </div>
-          <div className="absolute inset-0 flex items-center justify-center">
-            <Utensils className="size-8 sm:size-10 text-background/80 drop-shadow-md" />
-          </div>
-        </div>
-        
-        <motion.div
-          animate={{ opacity: [0.5, 1, 0.5] }}
-          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-          className="flex flex-col items-center"
+        {/* Animated Pizza Container */}
+        <motion.div 
+          initial={{ scale: 0.5, opacity: 0, rotate: -30 }}
+          animate={{ scale: [1, 1, 1, 1.15, 1], opacity: 1, rotate: 0 }}
+          transition={{ 
+            scale: { duration: 1.2, times: [0, 0.7, 0.9, 0.95, 1] },
+            opacity: { duration: 0.3 },
+            rotate: { type: "spring", bounce: 0.5, duration: 0.6 }
+          }}
+          className="relative mb-6"
         >
-          <h2 className="text-xl sm:text-2xl font-display font-bold text-foreground">Loading Menu</h2>
-          <p className="text-sm text-muted-foreground mt-2 font-medium">Preparing something delicious...</p>
+          <svg viewBox="0 0 100 100" className="size-24 sm:size-32 drop-shadow-xl">
+            {/* Crust */}
+            <circle cx="50" cy="50" r="45" fill="#e6a15c" />
+            {/* Cheese */}
+            <circle cx="50" cy="50" r="39" fill="#ffd54f" />
+            {/* Pepperoni */}
+            <circle cx="35" cy="25" r="5" fill="#e53935" />
+            <circle cx="65" cy="35" r="6" fill="#e53935" />
+            <circle cx="45" cy="70" r="5" fill="#e53935" />
+            <circle cx="25" cy="55" r="4" fill="#e53935" />
+            <circle cx="75" cy="65" r="5" fill="#e53935" />
+            <circle cx="55" cy="20" r="4" fill="#e53935" />
+
+            {/* Slicing Lines (darker cheese/crust color) */}
+            <motion.line x1="50" y1="5" x2="50" y2="95" stroke="#db8c2c" strokeWidth="2.5" strokeLinecap="round" 
+              initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 0.2, delay: 0.3 }} />
+            <motion.line x1="11" y1="27.5" x2="89" y2="72.5" stroke="#db8c2c" strokeWidth="2.5" strokeLinecap="round" 
+              initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 0.2, delay: 0.5 }} />
+            <motion.line x1="11" y1="72.5" x2="89" y2="27.5" stroke="#db8c2c" strokeWidth="2.5" strokeLinecap="round" 
+              initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 0.2, delay: 0.7 }} />
+          </svg>
         </motion.div>
+        
+        {/* Loading Text */}
+        <div className="flex flex-col items-center">
+          <motion.h2 
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2, duration: 0.4 }}
+            className="text-xl sm:text-2xl font-display font-bold text-foreground"
+          >
+            Preparing your menu...
+          </motion.h2>
+          
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.5, duration: 0.4, type: "spring" }}
+            className="mt-8 flex flex-col items-center gap-2"
+          >
+            <p className="text-[10px] sm:text-xs font-mono uppercase tracking-widest text-muted-foreground font-bold">Powered by</p>
+            <div className="flex items-center gap-2 px-3 py-1.5 bg-muted rounded-xl border border-border shadow-sm">
+               <div className="size-5 sm:size-6 bg-primary rounded-[0.4rem] grid place-items-center shadow-sm">
+                 <span className="text-[10px] sm:text-xs font-bold text-primary-foreground">M</span>
+               </div>
+               <span className="text-sm sm:text-base font-display font-bold tracking-tight text-foreground pr-1">MenuQR</span>
+            </div>
+          </motion.div>
+        </div>
       </div>
     </div>
   );
