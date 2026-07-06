@@ -22,9 +22,9 @@ function Overview() {
       const [{ count: products }, { count: categories }, { count: views }, recent, { data: weekViews }] = await Promise.all([
         supabase.from("products").select("id", { count: "exact", head: true }).eq("restaurant_id", rid).eq("is_available", true),
         supabase.from("categories").select("id", { count: "exact", head: true }).eq("restaurant_id", rid),
-        supabase.from("menu_views").select("id", { count: "exact", head: true }).eq("restaurant_id", rid),
+        supabase.from("analytics_events").select("id", { count: "exact", head: true }).eq("restaurant_id", rid).eq("event_type", "menu_view"),
         supabase.from("products").select("*").eq("restaurant_id", rid).order("created_at", { ascending: false }).limit(5),
-        supabase.from("menu_views").select("viewed_at").eq("restaurant_id", rid).gte("viewed_at", new Date(Date.now() - 7 * 86400000).toISOString()),
+        supabase.from("analytics_events").select("created_at").eq("restaurant_id", rid).eq("event_type", "menu_view").gte("created_at", new Date(Date.now() - 7 * 86400000).toISOString()),
       ]);
       return {
         products: products ?? 0,

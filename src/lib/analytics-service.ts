@@ -47,22 +47,22 @@ export interface TimeStats {
 }
 
 export async function getAnalyticsOverview(restaurantId: string) {
-  const { data, error } = await supabase
-    .from('analytics_product_stats')
-    .select('views, orders')
-    .eq('restaurant_id', restaurantId);
+  const [viewsRes, ordersRes] = await Promise.all([
+    supabase
+      .from('analytics_events')
+      .select('id', { count: 'exact', head: true })
+      .eq('restaurant_id', restaurantId)
+      .eq('event_type', 'menu_view'),
+    supabase
+      .from('orders')
+      .select('id', { count: 'exact', head: true })
+      .eq('restaurant_id', restaurantId)
+  ]);
 
-  if (error) {
-    console.error("getAnalyticsOverview error:", error);
-    return { views: 0, orders: 0 };
-  }
-  
-  const totals = data.reduce((acc, curr) => ({
-    views: acc.views + curr.views,
-    orders: acc.orders + curr.orders
-  }), { views: 0, orders: 0 });
-
-  return totals;
+  return { 
+    views: viewsRes.count || 0, 
+    orders: ordersRes.count || 0 
+  };
 }
 
 export async function getTopProducts(restaurantId: string): Promise<TopProduct[]> {

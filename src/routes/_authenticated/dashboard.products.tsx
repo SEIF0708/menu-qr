@@ -6,7 +6,7 @@ import { useMyRestaurant } from "@/lib/use-restaurant";
 import { useSignedImage } from "@/lib/use-signed-image";
 import { useState, useMemo } from "react";
 import { createPortal } from "react-dom";
-import { Plus, Pencil, Trash2, Copy, Search, UtensilsCrossed, Upload, X } from "lucide-react";
+import { Plus, Pencil, Trash2, Copy, Search, UtensilsCrossed, Upload, X, LayoutGrid, List } from "lucide-react";
 import { toast } from "sonner";
 import { uploadAsset } from "@/lib/storage";
 import { formatPrice, pickLocalized } from "@/lib/format";
@@ -22,6 +22,7 @@ function ProductsPage() {
   const [showNew, setShowNew] = useState(false);
   const [search, setSearch] = useState("");
   const [filterCat, setFilterCat] = useState<string>("");
+  const [viewMode, setViewMode] = useState<"list" | "grid">("list");
 
   const products = useQuery({
     enabled: !!restaurant?.id,
@@ -102,32 +103,75 @@ function ProductsPage() {
           <option value="">{t("common.all")}</option>
           {cats.data?.map((c) => <option key={c.id} value={c.id}>{pickLocalized(c, "name", lang) || "—"}</option>)}
         </select>
-      </div>
-
-      {filtered.length === 0 ? (
-        <div className="text-center py-20 bg-card border border-dashed border-border rounded-2xl">
-          <UtensilsCrossed className="size-12 text-muted-foreground mx-auto mb-4" />
-          <h3 className="font-display text-xl font-semibold mb-1">{t("products.empty")}</h3>
-          <p className="text-sm text-muted-foreground mb-6">{t("products.emptyHint")}</p>
-          <button onClick={() => {
-            if (restaurant?.subscription_status === "unpaid" && (products.data?.length ?? 0) >= 9) {
-              toast.error("Free tier limit reached. Maximum 9 products allowed. Please upgrade.");
-              return;
-            }
-            setShowNew(true);
-          }} className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-5 py-2.5 rounded-full text-sm font-medium">
-            <Plus className="size-4" /> {t("products.new")}
+        <div className="flex border border-border rounded-lg overflow-hidden bg-card shrink-0">
+          <button 
+            onClick={() => setViewMode("list")} 
+            className={`px-3 py-2.5 transition-colors ${viewMode === "list" ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-muted"}`}
+            title="List View"
+          >
+            <List className="size-4" />
+          </button>
+          <button 
+            onClick={() => setViewMode("grid")} 
+            className={`px-3 py-2.5 transition-colors ${viewMode === "grid" ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-muted"}`}
+            title="Grid View"
+          >
+            <LayoutGrid className="size-4" />
           </button>
         </div>
-      ) : (
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {filtered.map((p) => (
-            <ProductCard key={p.id} product={p} lang={lang} currency={restaurant?.currency || "TND"}
-              onEdit={() => setEditing(p)} onDelete={() => confirm(t("common.confirmDelete")) && del.mutate(p.id)}
-              onDup={() => dup.mutate(p)} onToggle={(v) => toggle.mutate({ id: p.id, available: v })} />
-          ))}
-        </div>
-      )}
+      </div>
+
+      {(() => {
+        if (filtered.length === 0) {
+          return (
+            <div className="text-center py-20 bg-card border border-dashed border-border rounded-2xl">
+              <UtensilsCrossed className="size-12 text-muted-foreground mx-auto mb-4" />
+              <h3 className="font-display text-xl font-semibold mb-1">{t("products.empty")}</h3>
+              <p className="text-sm text-muted-foreground mb-6">{t("products.emptyHint")}</p>
+              <button onClick={() => {
+                if (restaurant?.subscription_status === "unpaid" && (products.data?.length ?? 0) >= 9) {
+                  toast.error("Free tier limit reached. Maximum 9 products allowed. Please upgrade.");
+                  return;
+                }
+                setShowNew(true);
+              }} className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-5 py-2.5 rounded-full text-sm font-medium">
+                <Plus className="size-4" /> {t("products.new")}
+              </button>
+            </div>
+          );
+        }
+
+        const map = new Map();
+        if (cats.data) cats.data.forEach(c => map.set(c.id, { category: c, products: [] }));
+        map.set("uncategorized", { category: { id: "uncategorized", name_en: "Uncategorized", name_fr: "Non classé", name_ar: "غير مصنف" }, products: [] });
+
+        filtered.forEach(p => {
+          const catId = p.category_id || "uncategorized";
+          if (map.has(catId)) map.get(catId).products.push(p);
+          else map.get("uncategorized").products.push(p);
+        });
+
+        const grouped = Array.from(map.values()).filter(g => g.products.length > 0);
+
+        return (
+          <div className="space-y-8">
+            {grouped.map(group => (
+              <div key={group.category.id} className="space-y-3">
+                <h2 className="text-lg font-display font-bold text-foreground/80 px-1 border-b border-border/50 pb-2">
+                  {pickLocalized(group.category, "name", lang)}
+                </h2>
+                <div className={viewMode === "list" ? "space-y-3" : "grid sm:grid-cols-2 lg:grid-cols-3 gap-4"}>
+                  {group.products.map((p: any) => (
+                    <ProductCard key={p.id} product={p} lang={lang} currency={restaurant?.currency || "TND"} viewMode={viewMode}
+                      onEdit={() => setEditing(p)} onDelete={() => confirm(t("common.confirmDelete")) && del.mutate(p.id)}
+                      onDup={() => dup.mutate(p)} onToggle={(v: boolean) => toggle.mutate({ id: p.id, available: v })} />
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        );
+      })()}
 
       {(showNew || editing) && (
         <ProductDialog restaurantId={restaurant!.id} product={editing} categories={cats.data ?? []}
@@ -137,25 +181,57 @@ function ProductsPage() {
   );
 }
 
-function ProductCard({ product, lang, currency, onEdit, onDelete, onDup, onToggle }: any) {
+function ProductCard({ product, lang, currency, viewMode, onEdit, onDelete, onDup, onToggle }: any) {
   const img = useSignedImage(product.image_url);
+
+  if (viewMode === "grid") {
+    return (
+      <div className="bg-card border border-border rounded-2xl overflow-hidden hover:shadow-md hover:border-primary/30 transition-all group flex flex-col relative">
+        <div className="aspect-[4/3] bg-muted relative border-b border-border/50">
+          {img ? (
+            <img src={img} alt="" loading="lazy" className="size-full object-cover" />
+          ) : (
+            <div className="size-full grid place-items-center text-muted-foreground opacity-30"><UtensilsCrossed className="size-12" /></div>
+          )}
+          <button onClick={() => onToggle(!product.is_available)}
+            className={`absolute top-2 right-2 px-2 py-1 rounded text-[10px] font-bold uppercase shadow-sm transition-colors ${product.is_available ? "bg-emerald-500 text-white" : "bg-stone-500 text-white"}`}>
+            {product.is_available ? "ON" : "OFF"}
+          </button>
+        </div>
+        <div className="p-4 flex flex-col flex-1">
+          <h3 className="font-bold truncate text-foreground/90">{pickLocalized(product, "name", lang) || "—"}</h3>
+          <p className="text-sm font-display font-bold text-primary mt-1">{formatPrice(product.price, currency, lang)}</p>
+          <div className="flex gap-2 mt-auto pt-4 opacity-100 sm:opacity-0 group-hover:opacity-100 transition-opacity">
+            <button onClick={onEdit} className="flex-1 py-1.5 bg-muted hover:bg-primary/10 hover:text-primary text-muted-foreground rounded flex items-center justify-center transition-colors"><Pencil className="size-4" /></button>
+            <button onClick={onDup} className="flex-1 py-1.5 bg-muted hover:bg-primary/10 hover:text-primary text-muted-foreground rounded flex items-center justify-center transition-colors"><Copy className="size-4" /></button>
+            <button onClick={onDelete} className="flex-1 py-1.5 bg-muted hover:bg-destructive/10 text-muted-foreground hover:text-destructive rounded flex items-center justify-center transition-colors"><Trash2 className="size-4" /></button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="bg-card border border-border rounded-2xl overflow-hidden hover:shadow-md transition-shadow group">
-      <div className="aspect-[4/3] bg-muted relative">
-        {img && <img src={img} alt="" loading="lazy" className="size-full object-cover" />}
+    <div className="bg-card border border-border rounded-xl p-2.5 flex items-center gap-3 sm:gap-4 hover:shadow-md hover:border-primary/30 transition-all group relative">
+      <div className="size-20 sm:size-24 bg-muted rounded-lg relative overflow-hidden flex-shrink-0 border border-border/50">
+        {img ? (
+          <img src={img} alt="" loading="lazy" className="size-full object-cover" />
+        ) : (
+          <div className="size-full grid place-items-center text-muted-foreground opacity-30"><UtensilsCrossed className="size-8" /></div>
+        )}
         <button onClick={() => onToggle(!product.is_available)}
-          className={`absolute top-2 right-2 px-2 py-1 rounded text-[10px] font-bold uppercase ${product.is_available ? "bg-emerald-100 text-emerald-700" : "bg-stone-200 text-stone-700"}`}>
-          {product.is_available ? "●" : "○"}
+          className={`absolute top-1 right-1 px-1.5 py-0.5 rounded text-[8px] font-bold uppercase shadow-sm transition-colors ${product.is_available ? "bg-emerald-500 text-white" : "bg-stone-500 text-white"}`}>
+          {product.is_available ? "ON" : "OFF"}
         </button>
       </div>
-      <div className="p-4">
-        <h3 className="font-semibold truncate">{pickLocalized(product, "name", lang) || "—"}</h3>
+      <div className="flex-1 min-w-0 py-1">
+        <h3 className="font-bold truncate text-sm sm:text-base text-foreground/90">{pickLocalized(product, "name", lang) || "—"}</h3>
         <p className="text-sm font-display font-bold text-primary mt-1">{formatPrice(product.price, currency, lang)}</p>
-        <div className="flex gap-1 mt-3 opacity-60 group-hover:opacity-100 transition-opacity">
-          <button onClick={onEdit} className="flex-1 py-1.5 hover:bg-muted rounded flex items-center justify-center"><Pencil className="size-3.5" /></button>
-          <button onClick={onDup} className="flex-1 py-1.5 hover:bg-muted rounded flex items-center justify-center"><Copy className="size-3.5" /></button>
-          <button onClick={onDelete} className="flex-1 py-1.5 hover:bg-destructive/10 text-destructive rounded flex items-center justify-center"><Trash2 className="size-3.5" /></button>
-        </div>
+      </div>
+      <div className="flex flex-col gap-1 opacity-100 sm:opacity-0 group-hover:opacity-100 transition-opacity pr-1">
+        <button onClick={onEdit} className="size-7 sm:size-8 bg-muted hover:bg-primary/10 hover:text-primary text-muted-foreground rounded flex items-center justify-center transition-colors"><Pencil className="size-3.5 sm:size-4" /></button>
+        <button onClick={onDup} className="size-7 sm:size-8 bg-muted hover:bg-primary/10 hover:text-primary text-muted-foreground rounded flex items-center justify-center transition-colors"><Copy className="size-3.5 sm:size-4" /></button>
+        <button onClick={onDelete} className="size-7 sm:size-8 bg-muted hover:bg-destructive/10 text-muted-foreground hover:text-destructive rounded flex items-center justify-center transition-colors"><Trash2 className="size-3.5 sm:size-4" /></button>
       </div>
     </div>
   );

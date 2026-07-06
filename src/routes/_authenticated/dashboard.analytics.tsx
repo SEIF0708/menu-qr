@@ -10,7 +10,9 @@ import {
   getTimeAnalytics,
   getPromotionStats
 } from "@/lib/analytics-service";
-import { BarChart3, TrendingUp, Eye, ShoppingCart, Percent, Box, Clock } from "lucide-react";
+import { BarChart3, TrendingUp, Eye, ShoppingCart, Percent, Box, Clock, Users, Activity, Tag, MousePointerClick } from "lucide-react";
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart as RechartsBarChart, Bar } from "recharts";
+import { useMemo } from "react";
 
 export const Route = createFileRoute("/_authenticated/dashboard/analytics")({
   component: AnalyticsDashboard,
@@ -59,21 +61,30 @@ function AnalyticsDashboard() {
 
   // Simple peak time logic
   let peakTime = "N/A";
-  if (timeStats && timeStats.length > 0) {
-    const hourlyGroups: Record<number, number> = {};
+  const hourlyData = useMemo(() => {
+    const data = Array.from({ length: 24 }, (_, i) => ({
+      hour: `${i.toString().padStart(2, '0')}:00`,
+      events: 0
+    }));
+    
+    if (!timeStats) return data;
+    
     timeStats.forEach(stat => {
-      hourlyGroups[stat.hour_of_day] = (hourlyGroups[stat.hour_of_day] || 0) + stat.total_events;
+      data[stat.hour_of_day].events += stat.total_events;
     });
     
+    return data;
+  }, [timeStats]);
+
+  if (timeStats && timeStats.length > 0) {
     let maxHour = -1;
     let maxEvents = -1;
-    Object.entries(hourlyGroups).forEach(([hour, events]) => {
-      if (events > maxEvents) {
-        maxEvents = events;
-        maxHour = Number(hour);
+    hourlyData.forEach((d, i) => {
+      if (d.events > maxEvents) {
+        maxEvents = d.events;
+        maxHour = i;
       }
     });
-    
     if (maxHour !== -1) {
       peakTime = `${maxHour.toString().padStart(2, '0')}:00 - ${(maxHour + 1).toString().padStart(2, '0')}:00`;
     }
@@ -123,7 +134,7 @@ function AnalyticsDashboard() {
 
       <div className="grid lg:grid-cols-2 gap-6">
         {/* Top Products */}
-        <div className="bg-card border border-border rounded-2xl p-6 shadow-sm">
+        <div className="bg-card border border-border rounded-3xl p-6 shadow-sm">
           <div className="flex items-center gap-2 mb-6">
             <TrendingUp className="size-5 text-accent" />
             <h2 className="text-xl font-display font-bold">Top Products</h2>
@@ -135,7 +146,7 @@ function AnalyticsDashboard() {
           ) : (
             <div className="space-y-4">
               {topProducts?.map((product, i) => (
-                <div key={product.product_id} className="flex items-center justify-between">
+                <div key={product.product_id} className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-border/10 pb-3 last:border-0 last:pb-0">
                   <div className="flex items-center gap-3 min-w-0">
                     <div className="size-6 bg-muted rounded flex items-center justify-center text-xs font-bold shrink-0">
                       {i + 1}
@@ -144,10 +155,10 @@ function AnalyticsDashboard() {
                       {lang === 'fr' ? product.name_fr : lang === 'ar' ? product.name_ar : product.name_en || '—'}
                     </p>
                   </div>
-                  <div className="flex gap-4 text-xs font-medium text-muted-foreground shrink-0 pl-4">
-                    <span className="w-16 text-right">{product.views} views</span>
-                    <span className="w-12 text-right">{product.orders} ord.</span>
-                    <span className="w-12 text-right font-bold text-accent">{product.conversion_rate?.toFixed(1) || 0}%</span>
+                  <div className="flex items-center justify-between sm:justify-end gap-4 text-xs font-medium text-muted-foreground ml-9 sm:ml-0 bg-muted/30 sm:bg-transparent px-3 py-2 sm:p-0 rounded-lg">
+                    <div className="flex items-center gap-1.5" title="Views"><Eye className="size-3.5" /> <span>{product.views}</span></div>
+                    <div className="flex items-center gap-1.5" title="Orders"><ShoppingCart className="size-3.5" /> <span>{product.orders}</span></div>
+                    <div className="flex items-center gap-1.5 font-bold text-accent" title="Conversion Rate"><Percent className="size-3.5" /> <span>{product.conversion_rate?.toFixed(1) || 0}%</span></div>
                   </div>
                 </div>
               ))}
@@ -155,101 +166,147 @@ function AnalyticsDashboard() {
           )}
         </div>
 
-        {/* Top Categories */}
-        <div className="bg-card border border-border rounded-2xl p-6 shadow-sm">
+        {/* Top Categories Chart & List */}
+        <div className="bg-card border border-border rounded-3xl p-6 shadow-sm flex flex-col">
           <div className="flex items-center gap-2 mb-6">
             <Box className="size-5 text-blue-500" />
             <h2 className="text-xl font-display font-bold">Category Performance</h2>
           </div>
           {loadingCategories ? (
-            <div className="h-40 grid place-items-center"><div className="size-6 border-2 border-primary border-t-transparent rounded-full animate-spin"></div></div>
+            <div className="flex-1 grid place-items-center"><div className="size-6 border-2 border-primary border-t-transparent rounded-full animate-spin"></div></div>
           ) : topCategories?.length === 0 ? (
             <p className="text-muted-foreground text-sm text-center py-8">No data available yet.</p>
           ) : (
-            <div className="space-y-4">
-              {topCategories?.map((cat, i) => (
-                <div key={cat.category_id} className="flex items-center justify-between">
-                  <div className="flex items-center gap-3 min-w-0">
-                    <p className="font-medium truncate text-sm">
-                      {lang === 'fr' ? cat.name_fr : lang === 'ar' ? cat.name_ar : cat.name_en || '—'}
-                    </p>
+            <>
+              <div className="h-48 w-full mb-6">
+                <ResponsiveContainer width="100%" height="100%">
+                  <RechartsBarChart data={topCategories?.slice(0, 5)} margin={{ top: 0, right: 0, left: -20, bottom: 0 }}>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="currentColor" className="opacity-10" />
+                    <XAxis dataKey={lang === 'fr' ? 'name_fr' : 'name_en'} tick={{ fontSize: 10 }} tickLine={false} axisLine={false} />
+                    <YAxis tick={{ fontSize: 10 }} tickLine={false} axisLine={false} />
+                    <Tooltip cursor={{ fill: 'transparent' }} contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }} />
+                    <Bar dataKey="views" name="Views" fill="currentColor" className="text-blue-400" radius={[4, 4, 0, 0]} />
+                    <Bar dataKey="orders" name="Orders" fill="currentColor" className="text-primary" radius={[4, 4, 0, 0]} />
+                  </RechartsBarChart>
+                </ResponsiveContainer>
+              </div>
+              <div className="space-y-4">
+                {topCategories?.map((cat, i) => (
+                  <div key={cat.category_id} className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-border/10 pb-3 last:border-0 last:pb-0">
+                    <div className="flex items-center gap-3 min-w-0">
+                      <p className="font-medium truncate text-sm">
+                        {lang === 'fr' ? cat.name_fr : lang === 'ar' ? cat.name_ar : cat.name_en || '—'}
+                      </p>
+                    </div>
+                    <div className="flex items-center justify-between sm:justify-end gap-4 text-xs font-medium text-muted-foreground bg-muted/30 sm:bg-transparent px-3 py-2 sm:p-0 rounded-xl">
+                      <div className="flex items-center gap-1.5" title="Views"><Eye className="size-3.5" /> <span>{cat.views}</span></div>
+                      <div className="flex items-center gap-1.5" title="Cart Adds"><ShoppingCart className="size-3.5" /> <span>{cat.cart_adds}</span></div>
+                      <div className="flex items-center gap-1.5 font-bold text-primary" title="Orders"><BarChart3 className="size-3.5" /> <span>{cat.orders}</span></div>
+                    </div>
                   </div>
-                  <div className="flex gap-4 text-xs font-medium text-muted-foreground shrink-0 pl-4">
-                    <span className="w-16 text-right">{cat.views} views</span>
-                    <span className="w-16 text-right">{cat.cart_adds} adds</span>
-                    <span className="w-12 text-right text-primary">{cat.orders} ord.</span>
+                ))}
+              </div>
+            </>
+          )}
+        </div>
+      </div>
+
+      {/* Hourly Activity Chart */}
+      <div className="bg-card border border-border rounded-3xl p-6 shadow-sm">
+        <div className="flex items-center gap-2 mb-6">
+          <Activity className="size-5 text-purple-500" />
+          <h2 className="text-xl font-display font-bold">Hourly Activity (24h)</h2>
+        </div>
+        {loadingTime ? (
+          <div className="h-64 grid place-items-center"><div className="size-6 border-2 border-primary border-t-transparent rounded-full animate-spin"></div></div>
+        ) : (
+          <div className="h-64 w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={hourlyData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                <defs>
+                  <linearGradient id="colorEvents" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="currentColor" className="text-purple-500" stopOpacity={0.3}/>
+                    <stop offset="95%" stopColor="currentColor" className="text-purple-500" stopOpacity={0}/>
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="currentColor" className="opacity-10" />
+                <XAxis dataKey="hour" tick={{ fontSize: 10 }} tickLine={false} axisLine={false} minTickGap={30} />
+                <YAxis tick={{ fontSize: 10 }} tickLine={false} axisLine={false} />
+                <Tooltip contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }} />
+                <Area type="monotone" dataKey="events" name="Interactions" stroke="currentColor" className="text-purple-500" strokeWidth={3} fillOpacity={1} fill="url(#colorEvents)" />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
+        )}
+      </div>
+
+      {/* Active Tables & Promotions Grid */}
+      <div className="grid lg:grid-cols-2 gap-6">
+        {/* Active Tables */}
+        <div className="bg-card border border-border rounded-3xl p-6 shadow-sm">
+          <div className="flex items-center gap-2 mb-6">
+            <Users className="size-5 text-emerald-500" />
+            <h2 className="text-xl font-display font-bold">Active Tables</h2>
+          </div>
+          {loadingTables ? (
+            <div className="h-40 grid place-items-center"><div className="size-6 border-2 border-primary border-t-transparent rounded-full animate-spin"></div></div>
+          ) : topTables?.length === 0 ? (
+            <p className="text-muted-foreground text-sm text-center py-8">No data available yet.</p>
+          ) : (
+            <div className="grid sm:grid-cols-2 gap-3">
+              {topTables?.map((table) => (
+                <div key={table.table_id} className="p-4 rounded-2xl border border-border/50 bg-muted/20 hover:bg-muted/40 transition-colors flex flex-col">
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="font-display font-bold text-lg">{table.name}</span>
+                    <span className="text-xs bg-emerald-100 text-emerald-700 font-bold px-2 py-0.5 rounded-full">{table.sessions} Sessions</span>
+                  </div>
+                  <div className="grid grid-cols-2 gap-2 mt-auto">
+                    <div className="bg-background rounded-xl p-2.5 border border-border/50">
+                      <p className="text-[10px] text-muted-foreground font-semibold uppercase mb-0.5">Orders</p>
+                      <p className="font-bold text-primary">{table.orders}</p>
+                    </div>
+                    <div className="bg-background rounded-xl p-2.5 border border-border/50">
+                      <p className="text-[10px] text-muted-foreground font-semibold uppercase mb-0.5">Requests</p>
+                      <p className="font-bold">{table.requests}</p>
+                    </div>
                   </div>
                 </div>
               ))}
             </div>
           )}
         </div>
-      </div>
 
-      {/* Active Tables */}
-      <div className="bg-card border border-border rounded-2xl p-6 shadow-sm">
-        <h2 className="text-xl font-display font-bold mb-6">Active Tables</h2>
-        {loadingTables ? (
-          <div className="h-40 grid place-items-center"><div className="size-6 border-2 border-primary border-t-transparent rounded-full animate-spin"></div></div>
-        ) : topTables?.length === 0 ? (
-          <p className="text-muted-foreground text-sm text-center py-8">No data available yet.</p>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm text-left">
-              <thead className="text-xs text-muted-foreground uppercase bg-muted/50">
-                <tr>
-                  <th className="px-4 py-3 rounded-l-lg">Table</th>
-                  <th className="px-4 py-3">Total Sessions</th>
-                  <th className="px-4 py-3">Orders</th>
-                  <th className="px-4 py-3 rounded-r-lg">Service Requests</th>
-                </tr>
-              </thead>
-              <tbody>
-                {topTables?.map((table) => (
-                  <tr key={table.table_id} className="border-b border-border/50 last:border-0 hover:bg-muted/20">
-                    <td className="px-4 py-3 font-medium">{table.name}</td>
-                    <td className="px-4 py-3">{table.sessions}</td>
-                    <td className="px-4 py-3 font-bold text-primary">{table.orders}</td>
-                    <td className="px-4 py-3">{table.requests}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+        {/* Promotion Performance */}
+        <div className="bg-card border border-border rounded-3xl p-6 shadow-sm">
+          <div className="flex items-center gap-2 mb-6">
+            <Tag className="size-5 text-orange-500" />
+            <h2 className="text-xl font-display font-bold">Promotion Performance</h2>
           </div>
-        )}
-      </div>
-
-      {/* Promotion Performance */}
-      <div className="bg-card border border-border rounded-2xl p-6 shadow-sm">
-        <h2 className="text-xl font-display font-bold mb-6">Promotion Performance</h2>
-        {loadingPromotions ? (
-          <div className="h-40 grid place-items-center"><div className="size-6 border-2 border-primary border-t-transparent rounded-full animate-spin"></div></div>
-        ) : promotionStats?.length === 0 ? (
-          <p className="text-muted-foreground text-sm text-center py-8">No active promotions tracked yet.</p>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm text-left">
-              <thead className="text-xs text-muted-foreground uppercase bg-muted/50">
-                <tr>
-                  <th className="px-4 py-3 rounded-l-lg">Promotion Title</th>
-                  <th className="px-4 py-3">Type</th>
-                  <th className="px-4 py-3 rounded-r-lg">Clicks / Interactions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {promotionStats?.map((promo) => (
-                  <tr key={promo.promotion_id} className="border-b border-border/50 last:border-0 hover:bg-muted/30 transition-colors">
-                    <td className="px-4 py-3 font-medium">
+          {loadingPromotions ? (
+            <div className="h-40 grid place-items-center"><div className="size-6 border-2 border-primary border-t-transparent rounded-full animate-spin"></div></div>
+          ) : promotionStats?.length === 0 ? (
+            <p className="text-muted-foreground text-sm text-center py-8">No active promotions tracked yet.</p>
+          ) : (
+            <div className="space-y-3">
+              {promotionStats?.map((promo) => (
+                <div key={promo.promotion_id} className="p-4 rounded-2xl border border-border/50 bg-muted/20 flex items-center justify-between gap-4">
+                  <div className="min-w-0">
+                    <p className="font-bold truncate">
                       {lang === 'fr' ? promo.title_fr : lang === 'ar' ? promo.title_ar : promo.title_en || '—'}
-                    </td>
-                    <td className="px-4 py-3 capitalize">{promo.type.replace('_', ' ')}</td>
-                    <td className="px-4 py-3 font-bold text-primary">{promo.clicks}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
+                    </p>
+                    <p className="text-xs text-muted-foreground capitalize mt-0.5 flex items-center gap-1">
+                      <Tag className="size-3" /> {promo.type.replace('_', ' ')}
+                    </p>
+                  </div>
+                  <div className="shrink-0 flex items-center gap-2 bg-background border border-border/50 rounded-xl px-3 py-2">
+                    <MousePointerClick className="size-4 text-orange-500" />
+                    <span className="font-bold">{promo.clicks}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
@@ -257,14 +314,14 @@ function AnalyticsDashboard() {
 
 function KPI({ icon, label, value, loading, accent }: { icon: React.ReactNode; label: string; value: string; loading: boolean; accent?: boolean }) {
   return (
-    <div className={`p-6 rounded-2xl border shadow-sm ${accent ? "bg-primary/10 border-primary/20 text-primary" : "bg-card border-border"}`}>
-      <div className="flex items-center gap-2 text-sm font-medium opacity-80 mb-3">
+    <div className={`p-4 sm:p-6 rounded-3xl border shadow-sm transition-all hover:shadow-md ${accent ? "bg-primary/10 border-primary/20 text-primary" : "bg-card border-border"}`}>
+      <div className="flex items-center gap-2 text-xs sm:text-sm font-medium opacity-80 mb-2 sm:mb-3">
         {icon} {label}
       </div>
       {loading ? (
-        <div className="h-10 w-24 bg-muted animate-pulse rounded" />
+        <div className="h-8 sm:h-10 w-24 bg-muted animate-pulse rounded" />
       ) : (
-        <p className={`text-4xl font-display font-bold tracking-tight ${accent ? "text-primary" : "text-foreground"}`}>
+        <p className={`text-2xl sm:text-4xl font-display font-bold tracking-tight ${accent ? "text-primary" : "text-foreground"}`}>
           {value}
         </p>
       )}

@@ -248,6 +248,131 @@ export type Database = {
           },
         ]
       }
+      promotions: {
+        Row: {
+          id: string
+          restaurant_id: string
+          title_en: string | null
+          title_fr: string | null
+          title_ar: string | null
+          description_en: string | null
+          description_fr: string | null
+          description_ar: string | null
+          type: string
+          image_url: string | null
+          is_active: boolean
+          created_at: string
+          updated_at: string
+          metadata_json: Json | null
+          start_date: string | null
+          end_date: string | null
+        }
+        Insert: { id?: string, restaurant_id: string, title_en?: string | null, title_fr?: string | null, title_ar?: string | null, description_en?: string | null, description_fr?: string | null, description_ar?: string | null, type: string, image_url?: string | null, is_active?: boolean, created_at?: string, updated_at?: string, metadata_json?: Json | null, start_date?: string | null, end_date?: string | null }
+        Update: { id?: string, restaurant_id?: string, title_en?: string | null, title_fr?: string | null, title_ar?: string | null, description_en?: string | null, description_fr?: string | null, description_ar?: string | null, type?: string, image_url?: string | null, is_active?: boolean, created_at?: string, updated_at?: string, metadata_json?: Json | null, start_date?: string | null, end_date?: string | null }
+        Relationships: [
+          {
+            foreignKeyName: "promotions_restaurant_id_fkey"
+            columns: ["restaurant_id"]
+            isOneToOne: false
+            referencedRelation: "restaurants"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      product_recommendations: {
+        Row: {
+          id: string
+          restaurant_id: string
+          primary_product_id: string
+          recommended_product_id: string
+          display_order: number
+          created_at: string
+        }
+        Insert: { id?: string, restaurant_id: string, primary_product_id: string, recommended_product_id: string, display_order?: number, created_at?: string }
+        Update: { id?: string, restaurant_id?: string, primary_product_id?: string, recommended_product_id?: string, display_order?: number, created_at?: string }
+        Relationships: [
+          {
+            foreignKeyName: "product_recommendations_product_id_fkey"
+            columns: ["primary_product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "product_recommendations_recommended_product_id_fkey"
+            columns: ["recommended_product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      referral_codes: {
+        Row: {
+          id: string
+          code: string
+          user_id: string
+          referrer_name: string
+          commission_rate: number
+        }
+        Insert: {
+          id?: string
+          code: string
+          user_id?: string
+          referrer_name: string
+          commission_rate: number
+        }
+        Update: {
+          id?: string
+          code?: string
+          user_id?: string
+          referrer_name?: string
+          commission_rate?: number
+        }
+        Relationships: []
+      }
+      referral_payouts: {
+        Row: {
+          id: string
+          restaurant_id: string
+          referral_code_id: string | null
+          amount: number
+          status: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          restaurant_id: string
+          referral_code_id?: string | null
+          amount: number
+          status?: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          restaurant_id?: string
+          referral_code_id?: string | null
+          amount?: number
+          status?: string
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "referral_payouts_restaurant_id_fkey"
+            columns: ["restaurant_id"]
+            isOneToOne: false
+            referencedRelation: "restaurants"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "referral_payouts_referral_code_id_fkey"
+            columns: ["referral_code_id"]
+            isOneToOne: false
+            referencedRelation: "referral_codes"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
       profiles: {
         Row: {
           created_at: string
@@ -267,7 +392,15 @@ export type Database = {
           full_name?: string | null
           id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "restaurants_referral_code_id_fkey"
+            columns: ["referral_code_id"]
+            isOneToOne: false
+            referencedRelation: "referral_codes"
+            referencedColumns: ["id"]
+          }
+        ]
       }
       restaurant_tables: {
         Row: {
@@ -333,6 +466,8 @@ export type Database = {
           website: string | null
           table_count: number
           whatsapp_phone: string | null
+          subscription_status: string
+          referral_code_id: string | null
         }
         Insert: {
           cover_image_url?: string | null
@@ -356,6 +491,8 @@ export type Database = {
           website?: string | null
           table_count?: number
           whatsapp_phone?: string | null
+          subscription_status?: string
+          referral_code_id?: string | null
         }
         Update: {
           cover_image_url?: string | null
@@ -379,8 +516,18 @@ export type Database = {
           website?: string | null
           table_count?: number
           whatsapp_phone?: string | null
+          subscription_status?: string
+          referral_code_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "restaurants_referral_code_id_fkey"
+            columns: ["referral_code_id"]
+            isOneToOne: false
+            referencedRelation: "referral_codes"
+            referencedColumns: ["id"]
+          }
+        ]
       }
     }
     Views: {
@@ -404,6 +551,8 @@ export type Database = {
           website: string | null
           table_count: number
           whatsapp_phone: string | null
+          subscription_status: string
+          referral_code_id: string | null
         }
         Insert: {
           cover_image_url?: string | null
@@ -424,6 +573,8 @@ export type Database = {
           website?: string | null
           table_count?: number
           whatsapp_phone?: string | null
+          subscription_status?: string
+          referral_code_id?: string | null
         }
         Update: {
           cover_image_url?: string | null
@@ -444,8 +595,18 @@ export type Database = {
           website?: string | null
           table_count?: number
           whatsapp_phone?: string | null
+          subscription_status?: string
+          referral_code_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "restaurants_referral_code_id_fkey"
+            columns: ["referral_code_id"]
+            isOneToOne: false
+            referencedRelation: "referral_codes"
+            referencedColumns: ["id"]
+          }
+        ]
       }
     }
     Functions: {
