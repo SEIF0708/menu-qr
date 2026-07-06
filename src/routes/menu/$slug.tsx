@@ -9,7 +9,7 @@ import { useActivePromotions } from "@/lib/promotions-service";
 import { pickLocalized } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { Lock, X } from "lucide-react";
-import { AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 
 // New Components
 import { RestaurantThemeProvider } from "@/components/menu/RestaurantThemeProvider";
@@ -75,6 +75,7 @@ function MenuPage() {
   const lang = i18n.language?.split("-")[0] || "en";
   
   const [search, setSearch] = useState("");
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [activeCat, setActiveCat] = useState<string | null>(null);
   const [visibleCount, setVisibleCount] = useState(8);
   
@@ -245,6 +246,10 @@ function MenuPage() {
           restaurant={restaurant} 
           activeTable={activeTable} 
           onOpenInfo={() => setInfoOpen(true)} 
+          onToggleSearch={() => setIsSearchOpen(prev => {
+            if (prev) setSearch(""); // clear search when closing
+            return !prev;
+          })}
         />
 
         {!search && !activeCat && (
@@ -255,7 +260,18 @@ function MenuPage() {
           />
         )}
 
-        <SearchBar search={search} setSearch={setSearch} />
+        <AnimatePresence>
+          {isSearchOpen && (
+            <motion.div
+              initial={{ height: 0, opacity: 0, marginTop: 0 }}
+              animate={{ height: "auto", opacity: 1, marginTop: 0 }}
+              exit={{ height: 0, opacity: 0, marginTop: 0 }}
+              className="overflow-hidden"
+            >
+              <SearchBar search={search} setSearch={setSearch} />
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         <CategoryNavigation 
           categories={cats.data || []} 

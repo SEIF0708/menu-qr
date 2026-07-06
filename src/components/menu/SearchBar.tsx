@@ -11,7 +11,7 @@ export function SearchBar({ search, setSearch }: SearchBarProps) {
   const { t } = useTranslation();
 
   return (
-    <div className="sticky top-0 z-40 bg-background/95 backdrop-blur-md pt-4 pb-2 px-4 sm:px-6 shadow-sm border-b border-border/50 transition-all">
+    <div className="bg-background pt-4 pb-2 px-4 sm:px-6 transition-all">
       <div className="relative max-w-3xl mx-auto">
         <Search className="absolute start-4 top-1/2 -translate-y-1/2 size-5 text-muted-foreground" />
         <input

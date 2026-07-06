@@ -1,5 +1,5 @@
 import React from "react";
-import { Info, Table as TableIcon } from "lucide-react";
+import { Info, Table as TableIcon, Search } from "lucide-react";
 import { LangSwitcher } from "@/components/LangSwitcher";
 import { useSignedImage } from "@/lib/use-signed-image";
 
@@ -7,12 +7,14 @@ interface RestaurantHeroProps {
   restaurant: any;
   activeTable?: any;
   onOpenInfo: () => void;
+  onToggleSearch?: () => void;
 }
 
 export function RestaurantHero({
   restaurant,
   activeTable,
   onOpenInfo,
+  onToggleSearch,
 }: RestaurantHeroProps) {
   const cover = useSignedImage(restaurant.cover_image_url);
   const logo = useSignedImage(restaurant.logo_url);
@@ -54,7 +56,17 @@ export function RestaurantHero({
             </div>
           )}
         </div>
-        <LangSwitcher variant="dark" />
+        <div className="flex items-center gap-2">
+          {onToggleSearch && (
+            <button
+              onClick={onToggleSearch}
+              className="size-9 bg-white/20 hover:bg-white/30 backdrop-blur-md rounded-full grid place-items-center text-white transition-colors shadow-lg"
+            >
+              <Search className="size-4" />
+            </button>
+          )}
+          <LangSwitcher variant="dark" />
+        </div>
       </div>
 
       {/* Info Card / Bottom Content */}
