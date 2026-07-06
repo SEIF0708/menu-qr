@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useSignedImage } from "@/lib/use-signed-image";
 import LottieLib from "lottie-react";
-import pizzaAnimation from "@/assets/pizza-animation.json";
 
 // Safe interop for Vite/CommonJS default exports
 const Lottie = (LottieLib as any).default || LottieLib;
@@ -30,10 +29,16 @@ export function RestaurantLoadingScreen({
 }: RestaurantLoadingScreenProps) {
   const [messageIndex, setMessageIndex] = useState(0);
   const [isClient, setIsClient] = useState(false);
+  const [animationData, setAnimationData] = useState<any>(null);
   const logoUrl = useSignedImage(restaurantLogo);
 
   useEffect(() => {
     setIsClient(true);
+    fetch("/pizza-animation.json")
+      .then(res => res.json())
+      .then(setAnimationData)
+      .catch(console.error);
+
     const interval = setInterval(() => {
       setMessageIndex((prev) => (prev + 1) % MESSAGES.length);
     }, 2000);
@@ -76,7 +81,7 @@ export function RestaurantLoadingScreen({
 
         {/* Premium Pizza Lottie Animation */}
         <div className="relative size-32 sm:size-40 mb-8">
-           {isClient && <Lottie animationData={pizzaAnimation} loop={true} className="w-full h-full drop-shadow-2xl" />}
+           {isClient && animationData && <Lottie animationData={animationData} loop={true} className="w-full h-full drop-shadow-2xl" />}
         </div>
 
         {/* Restaurant Name */}
