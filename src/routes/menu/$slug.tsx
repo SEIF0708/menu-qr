@@ -8,7 +8,7 @@ import { useCart } from "@/lib/cart";
 import { useActivePromotions } from "@/lib/promotions-service";
 import { pickLocalized } from "@/lib/format";
 import { cn } from "@/lib/utils";
-import { Lock, X, Utensils } from "lucide-react";
+import { Lock, X, Utensils, ReceiptText } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 
 // New Components
