@@ -54,7 +54,15 @@
     "continueWithGoogle": "Continuer avec Google",
     "or": "ou",
     "tagline": "De beaux menus numériques que vos clients adoreront.",
-    "checkEmail": "Consultez votre boîte mail pour confirmer votre adresse."
+    "checkEmail": "Vérifiez votre boîte de réception pour confirmer votre e-mail.",
+    "waitstaffTab": "Serveurs",
+    "ownerTab": "Propriétaire",
+    "waitstaffLogin": "Connexion Serveur",
+    "waitstaffDesc": "Entrez le code de votre restaurant et votre code PIN à 4 chiffres pour accéder à votre portail.",
+    "restaurantCode": "Code Restaurant (Slug)",
+    "fourDigitPin": "Votre PIN à 4 chiffres",
+    "loginToPortal": "Connexion au portail",
+    "verifying": "Vérification..."
   },
   "nav": {
     "overview": "Vue d'ensemble",
@@ -300,9 +308,18 @@
     "website": "Site Web",
     "social": "Réseaux sociaux",
     "previewMode": "MODE APERÇU — Ce menu est masqué au public jusqu'à ce que vous activiez votre abonnement.",
-    "unavailableMenu": "Menu indisponible",
+    "unavailableMenu": "Menu Indisponible",
     "inactiveMenu": "Le menu numérique de ce restaurant est actuellement inactif. Veuillez revenir plus tard.",
-    "unavailableQr": "Code QR indisponible"
+    "unavailableQr": "Code QR Indisponible",
+    "orderTracker": "Suivi de Commande",
+    "sentToKitchen": "Envoyé en Cuisine",
+    "sentDesc": "Votre commande a été passée.",
+    "preparing": "En Préparation",
+    "preparingDesc": "Le chef prépare votre repas.",
+    "served": "Servie",
+    "servedDesc": "Bon appétit !",
+    "done": "Terminé",
+    "submitOrder": "Valider la Commande"
   },
   "landing": {
     "tagline": "Menus numériques pour restaurants modernes.",

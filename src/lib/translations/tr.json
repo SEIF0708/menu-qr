@@ -54,7 +54,15 @@
     "continueWithGoogle": "Google ile devam et",
     "or": "veya",
     "tagline": "Misafirlerinizin seveceği harika dijital menüler.",
-    "checkEmail": "E-postanızı onaylamak için gelen kutunuzu kontrol edin."
+    "checkEmail": "E-postanızı onaylamak için gelen kutunuzu kontrol edin.",
+    "waitstaffTab": "Garsonlar",
+    "ownerTab": "Restoran Sahibi",
+    "waitstaffLogin": "Garson Girişi",
+    "waitstaffDesc": "Portalınıza erişmek için restoran kodunuzu ve 4 haneli PIN kodunuzu girin.",
+    "restaurantCode": "Restoran Kodu (Slug)",
+    "fourDigitPin": "4 Haneli PIN",
+    "loginToPortal": "Portala Giriş Yap",
+    "verifying": "Doğrulanıyor..."
   },
   "nav": {
     "overview": "Genel Bakış",
@@ -302,7 +310,16 @@
     "previewMode": "ÖNİZLEME MODU — Aboneliğinizi etkinleştirene kadar bu menü halka gizlidir.",
     "unavailableMenu": "Menü Kullanılamıyor",
     "inactiveMenu": "Bu restoranın dijital menüsü şu anda aktif değil. Lütfen daha sonra tekrar kontrol edin.",
-    "unavailableQr": "QR Kod Kullanılamıyor"
+    "unavailableQr": "QR Kod Kullanılamıyor",
+    "orderTracker": "Sipariş Takibi",
+    "sentToKitchen": "Mutfağa İletildi",
+    "sentDesc": "Siparişiniz alındı.",
+    "preparing": "Hazırlanıyor",
+    "preparingDesc": "Şef yemeğinizi hazırlıyor.",
+    "served": "Servis Edildi",
+    "servedDesc": "Afiyet olsun!",
+    "done": "Bitti",
+    "submitOrder": "Siparişi Gönder"
   },
   "landing": {
     "tagline": "Modern restoranlar için dijital menüler.",

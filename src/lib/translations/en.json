@@ -54,7 +54,15 @@
     "continueWithGoogle": "Continue with Google",
     "or": "or",
     "tagline": "Beautiful digital menus your guests will love.",
-    "checkEmail": "Check your inbox to confirm your email."
+    "checkEmail": "Check your inbox to confirm your email.",
+    "waitstaffTab": "Waitstaff",
+    "ownerTab": "Restaurant Owner",
+    "waitstaffLogin": "Waitstaff Login",
+    "waitstaffDesc": "Enter your restaurant code and your 4-digit PIN to access your portal.",
+    "restaurantCode": "Restaurant Code (Slug)",
+    "fourDigitPin": "Your 4-Digit PIN",
+    "loginToPortal": "Login to Portal",
+    "verifying": "Verifying..."
   },
   "nav": {
     "overview": "Overview",
@@ -302,7 +310,16 @@
     "previewMode": "PREVIEW MODE — This menu is hidden from the public until you activate your subscription.",
     "unavailableMenu": "Menu Unavailable",
     "inactiveMenu": "This restaurant's digital menu is currently inactive. Please check back later.",
-    "unavailableQr": "QR Code Unavailable"
+    "unavailableQr": "QR Code Unavailable",
+    "orderTracker": "Order Tracker",
+    "sentToKitchen": "Sent to Kitchen",
+    "sentDesc": "Your order has been placed.",
+    "preparing": "Preparing",
+    "preparingDesc": "The chef is preparing your meal.",
+    "served": "Served",
+    "servedDesc": "Enjoy your meal!",
+    "done": "Done",
+    "submitOrder": "Submit Order"
   },
   "landing": {
     "tagline": "Digital menus for modern restaurants.",

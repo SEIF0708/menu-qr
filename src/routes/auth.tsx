@@ -154,14 +154,14 @@ function AuthPage() {
               search={{ mode: "signin", role: "owner" }}
               className={`flex-1 text-center text-sm py-2 rounded-lg font-medium transition-colors ${role !== "staff" ? "bg-background shadow-sm text-foreground" : "text-muted-foreground hover:text-foreground"}`}
             >
-              Restaurant Owner
+              {t("auth.ownerTab") || "Restaurant Owner"}
             </Link>
             <Link
               to="/auth"
               search={{ mode: "signin", role: "staff" }}
               className={`flex-1 text-center text-sm py-2 rounded-lg font-medium transition-colors ${role === "staff" ? "bg-background shadow-sm text-foreground" : "text-muted-foreground hover:text-foreground"}`}
             >
-              Waitstaff
+              {t("auth.waitstaffTab") || "Waitstaff"}
             </Link>
           </div>
 
@@ -173,10 +173,10 @@ function AuthPage() {
                 </div>
               </div>
               <h1 className="text-2xl font-display font-bold text-center mb-2">
-                Waitstaff Login
+                {t("auth.waitstaffLogin") || "Waitstaff Login"}
               </h1>
               <p className="text-sm text-center text-muted-foreground mb-6">
-                Enter your restaurant code and your 4-digit PIN to access your portal.
+                {t("auth.waitstaffDesc") || "Enter your restaurant code and your 4-digit PIN to access your portal."}
               </p>
 
               {staffError && (
@@ -187,7 +187,7 @@ function AuthPage() {
               )}
 
               <form onSubmit={onStaffSubmit} className="space-y-4">
-                <Field label="Restaurant Code (Slug)">
+                <Field label={t("auth.restaurantCode") || "Restaurant Code (Slug)"}>
                   <input
                     type="text"
                     required
@@ -198,7 +198,7 @@ function AuthPage() {
                   />
                 </Field>
 
-                <Field label="Your 4-Digit PIN">
+                <Field label={t("auth.fourDigitPin") || "Your 4-Digit PIN"}>
                   <input
                     type="text"
                     required
@@ -215,7 +215,7 @@ function AuthPage() {
                   disabled={loading || !slug || pin.length < 4}
                   className="w-full bg-primary text-primary-foreground py-2.5 rounded-lg font-bold flex items-center justify-center gap-2 hover:brightness-110 active:scale-95 transition-all disabled:opacity-50 mt-2"
                 >
-                  {loading ? "Verifying..." : "Login to Portal"}
+                  {loading ? (t("auth.verifying") || "Verifying...") : (t("auth.loginToPortal") || "Login to Portal")}
                   {!loading && <ArrowRight className="size-4" />}
                 </button>
               </form>

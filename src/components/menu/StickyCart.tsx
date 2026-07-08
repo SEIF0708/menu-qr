@@ -184,7 +184,7 @@ function CartModal({ cart, restaurant, activeTable, lang, currency, onClose, onO
 
               {success ? (
                 <div className="mb-3 py-4 text-sm font-bold bg-green-500 text-white rounded-full flex items-center justify-center gap-2">
-                  <Check className="size-5" /> Order Sent!
+                  <Check className="size-5" /> {t("menu.sentDesc") || "Order Sent!"}
                 </div>
               ) : (
                 <button
@@ -195,7 +195,7 @@ function CartModal({ cart, restaurant, activeTable, lang, currency, onClose, onO
                   {isSubmitting ? (
                     <div className="size-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
                   ) : (
-                    <>Submit Order</>
+                    <>{t("menu.submitOrder") || "Submit Order"}</>
                   )}
                 </button>
               )}

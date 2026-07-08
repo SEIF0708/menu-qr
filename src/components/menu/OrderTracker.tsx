@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Check, ChefHat, Clock, PartyPopper, ReceiptText, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useTranslation } from "react-i18next";
 
 interface OrderTrackerProps {
   orderId: string;
@@ -9,6 +10,7 @@ interface OrderTrackerProps {
 }
 
 export function OrderTracker({ orderId, onClose }: OrderTrackerProps) {
+  const { t } = useTranslation();
   const [order, setOrder] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
@@ -59,7 +61,7 @@ export function OrderTracker({ orderId, onClose }: OrderTrackerProps) {
       <div className="flex items-center justify-between mb-6">
         <h3 className="font-display font-bold text-lg flex items-center gap-2">
           <ReceiptText className="size-5" />
-          Order Tracker
+          {t("menu.orderTracker") || "Order Tracker"}
         </h3>
         {isCompleted && (
           <button onClick={onClose} className="p-2 bg-muted rounded-full text-muted-foreground hover:text-foreground transition-colors">
@@ -75,8 +77,8 @@ export function OrderTracker({ orderId, onClose }: OrderTrackerProps) {
             <Clock className="size-5" />
           </div>
           <div>
-            <p className={`font-bold ${order ? 'text-foreground' : 'text-muted-foreground'}`}>Sent to Kitchen</p>
-            <p className="text-xs text-muted-foreground">Your order has been placed.</p>
+            <p className={`font-bold ${order ? 'text-foreground' : 'text-muted-foreground'}`}>{t("menu.sentToKitchen") || "Sent to Kitchen"}</p>
+            <p className="text-xs text-muted-foreground">{t("menu.sentDesc") || "Your order has been placed."}</p>
           </div>
         </div>
 
@@ -86,8 +88,8 @@ export function OrderTracker({ orderId, onClose }: OrderTrackerProps) {
             <ChefHat className="size-5" />
           </div>
           <div>
-            <p className={`font-bold ${isPreparing || isCompleted ? 'text-foreground' : 'text-muted-foreground'}`}>Preparing</p>
-            <p className="text-xs text-muted-foreground">The chef is preparing your meal.</p>
+            <p className={`font-bold ${isPreparing || isCompleted ? 'text-foreground' : 'text-muted-foreground'}`}>{t("menu.preparing") || "Preparing"}</p>
+            <p className="text-xs text-muted-foreground">{t("menu.preparingDesc") || "The chef is preparing your meal."}</p>
           </div>
         </div>
 
@@ -97,8 +99,8 @@ export function OrderTracker({ orderId, onClose }: OrderTrackerProps) {
             <PartyPopper className="size-5" />
           </div>
           <div>
-            <p className={`font-bold ${isCompleted ? 'text-foreground' : 'text-muted-foreground'}`}>Served</p>
-            <p className="text-xs text-muted-foreground">Enjoy your meal!</p>
+            <p className={`font-bold ${isCompleted ? 'text-foreground' : 'text-muted-foreground'}`}>{t("menu.served") || "Served"}</p>
+            <p className="text-xs text-muted-foreground">{t("menu.servedDesc") || "Enjoy your meal!"}</p>
           </div>
         </div>
       </div>
@@ -108,7 +110,7 @@ export function OrderTracker({ orderId, onClose }: OrderTrackerProps) {
           onClick={onClose}
           className="w-full mt-4 bg-green-500 text-white py-3.5 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-green-600 transition-colors"
         >
-          Done
+          {t("menu.done") || "Done"}
         </button>
       )}
     </motion.div>
