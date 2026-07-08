@@ -108,6 +108,7 @@ function MenuPage() {
     }
     return null;
   });
+  const [isTrackerOpen, setIsTrackerOpen] = useState(false);
 
   useEffect(() => {
     // Show splash for at least 2.5 seconds to allow the progress bar and messages to be appreciated
@@ -412,27 +413,48 @@ function MenuPage() {
         </div>
 
         {/* Cart & Order Tracker */}
+        <StickyCart
+          key="sticky-cart"
+          cart={cart}
+          restaurant={restaurant}
+          activeTable={activeTable}
+          lang={lang}
+          currency={restaurant.currency || "USD"}
+          onOrderSubmitted={(orderId) => {
+            setActiveOrderId(orderId);
+            localStorage.setItem(`menuflow_active_order_${restaurant.id}`, orderId);
+            setIsTrackerOpen(true);
+          }}
+        />
+
+        <AnimatePresence>
+          {activeOrderId && !isTrackerOpen && (
+            <motion.button
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.8, opacity: 0 }}
+              onClick={() => setIsTrackerOpen(true)}
+              className="fixed bottom-24 left-4 z-40 bg-background text-foreground shadow-xl shadow-black/10 border border-border px-4 py-3 rounded-full flex items-center gap-2 font-bold text-sm"
+            >
+              <div className="relative">
+                <ReceiptText className="size-5 text-primary" />
+                <span className="absolute -top-1 -right-1 size-2.5 bg-blue-500 border-2 border-background rounded-full animate-pulse" />
+              </div>
+              <span className="hidden sm:inline">{t("menu.orderTracker") || "Track Order"}</span>
+            </motion.button>
+          )}
+        </AnimatePresence>
+
         <AnimatePresence mode="wait">
-          {activeOrderId ? (
+          {isTrackerOpen && activeOrderId && (
             <OrderTracker
               key="order-tracker"
               orderId={activeOrderId}
-              onClose={() => {
+              onClose={() => setIsTrackerOpen(false)}
+              onDone={() => {
                 setActiveOrderId(null);
+                setIsTrackerOpen(false);
                 localStorage.removeItem(`menuflow_active_order_${restaurant.id}`);
-              }}
-            />
-          ) : (
-            <StickyCart
-              key="sticky-cart"
-              cart={cart}
-              restaurant={restaurant}
-              activeTable={activeTable}
-              lang={lang}
-              currency={restaurant.currency || "USD"}
-              onOrderSubmitted={(orderId) => {
-                setActiveOrderId(orderId);
-                localStorage.setItem(`menuflow_active_order_${restaurant.id}`, orderId);
               }}
             />
           )}

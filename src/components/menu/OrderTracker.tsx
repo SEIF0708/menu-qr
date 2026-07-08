@@ -7,9 +7,10 @@ import { useTranslation } from "react-i18next";
 interface OrderTrackerProps {
   orderId: string;
   onClose: () => void;
+  onDone: () => void;
 }
 
-export function OrderTracker({ orderId, onClose }: OrderTrackerProps) {
+export function OrderTracker({ orderId, onClose, onDone }: OrderTrackerProps) {
   const { t } = useTranslation();
   const [order, setOrder] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -63,11 +64,9 @@ export function OrderTracker({ orderId, onClose }: OrderTrackerProps) {
           <ReceiptText className="size-5" />
           {t("menu.orderTracker") || "Order Tracker"}
         </h3>
-        {isCompleted && (
-          <button onClick={onClose} className="p-2 bg-muted rounded-full text-muted-foreground hover:text-foreground transition-colors">
-            <X className="size-4" />
-          </button>
-        )}
+        <button onClick={onClose} className="p-2 bg-muted rounded-full text-muted-foreground hover:text-foreground transition-colors">
+          <X className="size-4" />
+        </button>
       </div>
 
       <div className="space-y-6 pb-4">
@@ -107,7 +106,7 @@ export function OrderTracker({ orderId, onClose }: OrderTrackerProps) {
 
       {isCompleted && (
         <button
-          onClick={onClose}
+          onClick={onDone}
           className="w-full mt-4 bg-green-500 text-white py-3.5 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-green-600 transition-colors"
         >
           {t("menu.done") || "Done"}
