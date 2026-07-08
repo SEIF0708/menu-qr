@@ -106,7 +106,14 @@ function FeaturedCard({
           )}
         </div>
         <button 
-          onClick={onAdd}
+          onClick={(e) => {
+            e.stopPropagation();
+            if (product.has_sizes || product.has_modifiers) {
+              onClick();
+            } else {
+              onAdd(e);
+            }
+          }}
           className="flex items-center gap-1.5 bg-primary text-primary-foreground px-3 py-1.5 rounded-full text-xs font-bold hover:brightness-110 active:scale-95 transition-all shadow-md shadow-primary/20"
         >
           <Plus className="size-3" />

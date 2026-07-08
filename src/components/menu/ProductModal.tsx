@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { Plus, Minus, Flame, Clock, X } from "lucide-react";
 import { formatPrice, pickLocalized } from "@/lib/format";
 import { useSignedImage } from "@/lib/use-signed-image";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 import { useProductRecommendations } from "@/lib/promotions-service";
 import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
@@ -51,13 +53,80 @@ export function ProductModal({
   const desc = pickLocalized(product, "description", lang);
   const [qty, setQty] = useState(1);
   const { data: recs } = useProductRecommendations(restaurant.id, product.id);
+  const { data: crossSellsData } = useQuery({
+    queryKey: ["cross-sells", product.id],
+    queryFn: async () => {
+      const ids = product.product_cross_sells?.map((c: any) => c.cross_sell_product_id) || [];
+      if (ids.length === 0) return [];
+      const { data } = await supabase.from("products").select("*").in("id", ids);
+      return data ?? [];
+    },
+    enabled: !!product.product_cross_sells?.length
+  });
 
-  const finalPrice = getDiscountedPrice(Number(product.price));
-  const isDiscounted = finalPrice < Number(product.price);
+  const displayRecs = (crossSellsData && crossSellsData.length > 0) 
+    ? crossSellsData.map(p => ({ recommended_product: p, id: p.id })) 
+    : recs;
+
+  const [selectedSize, setSelectedSize] = useState<any>(
+    product.has_sizes && product.product_sizes?.length > 0 ? product.product_sizes[0] : null
+  );
+  
+  const [selectedMods, setSelectedMods] = useState<Record<string, any>>({});
+
+  const toggleMod = (group: any, mod: any) => {
+    const isSelected = !!selectedMods[mod.id];
+    const groupSelectedMods = Object.values(selectedMods).filter((m: any) => m.group_id === group.id);
+    
+    if (isSelected) {
+      const next = { ...selectedMods };
+      delete next[mod.id];
+      setSelectedMods(next);
+    } else {
+      if (group.max_selections && groupSelectedMods.length >= group.max_selections) {
+        // Can't add more
+        return;
+      }
+      setSelectedMods({ ...selectedMods, [mod.id]: mod });
+    }
+  };
+
+  const baseProductPrice = selectedSize ? Number(selectedSize.price) : Number(product.price);
+  const modsPrice = Object.values(selectedMods).reduce((acc: number, mod: any) => acc + Number(mod.price || 0), 0);
+  const rawPrice = baseProductPrice + modsPrice;
+  const finalPrice = getDiscountedPrice(rawPrice);
+
+  const isDiscounted = finalPrice < rawPrice;
 
   const handleAdd = () => {
-    onAddToCart(product, qty);
+    // Validate required groups
+    if (product.has_modifiers && product.modifier_groups) {
+      for (const g of product.modifier_groups) {
+        const selectedForGroup = Object.values(selectedMods).filter((m: any) => m.group_id === g.id);
+        if (g.is_required && selectedForGroup.length < (g.min_selections || 1)) {
+          // Could show a toast here, but we will just disable the button instead
+          return;
+        }
+      }
+    }
+    
+    onAddToCart({
+      ...product,
+      cartItemId: crypto.randomUUID(),
+      selectedSize,
+      selectedMods: Object.values(selectedMods),
+      calculatedPrice: finalPrice
+    }, qty);
   };
+
+  // Check if Add to Cart should be disabled
+  let canAdd = true;
+  if (product.has_modifiers && product.modifier_groups) {
+    for (const g of product.modifier_groups) {
+      const selectedForGroup = Object.values(selectedMods).filter((m: any) => m.group_id === g.id);
+      if (g.is_required && selectedForGroup.length < (g.min_selections || 1)) canAdd = false;
+    }
+  }
 
   return (
     <BottomSheet onClose={onClose}>
@@ -113,11 +182,67 @@ export function ProductModal({
               </div>
             )}
 
-            {recs && recs.length > 0 && (
+            {/* Sizes */}
+            {product.has_sizes && product.product_sizes?.length > 0 && (
+              <div className="mt-8">
+                <h3 className="font-display font-bold text-lg mb-3">Choose Size</h3>
+                <div className="space-y-2">
+                  {product.product_sizes.map((s: any) => (
+                    <label key={s.id} className={`flex items-center justify-between p-4 rounded-xl border cursor-pointer transition-colors ${selectedSize?.id === s.id ? 'border-primary bg-primary/5' : 'border-border bg-card'}`}>
+                      <div className="flex items-center gap-3">
+                        <div className={`size-5 rounded-full border flex items-center justify-center ${selectedSize?.id === s.id ? 'border-primary' : 'border-muted-foreground/30'}`}>
+                          {selectedSize?.id === s.id && <div className="size-2.5 rounded-full bg-primary" />}
+                        </div>
+                        <span className="font-medium">{pickLocalized(s, "name", lang)}</span>
+                      </div>
+                      <span className="font-medium">{formatPrice(getDiscountedPrice(s.price), currency, lang)}</span>
+                      <input type="radio" className="hidden" name="product_size" checked={selectedSize?.id === s.id} onChange={() => setSelectedSize(s)} />
+                    </label>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Modifiers */}
+            {product.has_modifiers && product.modifier_groups?.map((g: any) => {
+              const selectedCount = Object.values(selectedMods).filter((m: any) => m.group_id === g.id).length;
+              const isMet = !g.is_required || selectedCount >= (g.min_selections || 1);
+              
+              return (
+                <div key={g.id} className="mt-8">
+                  <div className="flex items-baseline justify-between mb-3">
+                    <h3 className="font-display font-bold text-lg">{pickLocalized(g, "name", lang)}</h3>
+                    {g.is_required && !isMet && <span className="text-xs font-bold text-destructive bg-destructive/10 px-2 py-1 rounded">Required</span>}
+                    {g.max_selections && <span className="text-xs text-muted-foreground">Max {g.max_selections}</span>}
+                  </div>
+                  <div className="space-y-2">
+                    {g.modifiers?.map((m: any) => {
+                      const isSelected = !!selectedMods[m.id];
+                      const disabled = !isSelected && g.max_selections && selectedCount >= g.max_selections;
+                      
+                      return (
+                        <label key={m.id} className={`flex items-center justify-between p-4 rounded-xl border transition-colors ${isSelected ? 'border-primary bg-primary/5' : 'border-border bg-card'} ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}>
+                          <div className="flex items-center gap-3">
+                            <div className={`size-5 rounded border flex items-center justify-center ${isSelected ? 'border-primary bg-primary text-primary-foreground' : 'border-muted-foreground/30'}`}>
+                              {isSelected && <svg viewBox="0 0 24 24" fill="none" className="size-3.5" stroke="currentColor" strokeWidth="3"><path d="M5 13l4 4L19 7"/></svg>}
+                            </div>
+                            <span className="font-medium">{pickLocalized(m, "name", lang)}</span>
+                          </div>
+                          {m.price > 0 && <span className="font-medium text-muted-foreground">+{formatPrice(m.price, currency, lang)}</span>}
+                          <input type="checkbox" className="hidden" checked={isSelected} disabled={disabled} onChange={() => toggleMod(g, m)} />
+                        </label>
+                      );
+                    })}
+                  </div>
+                </div>
+              );
+            })}
+
+            {displayRecs && displayRecs.length > 0 && (
               <div className="mt-8 pt-6 border-t border-border">
                 <h3 className="font-display font-bold text-lg mb-4">{t("menu.frequentlyBought")}</h3>
                 <div className="flex gap-4 overflow-x-auto no-scrollbar -mx-6 px-6 pb-2 snap-x">
-                  {recs.map((r: any) => {
+                  {displayRecs.map((r: any) => {
                     const p = r.recommended_product;
                     if (!p) return null;
                     const rPrice = getDiscountedPrice(Number(p.price));
@@ -152,7 +277,8 @@ export function ProductModal({
         </div>
         <button 
           onClick={handleAdd} 
-          className="flex-1 bg-primary text-primary-foreground rounded-full flex items-center justify-between px-6 py-3 font-bold hover:brightness-110 active:scale-[0.98] transition-all shadow-xl shadow-primary/20"
+          disabled={!canAdd}
+          className="flex-1 bg-primary text-primary-foreground rounded-full flex items-center justify-between px-6 py-3 font-bold hover:brightness-110 active:scale-[0.98] transition-all shadow-xl shadow-primary/20 disabled:opacity-50 disabled:cursor-not-allowed"
         >
            <span>{t("menu.addToCart")}</span>
            <span className="size-1.5 rounded-full bg-primary-foreground/30" />

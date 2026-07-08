@@ -106,7 +106,14 @@ export function ProductCard({
         </div>
         {product.is_available && (
           <button
-            onClick={onAddToCart}
+            onClick={(e) => {
+              e.stopPropagation();
+              if (product.has_sizes || product.has_modifiers) {
+                onClick();
+              } else {
+                onAddToCart(e);
+              }
+            }}
             className="absolute -bottom-2 -right-2 size-10 bg-background rounded-full grid place-items-center shadow-lg border border-border/50"
           >
             <div className="size-8 bg-primary text-primary-foreground rounded-full grid place-items-center active:scale-90 transition-transform shadow-inner shadow-white/20">

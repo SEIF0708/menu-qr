@@ -37,18 +37,20 @@ export function useSubmitOrder() {
       items: any[];
       total_amount: number;
     }) => {
-      const { error } = await supabase
+      const { data: order, error } = await supabase
         .from("orders")
         .insert({
           restaurant_id,
           table_id,
           items_json: items as unknown as Json,
           total_amount,
-          whatsapp_sent: true
-        });
+          whatsapp_sent: false
+        })
+        .select()
+        .single();
         
       if (error) throw error;
-      return { restaurant_id };
+      return order;
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["orders", data.restaurant_id] });

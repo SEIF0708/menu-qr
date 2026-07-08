@@ -13,13 +13,17 @@ import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as WaiterSlugRouteImport } from './routes/waiter/$slug'
 import { Route as MenuSlugRouteImport } from './routes/menu/$slug'
 import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated/onboarding'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
+import { Route as WaiterSlugIndexRouteImport } from './routes/waiter/$slug.index'
 import { Route as AuthenticatedDashboardIndexRouteImport } from './routes/_authenticated/dashboard.index'
+import { Route as WaiterSlugLoginRouteImport } from './routes/waiter/$slug.login'
 import { Route as AuthenticatedDashboardTablesRouteImport } from './routes/_authenticated/dashboard.tables'
 import { Route as AuthenticatedDashboardSubscriptionRouteImport } from './routes/_authenticated/dashboard.subscription'
+import { Route as AuthenticatedDashboardStaffRouteImport } from './routes/_authenticated/dashboard.staff'
 import { Route as AuthenticatedDashboardSettingsRouteImport } from './routes/_authenticated/dashboard.settings'
 import { Route as AuthenticatedDashboardReferralsRouteImport } from './routes/_authenticated/dashboard.referrals'
 import { Route as AuthenticatedDashboardQrRouteImport } from './routes/_authenticated/dashboard.qr'
@@ -48,6 +52,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const WaiterSlugRoute = WaiterSlugRouteImport.update({
+  id: '/waiter/$slug',
+  path: '/waiter/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MenuSlugRoute = MenuSlugRouteImport.update({
   id: '/menu/$slug',
   path: '/menu/$slug',
@@ -68,12 +77,22 @@ const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
   path: '/admin',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const WaiterSlugIndexRoute = WaiterSlugIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => WaiterSlugRoute,
+} as any)
 const AuthenticatedDashboardIndexRoute =
   AuthenticatedDashboardIndexRouteImport.update({
     id: '/',
     path: '/',
     getParentRoute: () => AuthenticatedDashboardRoute,
   } as any)
+const WaiterSlugLoginRoute = WaiterSlugLoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => WaiterSlugRoute,
+} as any)
 const AuthenticatedDashboardTablesRoute =
   AuthenticatedDashboardTablesRouteImport.update({
     id: '/tables',
@@ -84,6 +103,12 @@ const AuthenticatedDashboardSubscriptionRoute =
   AuthenticatedDashboardSubscriptionRouteImport.update({
     id: '/subscription',
     path: '/subscription',
+    getParentRoute: () => AuthenticatedDashboardRoute,
+  } as any)
+const AuthenticatedDashboardStaffRoute =
+  AuthenticatedDashboardStaffRouteImport.update({
+    id: '/staff',
+    path: '/staff',
     getParentRoute: () => AuthenticatedDashboardRoute,
   } as any)
 const AuthenticatedDashboardSettingsRoute =
@@ -143,6 +168,7 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof AuthenticatedDashboardRouteWithChildren
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/menu/$slug': typeof MenuSlugRoute
+  '/waiter/$slug': typeof WaiterSlugRouteWithChildren
   '/dashboard/analytics': typeof AuthenticatedDashboardAnalyticsRoute
   '/dashboard/categories': typeof AuthenticatedDashboardCategoriesRoute
   '/dashboard/orders': typeof AuthenticatedDashboardOrdersRoute
@@ -151,9 +177,12 @@ export interface FileRoutesByFullPath {
   '/dashboard/qr': typeof AuthenticatedDashboardQrRoute
   '/dashboard/referrals': typeof AuthenticatedDashboardReferralsRoute
   '/dashboard/settings': typeof AuthenticatedDashboardSettingsRoute
+  '/dashboard/staff': typeof AuthenticatedDashboardStaffRoute
   '/dashboard/subscription': typeof AuthenticatedDashboardSubscriptionRoute
   '/dashboard/tables': typeof AuthenticatedDashboardTablesRoute
+  '/waiter/$slug/login': typeof WaiterSlugLoginRoute
   '/dashboard/': typeof AuthenticatedDashboardIndexRoute
+  '/waiter/$slug/': typeof WaiterSlugIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -170,9 +199,12 @@ export interface FileRoutesByTo {
   '/dashboard/qr': typeof AuthenticatedDashboardQrRoute
   '/dashboard/referrals': typeof AuthenticatedDashboardReferralsRoute
   '/dashboard/settings': typeof AuthenticatedDashboardSettingsRoute
+  '/dashboard/staff': typeof AuthenticatedDashboardStaffRoute
   '/dashboard/subscription': typeof AuthenticatedDashboardSubscriptionRoute
   '/dashboard/tables': typeof AuthenticatedDashboardTablesRoute
+  '/waiter/$slug/login': typeof WaiterSlugLoginRoute
   '/dashboard': typeof AuthenticatedDashboardIndexRoute
+  '/waiter/$slug': typeof WaiterSlugIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -184,6 +216,7 @@ export interface FileRoutesById {
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRouteWithChildren
   '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
   '/menu/$slug': typeof MenuSlugRoute
+  '/waiter/$slug': typeof WaiterSlugRouteWithChildren
   '/_authenticated/dashboard/analytics': typeof AuthenticatedDashboardAnalyticsRoute
   '/_authenticated/dashboard/categories': typeof AuthenticatedDashboardCategoriesRoute
   '/_authenticated/dashboard/orders': typeof AuthenticatedDashboardOrdersRoute
@@ -192,9 +225,12 @@ export interface FileRoutesById {
   '/_authenticated/dashboard/qr': typeof AuthenticatedDashboardQrRoute
   '/_authenticated/dashboard/referrals': typeof AuthenticatedDashboardReferralsRoute
   '/_authenticated/dashboard/settings': typeof AuthenticatedDashboardSettingsRoute
+  '/_authenticated/dashboard/staff': typeof AuthenticatedDashboardStaffRoute
   '/_authenticated/dashboard/subscription': typeof AuthenticatedDashboardSubscriptionRoute
   '/_authenticated/dashboard/tables': typeof AuthenticatedDashboardTablesRoute
+  '/waiter/$slug/login': typeof WaiterSlugLoginRoute
   '/_authenticated/dashboard/': typeof AuthenticatedDashboardIndexRoute
+  '/waiter/$slug/': typeof WaiterSlugIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -206,6 +242,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/onboarding'
     | '/menu/$slug'
+    | '/waiter/$slug'
     | '/dashboard/analytics'
     | '/dashboard/categories'
     | '/dashboard/orders'
@@ -214,9 +251,12 @@ export interface FileRouteTypes {
     | '/dashboard/qr'
     | '/dashboard/referrals'
     | '/dashboard/settings'
+    | '/dashboard/staff'
     | '/dashboard/subscription'
     | '/dashboard/tables'
+    | '/waiter/$slug/login'
     | '/dashboard/'
+    | '/waiter/$slug/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -233,9 +273,12 @@ export interface FileRouteTypes {
     | '/dashboard/qr'
     | '/dashboard/referrals'
     | '/dashboard/settings'
+    | '/dashboard/staff'
     | '/dashboard/subscription'
     | '/dashboard/tables'
+    | '/waiter/$slug/login'
     | '/dashboard'
+    | '/waiter/$slug'
   id:
     | '__root__'
     | '/'
@@ -246,6 +289,7 @@ export interface FileRouteTypes {
     | '/_authenticated/dashboard'
     | '/_authenticated/onboarding'
     | '/menu/$slug'
+    | '/waiter/$slug'
     | '/_authenticated/dashboard/analytics'
     | '/_authenticated/dashboard/categories'
     | '/_authenticated/dashboard/orders'
@@ -254,9 +298,12 @@ export interface FileRouteTypes {
     | '/_authenticated/dashboard/qr'
     | '/_authenticated/dashboard/referrals'
     | '/_authenticated/dashboard/settings'
+    | '/_authenticated/dashboard/staff'
     | '/_authenticated/dashboard/subscription'
     | '/_authenticated/dashboard/tables'
+    | '/waiter/$slug/login'
     | '/_authenticated/dashboard/'
+    | '/waiter/$slug/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -265,6 +312,7 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   MenuSlugRoute: typeof MenuSlugRoute
+  WaiterSlugRoute: typeof WaiterSlugRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
@@ -297,6 +345,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/waiter/$slug': {
+      id: '/waiter/$slug'
+      path: '/waiter/$slug'
+      fullPath: '/waiter/$slug'
+      preLoaderRoute: typeof WaiterSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/menu/$slug': {
       id: '/menu/$slug'
       path: '/menu/$slug'
@@ -325,12 +380,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/waiter/$slug/': {
+      id: '/waiter/$slug/'
+      path: '/'
+      fullPath: '/waiter/$slug/'
+      preLoaderRoute: typeof WaiterSlugIndexRouteImport
+      parentRoute: typeof WaiterSlugRoute
+    }
     '/_authenticated/dashboard/': {
       id: '/_authenticated/dashboard/'
       path: '/'
       fullPath: '/dashboard/'
       preLoaderRoute: typeof AuthenticatedDashboardIndexRouteImport
       parentRoute: typeof AuthenticatedDashboardRoute
+    }
+    '/waiter/$slug/login': {
+      id: '/waiter/$slug/login'
+      path: '/login'
+      fullPath: '/waiter/$slug/login'
+      preLoaderRoute: typeof WaiterSlugLoginRouteImport
+      parentRoute: typeof WaiterSlugRoute
     }
     '/_authenticated/dashboard/tables': {
       id: '/_authenticated/dashboard/tables'
@@ -344,6 +413,13 @@ declare module '@tanstack/react-router' {
       path: '/subscription'
       fullPath: '/dashboard/subscription'
       preLoaderRoute: typeof AuthenticatedDashboardSubscriptionRouteImport
+      parentRoute: typeof AuthenticatedDashboardRoute
+    }
+    '/_authenticated/dashboard/staff': {
+      id: '/_authenticated/dashboard/staff'
+      path: '/staff'
+      fullPath: '/dashboard/staff'
+      preLoaderRoute: typeof AuthenticatedDashboardStaffRouteImport
       parentRoute: typeof AuthenticatedDashboardRoute
     }
     '/_authenticated/dashboard/settings': {
@@ -414,6 +490,7 @@ interface AuthenticatedDashboardRouteChildren {
   AuthenticatedDashboardQrRoute: typeof AuthenticatedDashboardQrRoute
   AuthenticatedDashboardReferralsRoute: typeof AuthenticatedDashboardReferralsRoute
   AuthenticatedDashboardSettingsRoute: typeof AuthenticatedDashboardSettingsRoute
+  AuthenticatedDashboardStaffRoute: typeof AuthenticatedDashboardStaffRoute
   AuthenticatedDashboardSubscriptionRoute: typeof AuthenticatedDashboardSubscriptionRoute
   AuthenticatedDashboardTablesRoute: typeof AuthenticatedDashboardTablesRoute
   AuthenticatedDashboardIndexRoute: typeof AuthenticatedDashboardIndexRoute
@@ -431,6 +508,7 @@ const AuthenticatedDashboardRouteChildren: AuthenticatedDashboardRouteChildren =
     AuthenticatedDashboardQrRoute: AuthenticatedDashboardQrRoute,
     AuthenticatedDashboardReferralsRoute: AuthenticatedDashboardReferralsRoute,
     AuthenticatedDashboardSettingsRoute: AuthenticatedDashboardSettingsRoute,
+    AuthenticatedDashboardStaffRoute: AuthenticatedDashboardStaffRoute,
     AuthenticatedDashboardSubscriptionRoute:
       AuthenticatedDashboardSubscriptionRoute,
     AuthenticatedDashboardTablesRoute: AuthenticatedDashboardTablesRoute,
@@ -457,12 +535,27 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
 const AuthenticatedRouteRouteWithChildren =
   AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
 
+interface WaiterSlugRouteChildren {
+  WaiterSlugLoginRoute: typeof WaiterSlugLoginRoute
+  WaiterSlugIndexRoute: typeof WaiterSlugIndexRoute
+}
+
+const WaiterSlugRouteChildren: WaiterSlugRouteChildren = {
+  WaiterSlugLoginRoute: WaiterSlugLoginRoute,
+  WaiterSlugIndexRoute: WaiterSlugIndexRoute,
+}
+
+const WaiterSlugRouteWithChildren = WaiterSlugRoute._addFileChildren(
+  WaiterSlugRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   MenuSlugRoute: MenuSlugRoute,
+  WaiterSlugRoute: WaiterSlugRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

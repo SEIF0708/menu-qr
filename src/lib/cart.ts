@@ -2,11 +2,14 @@ import { useEffect, useState, useCallback } from "react";
 import { trackEvent } from "./analytics";
 
 export type CartItem = {
-  id: string;
+  id: string; // Line item ID (hash of options, or product id)
+  productId: string; // Original product ID
   name: string;
   price: number;
   image?: string | null;
   qty: number;
+  selectedSize?: any;
+  selectedMods?: any[];
 };
 
 const KEY = (slug: string) => `menuflow_cart_${slug}`;

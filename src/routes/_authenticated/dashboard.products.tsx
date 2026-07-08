@@ -10,6 +10,7 @@ import { Plus, Pencil, Trash2, Copy, Search, UtensilsCrossed, Upload, X, LayoutG
 import { toast } from "sonner";
 import { uploadAsset } from "@/lib/storage";
 import { formatPrice, pickLocalized } from "@/lib/format";
+import { SizesEditor, ModifiersEditor, CrossSellsEditor } from "@/components/dashboard/ProductCustomizationsEditor";
 
 export const Route = createFileRoute("/_authenticated/dashboard/products")({ component: ProductsPage });
 
@@ -28,7 +29,14 @@ function ProductsPage() {
     enabled: !!restaurant?.id,
     queryKey: ["products", restaurant?.id],
     queryFn: async () => {
-      const { data } = await supabase.from("products").select("*").eq("restaurant_id", restaurant!.id).order("display_order").order("created_at", { ascending: false });
+      const { data, error } = await supabase.from("products").select("*, product_sizes(*), modifier_groups(*, modifiers(*)), product_cross_sells!product_id(*)").eq("restaurant_id", restaurant!.id).order("display_order").order("created_at", { ascending: false });
+      if (error) {
+        console.error("Products fetch error:", error);
+        if (error.code === 'PGRST200') {
+          toast.error("Database update required. Please run the product customization migration in Supabase.");
+        }
+        throw error;
+      }
       return data ?? [];
     },
   });
@@ -122,6 +130,12 @@ function ProductsPage() {
       </div>
 
       {(() => {
+        if (products.isLoading) {
+          return <div className="py-20 text-center text-muted-foreground animate-pulse">Loading products...</div>;
+        }
+        if (products.isError) {
+          return <div className="py-20 text-center text-destructive font-bold">Error loading products. Check console for details.</div>;
+        }
         if (filtered.length === 0) {
           return (
             <div className="text-center py-20 bg-card border border-dashed border-border rounded-2xl">
@@ -255,10 +269,25 @@ function ProductDialog({ restaurantId, product, categories, onClose }: { restaur
     ingredients: product?.ingredients ?? "",
     allergens: product?.allergens ?? "",
     badges: product?.badges ?? [],
+    has_sizes: product?.has_sizes ?? false,
+    has_modifiers: product?.has_modifiers ?? false,
+    has_cross_sells: product?.has_cross_sells ?? false,
+    product_sizes: product?.product_sizes ?? [],
+    modifier_groups: product?.modifier_groups ?? [],
+    product_cross_sells: product?.product_cross_sells ?? [],
   });
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   const img = useSignedImage(form.image_url);
+
+  // We need to fetch all products for cross-sells
+  const allProds = useQuery({
+    queryKey: ["all-products-for-cross", restaurantId],
+    queryFn: async () => {
+      const { data } = await supabase.from("products").select("id, name_en, name_fr, name_ar").eq("restaurant_id", restaurantId).neq("id", product?.id || "none");
+      return data ?? [];
+    }
+  });
 
   const upload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]; if (!file) return;
@@ -275,18 +304,77 @@ function ProductDialog({ restaurantId, product, categories, onClose }: { restaur
     setSaving(true);
     try {
       const payload = { 
-        ...form, 
+        name_en: form.name_en, name_fr: form.name_fr, name_ar: form.name_ar,
+        description_en: form.description_en, description_fr: form.description_fr, description_ar: form.description_ar,
         price: Number(form.price), 
         category_id: form.category_id || null, 
-        restaurant_id: restaurantId,
+        is_available: form.is_available,
+        image_url: form.image_url,
+        featured: form.featured, popular: form.popular, chef_recommendation: form.chef_recommendation,
         prep_time_minutes: form.prep_time_minutes ? Number(form.prep_time_minutes) : null,
-        calories: form.calories ? Number(form.calories) : null
+        calories: form.calories ? Number(form.calories) : null,
+        ingredients: form.ingredients, allergens: form.allergens, badges: form.badges,
+        has_sizes: form.has_sizes, has_modifiers: form.has_modifiers, has_cross_sells: form.has_cross_sells,
+        restaurant_id: restaurantId,
       };
+      
+      let newProductId = product?.id;
       if (product) {
         await supabase.from("products").update(payload).eq("id", product.id);
       } else {
-        await supabase.from("products").insert(payload);
+        const { data, error } = await supabase.from("products").insert(payload).select().single();
+        if (error) throw error;
+        newProductId = data.id;
       }
+
+      // Sync sizes
+      if (form.has_sizes && form.product_sizes.length > 0) {
+        const sizesToUpsert = form.product_sizes.map((s: any, idx: number) => {
+          const { id, created_at, ...rest } = s; // Strip id and created_at to avoid duplicate key errors on insert
+          return { ...rest, product_id: newProductId, display_order: idx };
+        });
+        await supabase.from("product_sizes").delete().eq("product_id", newProductId);
+        const { error: sizesErr } = await supabase.from("product_sizes").insert(sizesToUpsert);
+        if (sizesErr) throw sizesErr;
+      } else {
+        await supabase.from("product_sizes").delete().eq("product_id", newProductId);
+      }
+
+      // Sync modifiers
+      if (form.has_modifiers && form.modifier_groups.length > 0) {
+        await supabase.from("modifier_groups").delete().eq("product_id", newProductId);
+        for (let i = 0; i < form.modifier_groups.length; i++) {
+          const mg = form.modifier_groups[i];
+          const { data: mgData, error: mgError } = await supabase.from("modifier_groups").insert({
+            product_id: newProductId, name_en: mg.name_en, name_fr: mg.name_fr, name_ar: mg.name_ar,
+            is_required: mg.is_required, min_selections: mg.min_selections, max_selections: mg.max_selections, display_order: i
+          }).select().single();
+          
+          if (mgError) throw mgError;
+
+          if (mg.modifiers && mg.modifiers.length > 0) {
+            const modsToInsert = mg.modifiers.map((m: any, idx: number) => {
+              const { id, created_at, ...rest } = m;
+              return { ...rest, group_id: mgData.id, display_order: idx };
+            });
+            const { error: modErr } = await supabase.from("modifiers").insert(modsToInsert);
+            if (modErr) throw modErr;
+          }
+        }
+      } else {
+        await supabase.from("modifier_groups").delete().eq("product_id", newProductId);
+      }
+
+      // Sync cross sells
+      if (form.has_cross_sells && form.product_cross_sells.length > 0) {
+        const csToUpsert = form.product_cross_sells.map((c: any, idx: number) => ({ product_id: newProductId, cross_sell_product_id: c.cross_sell_product_id, display_order: idx }));
+        await supabase.from("product_cross_sells").delete().eq("product_id", newProductId);
+        const { error: csErr } = await supabase.from("product_cross_sells").insert(csToUpsert);
+        if (csErr) throw csErr;
+      } else {
+        await supabase.from("product_cross_sells").delete().eq("product_id", newProductId);
+      }
+
       toast.success(t("common.saved"));
       onClose();
     } catch (e: any) { toast.error(e.message); } finally { setSaving(false); }
@@ -343,7 +431,40 @@ function ProductDialog({ restaurantId, product, categories, onClose }: { restaur
             {t("products.available")}
           </label>
 
-          <div className="grid sm:grid-cols-2 gap-4">
+          {/* Customization Toggles */}
+          <div className="space-y-3 pt-4 border-t border-border">
+            <h3 className="text-sm font-semibold">Advanced Customization</h3>
+            <div className="flex flex-wrap gap-4">
+              <label className="flex items-center gap-2 text-sm">
+                <input type="checkbox" checked={form.has_sizes} onChange={(e) => setForm({ ...form, has_sizes: e.target.checked })} /> Enable Sizes
+              </label>
+              <label className="flex items-center gap-2 text-sm">
+                <input type="checkbox" checked={form.has_modifiers} onChange={(e) => setForm({ ...form, has_modifiers: e.target.checked })} /> Enable Options / Toppings
+              </label>
+              <label className="flex items-center gap-2 text-sm">
+                <input type="checkbox" checked={form.has_cross_sells} onChange={(e) => setForm({ ...form, has_cross_sells: e.target.checked })} /> Enable Cross-Sells
+              </label>
+            </div>
+            
+            {form.has_sizes && (
+              <SizesEditor sizes={form.product_sizes} setSizes={(s) => setForm({ ...form, product_sizes: s })} />
+            )}
+            
+            {form.has_modifiers && (
+              <ModifiersEditor groups={form.modifier_groups} setGroups={(g) => setForm({ ...form, modifier_groups: g })} />
+            )}
+            
+            {form.has_cross_sells && (
+              <CrossSellsEditor 
+                crossSells={form.product_cross_sells} 
+                setCrossSells={(c) => setForm({ ...form, product_cross_sells: c })} 
+                availableProducts={allProds.data || []} 
+                lang={lang} 
+              />
+            )}
+          </div>
+
+          <div className="grid sm:grid-cols-2 gap-4 pt-4 border-t border-border">
             <Field label="Prep Time (mins)"><input type="number" value={form.prep_time_minutes} onChange={(e) => setForm({ ...form, prep_time_minutes: e.target.value })} className="input2" /></Field>
             <Field label="Calories (kcal)"><input type="number" value={form.calories} onChange={(e) => setForm({ ...form, calories: e.target.value })} className="input2" /></Field>
           </div>

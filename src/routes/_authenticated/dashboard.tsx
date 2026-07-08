@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useMyRestaurant } from "@/lib/use-restaurant";
 import { supabase } from "@/integrations/supabase/client";
 import { LangSwitcher } from "@/components/LangSwitcher";
-import { LayoutGrid, FolderKanban, UtensilsCrossed, QrCode, Settings, LogOut, ExternalLink, Menu, X, CreditCard, AlertTriangle, Shield, Gift, Table, ShoppingBag, BarChart3, Tag, Lock } from "lucide-react";
+import { LayoutGrid, FolderKanban, UtensilsCrossed, QrCode, Settings, LogOut, ExternalLink, Menu, X, CreditCard, AlertTriangle, Shield, Gift, Table, ShoppingBag, BarChart3, Tag, Lock, Users } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { cn } from "@/lib/utils";
@@ -31,7 +31,8 @@ function DashboardLayout() {
     { to: "/dashboard/promotions", label: t("nav.promotions"), icon: Tag },
     { to: "/dashboard/qr", label: t("nav.qr"), icon: QrCode },
     { to: "/dashboard/orders", label: t("nav.orders"), icon: ShoppingBag },
-    { to: "/dashboard/tables", label: t("nav.tables"), icon: Table },
+    { to: "/dashboard/tables", label: t("nav.tables") || "Tables", icon: Table },
+    { to: "/dashboard/staff", label: t("nav.staff") || "Waitstaff", icon: Users },
     { to: "/dashboard/subscription", label: t("nav.subscription"), icon: CreditCard },
     { to: "/dashboard/referrals", label: t("nav.referrals"), icon: Gift },
     { to: "/dashboard/settings", label: t("nav.settings"), icon: Settings },

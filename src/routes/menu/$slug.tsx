@@ -22,6 +22,8 @@ import { ComboSection } from "@/components/menu/ComboSection";
 import { ProductCard } from "@/components/menu/ProductCard";
 import { ProductModal, BottomSheet } from "@/components/menu/ProductModal";
 import { StickyCart } from "@/components/menu/StickyCart";
+import { OrderTracker } from "@/components/menu/OrderTracker";
+import { WaiterFab } from "@/components/menu/WaiterFab";
 import { RestaurantLoadingScreen } from "@/components/menu/RestaurantLoadingScreen";
 
 export const Route = createFileRoute("/menu/$slug")({
@@ -40,7 +42,11 @@ export const Route = createFileRoute("/menu/$slug")({
       context.queryClient.ensureQueryData({
         queryKey: ["public-prods", restaurant.id],
         queryFn: async () => {
-          const { data } = await supabase.from("products").select("*").eq("restaurant_id", restaurant.id).order("display_order");
+          const { data, error } = await supabase.from("products").select("*, product_sizes(*), modifier_groups(*, modifiers(*)), product_cross_sells!product_id(*)").eq("restaurant_id", restaurant.id).order("display_order");
+          if (error) {
+            console.error("Products fetch error in menu:", error);
+            throw error;
+          }
           return data ?? [];
         }
       }),
@@ -95,6 +101,10 @@ function MenuPage() {
   
   // Fast animated splash screen guaranteed for a premium feel
   const [showSplash, setShowSplash] = useState(true);
+
+  const [activeOrderId, setActiveOrderId] = useState<string | null>(() => {
+    return localStorage.getItem(`menuflow_active_order_${restaurant.id}`);
+  });
 
   useEffect(() => {
     // Show splash for at least 2.5 seconds to allow the progress bar and messages to be appreciated
@@ -166,7 +176,11 @@ function MenuPage() {
   const prods = useQuery({
     queryKey: ["public-prods", restaurant.id],
     queryFn: async () => {
-      const { data } = await supabase.from("products").select("*").eq("restaurant_id", restaurant.id).order("display_order");
+      const { data, error } = await supabase.from("products").select("*, product_sizes(*), modifier_groups(*, modifiers(*)), product_cross_sells!product_id(*)").eq("restaurant_id", restaurant.id).order("display_order");
+      if (error) {
+        console.error("Products fetch error in menu:", error);
+        throw error;
+      }
       return data ?? [];
     },
   });
@@ -239,9 +253,25 @@ function MenuPage() {
   }
 
   const handleAddToCart = (p: any, qty: number = 1) => {
-    const finalPrice = getDiscountedPrice(Number(p.price));
+    const isCustom = p.selectedSize || (p.selectedMods && p.selectedMods.length > 0);
+    const price = p.calculatedPrice !== undefined ? p.calculatedPrice : getDiscountedPrice(Number(p.price));
+    
+    let combinationId = p.id;
+    if (isCustom) {
+       const modIds = p.selectedMods?.map((m: any) => m.id).sort().join('-') || 'nomods';
+       combinationId = `${p.id}_${p.selectedSize?.id || 'nosize'}_${modIds}`;
+    }
+
     for (let i = 0; i < qty; i++) {
-      cart.add({ id: p.id, name: pickLocalized(p, "name", lang) || "—", price: finalPrice, image: p.image_url });
+      cart.add({ 
+        id: combinationId, 
+        productId: p.id,
+        name: pickLocalized(p, "name", lang) || "—", 
+        price: price, 
+        image: p.image_url,
+        selectedSize: p.selectedSize,
+        selectedMods: p.selectedMods
+      });
       trackEvent({ restaurant_id: restaurant.id, event_type: 'add_to_cart', entity_type: 'product', entity_id: p.id, table_id: activeTable?.id });
     }
   };
@@ -330,6 +360,7 @@ function MenuPage() {
               onAddToCart={(c) => {
                 cart.add({
                   id: c.id,
+                  productId: c.id,
                   name: pickLocalized(c, "title", lang) || "Combo",
                   price: Number(c.metadata_json?.price || 0),
                   image: c.metadata_json?.image_url
@@ -377,12 +408,36 @@ function MenuPage() {
           </div>
         </div>
 
-        <StickyCart 
-          cart={cart} 
-          restaurant={restaurant} 
-          activeTable={activeTable} 
-          lang={lang} 
-          currency={restaurant.currency} 
+        {/* Cart & Order Tracker */}
+        <AnimatePresence mode="wait">
+          {activeOrderId ? (
+            <OrderTracker
+              key="order-tracker"
+              orderId={activeOrderId}
+              onClose={() => {
+                setActiveOrderId(null);
+                localStorage.removeItem(`menuflow_active_order_${restaurant.id}`);
+              }}
+            />
+          ) : (
+            <StickyCart
+              key="sticky-cart"
+              cart={cart}
+              restaurant={restaurant}
+              activeTable={activeTable}
+              lang={lang}
+              currency={restaurant.currency || "USD"}
+              onOrderSubmitted={(orderId) => {
+                setActiveOrderId(orderId);
+                localStorage.setItem(`menuflow_active_order_${restaurant.id}`, orderId);
+              }}
+            />
+          )}
+        </AnimatePresence>
+        
+        <WaiterFab 
+          restaurant={restaurant}
+          activeTable={activeTable}
         />
 
         <AnimatePresence>
