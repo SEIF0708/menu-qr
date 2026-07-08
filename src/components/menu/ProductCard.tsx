@@ -1,5 +1,6 @@
 import React from "react";
 import { Plus, Flame, Clock } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { pickLocalized, formatPrice } from "@/lib/format";
 import { useSignedImage } from "@/lib/use-signed-image";
 
@@ -20,6 +21,7 @@ export function ProductCard({
   onClick,
   onAddToCart,
 }: ProductCardProps) {
+  const { t } = useTranslation();
   const img = useSignedImage(product.image_url);
   const name = pickLocalized(product, "name", lang) || "—";
   const desc = pickLocalized(product, "description", lang);
