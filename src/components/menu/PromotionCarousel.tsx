@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Megaphone, Clock } from "lucide-react";
 import { pickLocalized } from "@/lib/format";
 import { cn } from "@/lib/utils";
+import { useTranslation } from "react-i18next";
 
 interface PromotionCarouselProps {
   banners: any[];
@@ -14,6 +15,7 @@ export function PromotionCarousel({
   happyHour,
   lang,
 }: PromotionCarouselProps) {
+  const { t } = useTranslation();
   const [timeLeft, setTimeLeft] = useState<number | null>(null);
 
   useEffect(() => {
@@ -63,7 +65,7 @@ export function PromotionCarousel({
               </div>
               <div className="min-w-0">
                 <h3 className="font-bold text-white text-sm sm:text-base leading-tight truncate">
-                  {pickLocalized(happyHour, "title", lang) || "Happy Hour"}
+                  {pickLocalized(happyHour, "title", lang) || t("menu.happyHour")}
                 </h3>
                 <p className="text-[10px] sm:text-[11px] text-white/90 font-medium mt-0.5 truncate">
                   {happyHour.metadata_json?.discount_percent}% OFF
@@ -73,7 +75,7 @@ export function PromotionCarousel({
             
             <div className="relative z-10 flex flex-col items-end shrink-0 ml-auto pl-2">
               <span className="text-[8px] sm:text-[9px] uppercase font-bold tracking-wider text-white/90 mb-1">
-                Ends In
+                {t("menu.endsIn")}
               </span>
               <div className="flex items-center gap-0.5 font-display font-bold text-white text-xs sm:text-sm bg-black/20 rounded-lg px-2 py-1 backdrop-blur-sm">
                 {(hours > 0 || timeLeft === null) && (

@@ -21,9 +21,9 @@ function OrdersPage() {
     <div className="max-w-5xl">
       <header className="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
-          <p className="text-xs font-mono text-muted-foreground uppercase tracking-widest mb-1">Orders</p>
-          <h1 className="text-3xl font-display font-bold">Recent Orders</h1>
-          <p className="text-sm text-muted-foreground mt-1">Review orders sent to WhatsApp.</p>
+          <p className="text-xs font-mono text-muted-foreground uppercase tracking-widest mb-1">{t("nav.orders")}</p>
+          <h1 className="text-3xl font-display font-bold">{t("orders.title")}</h1>
+          <p className="text-sm text-muted-foreground mt-1">{t("orders.subtitle")}</p>
         </div>
       </header>
 
@@ -32,8 +32,8 @@ function OrdersPage() {
           <div className="size-16 bg-muted rounded-full grid place-items-center mb-4">
             <ShoppingBag className="size-6 text-muted-foreground" />
           </div>
-          <h3 className="font-display font-bold text-lg">No orders yet</h3>
-          <p className="text-muted-foreground text-sm mt-1 max-w-sm">When customers send an order via WhatsApp, it will appear here for your records.</p>
+          <h3 className="font-display font-bold text-lg">{t("orders.empty")}</h3>
+          <p className="text-muted-foreground text-sm mt-1 max-w-sm">{t("orders.emptyHint")}</p>
         </div>
       ) : (
         <div className="bg-card border border-border rounded-2xl overflow-hidden shadow-sm">
@@ -41,11 +41,11 @@ function OrdersPage() {
             <table className="w-full text-sm text-left">
               <thead className="text-xs text-muted-foreground uppercase bg-muted/50 border-b border-border">
                 <tr>
-                  <th className="px-6 py-4 font-medium">Date & Time</th>
-                  <th className="px-6 py-4 font-medium">Table</th>
-                  <th className="px-6 py-4 font-medium">Items</th>
-                  <th className="px-6 py-4 font-medium">Total</th>
-                  <th className="px-6 py-4 font-medium text-right">Status</th>
+                  <th className="px-6 py-4 font-medium">{t("orders.dateTime")}</th>
+                  <th className="px-6 py-4 font-medium">{t("orders.table")}</th>
+                  <th className="px-6 py-4 font-medium">{t("orders.items")}</th>
+                  <th className="px-6 py-4 font-medium">{t("orders.total")}</th>
+                  <th className="px-6 py-4 font-medium text-right">{t("orders.status")}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
@@ -63,10 +63,10 @@ function OrdersPage() {
                         </div>
                       </td>
                       <td className="px-6 py-4 font-medium">
-                        {order.table?.name || <span className="text-muted-foreground text-xs italic">No Table</span>}
+                        {order.table?.name || <span className="text-muted-foreground text-xs italic">{t("orders.noTable")}</span>}
                       </td>
                       <td className="px-6 py-4">
-                        {itemsCount} items
+                        {t("orders.itemsCount", { count: itemsCount })}
                       </td>
                       <td className="px-6 py-4 font-display font-bold">
                         {formatPrice(order.total_amount, restaurant!.currency, lang)}
@@ -74,11 +74,11 @@ function OrdersPage() {
                       <td className="px-6 py-4 text-right">
                         {order.whatsapp_sent ? (
                           <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-700 text-xs font-bold">
-                            <CheckCircle2 className="size-3.5" /> Sent
+                            <CheckCircle2 className="size-3.5" /> {t("orders.sent")}
                           </span>
                         ) : (
                           <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-muted text-muted-foreground text-xs font-bold">
-                            Pending
+                            {t("orders.pending")}
                           </span>
                         )}
                       </td>

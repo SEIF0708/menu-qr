@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import { Plus, Minus, Flame, Clock, X } from "lucide-react";
-import { pickLocalized, formatPrice } from "@/lib/format";
+import { formatPrice, pickLocalized } from "@/lib/format";
 import { useSignedImage } from "@/lib/use-signed-image";
 import { useProductRecommendations } from "@/lib/promotions-service";
 import { motion } from "framer-motion";
+import { useTranslation } from "react-i18next";
 
 export function BottomSheet({ children, onClose }: { children: React.ReactNode; onClose: () => void }) {
   return (
@@ -44,6 +45,7 @@ export function ProductModal({
   onAddToCart,
   onTrackUpsellClick,
 }: ProductModalProps) {
+  const { t } = useTranslation();
   const img = useSignedImage(product.image_url);
   const name = pickLocalized(product, "name", lang) || "—";
   const desc = pickLocalized(product, "description", lang);
@@ -81,14 +83,14 @@ export function ProductModal({
             {(product.calories || product.prep_time_minutes) && (
               <div className="flex items-center gap-6 mt-6 py-4 border-y border-border">
                 {product.calories && (
-                  <div className="flex flex-col">
-                    <span className="text-[10px] text-muted-foreground uppercase tracking-wider font-bold mb-1">Calories</span>
+                  <div className="flex flex-col border-r border-border/50 pr-4">
+                    <span className="text-[10px] text-muted-foreground uppercase tracking-wider font-bold mb-1">{t("menu.calories")}</span>
                     <span className="text-sm font-medium flex items-center gap-1.5"><Flame className="size-4 text-orange-500"/> {product.calories} kcal</span>
                   </div>
                 )}
                 {product.prep_time_minutes && (
-                  <div className="flex flex-col">
-                    <span className="text-[10px] text-muted-foreground uppercase tracking-wider font-bold mb-1">Prep Time</span>
+                  <div className="flex flex-col pl-2">
+                    <span className="text-[10px] text-muted-foreground uppercase tracking-wider font-bold mb-1">{t("menu.prepTime")}</span>
                     <span className="text-sm font-medium flex items-center gap-1.5"><Clock className="size-4 text-blue-500"/> {product.prep_time_minutes} mins</span>
                   </div>
                 )}
@@ -99,21 +101,21 @@ export function ProductModal({
             
             {product.ingredients && (
               <div className="mt-6 bg-muted/50 p-4 rounded-2xl">
-                <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-2">Ingredients</h4>
+                <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-2">{t("menu.ingredients")}</h4>
                 <p className="text-sm">{product.ingredients}</p>
               </div>
             )}
             
             {product.allergens && (
-              <div className="mt-4 p-4 bg-red-50 text-red-900 rounded-2xl">
-                <h4 className="text-xs font-bold uppercase tracking-wider mb-1">Allergens</h4>
+              <div className="mt-4 p-4 bg-orange-500/10 border border-orange-500/20 text-orange-800 rounded-2xl">
+                <h4 className="text-xs font-bold uppercase tracking-wider mb-1">{t("menu.allergens")}</h4>
                 <p className="text-sm font-medium">{product.allergens}</p>
               </div>
             )}
 
             {recs && recs.length > 0 && (
               <div className="mt-8 pt-6 border-t border-border">
-                <h3 className="font-display font-bold text-lg mb-4">Frequently Bought Together</h3>
+                <h3 className="font-display font-bold text-lg mb-4">{t("menu.frequentlyBought")}</h3>
                 <div className="flex gap-4 overflow-x-auto no-scrollbar -mx-6 px-6 pb-2 snap-x">
                   {recs.map((r: any) => {
                     const p = r.recommended_product;
@@ -148,9 +150,12 @@ export function ProductModal({
            <span className="font-bold text-base">{qty}</span>
            <button onClick={() => setQty(qty+1)} className="size-10 rounded-full bg-background shadow-sm grid place-items-center active:scale-95 transition-transform"><Plus className="size-4" /></button>
         </div>
-        <button onClick={handleAdd} className="flex-1 bg-primary text-primary-foreground h-14 rounded-full font-bold text-base shadow-xl shadow-primary/20 hover:brightness-110 active:scale-[0.98] transition-all flex items-center justify-center gap-2">
-           <span>Add to order</span>
-           <span className="font-normal opacity-80">•</span>
+        <button 
+          onClick={handleAdd} 
+          className="flex-1 bg-primary text-primary-foreground rounded-full flex items-center justify-between px-6 py-3 font-bold hover:brightness-110 active:scale-[0.98] transition-all shadow-xl shadow-primary/20"
+        >
+           <span>{t("menu.addToCart")}</span>
+           <span className="size-1.5 rounded-full bg-primary-foreground/30" />
            <span>{formatPrice(finalPrice * qty, currency, lang)}</span>
         </button>
       </div>

@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMyRestaurant } from "@/lib/use-restaurant";
 import { useTables, useCreateTable, useUpdateTable, useDeleteTable } from "@/lib/use-tables";
+import { useTranslation } from "react-i18next";
 import { useState, useRef } from "react";
 import { QRCodeCanvas } from "qrcode.react";
 import { Download, Printer, Plus, Trash2, Edit2, Lock, Table as TableIcon } from "lucide-react";
@@ -12,6 +13,7 @@ export const Route = createFileRoute("/_authenticated/dashboard/tables")({
 });
 
 function TablesPage() {
+  const { t } = useTranslation();
   const { data: restaurant } = useMyRestaurant();
   const { data: tables = [], isLoading } = useTables(restaurant?.id);
   const createTable = useCreateTable(restaurant?.id);
@@ -68,13 +70,13 @@ function TablesPage() {
     return (
       <div className="max-w-4xl">
         <header className="mb-8">
-          <p className="text-xs font-mono text-muted-foreground uppercase tracking-widest mb-1">Tables</p>
-          <h1 className="text-3xl font-display font-bold">Table Management</h1>
+          <p className="text-xs font-mono text-muted-foreground uppercase tracking-widest mb-1">{t("nav.tables")}</p>
+          <h1 className="text-3xl font-display font-bold">{t("tables.title")}</h1>
         </header>
         <div className="bg-orange-50 border border-orange-200 rounded-2xl p-8 flex flex-col items-center text-center">
            <Lock className="size-12 mb-4 text-orange-500" />
-           <h2 className="text-xl font-bold mb-2 text-orange-900">Table QR Disabled</h2>
-           <p className="max-w-md text-orange-800">Your menu is currently inactive. Please upgrade your subscription to generate and manage table QR codes.</p>
+           <h2 className="text-xl font-bold mb-2 text-orange-900">{t("tables.disabled")}</h2>
+           <p className="max-w-md text-orange-800">{t("tables.disabledHint")}</p>
         </div>
       </div>
     );
@@ -84,52 +86,52 @@ function TablesPage() {
     <div className="max-w-5xl">
       <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
         <div>
-          <p className="text-xs font-mono text-muted-foreground uppercase tracking-widest mb-1">Tables</p>
-          <h1 className="text-3xl font-display font-bold">Table Management</h1>
-          <p className="text-sm text-muted-foreground mt-1">Manage tables and generate specific QR codes for each.</p>
+          <p className="text-xs font-mono text-muted-foreground uppercase tracking-widest mb-1">{t("nav.tables")}</p>
+          <h1 className="text-3xl font-display font-bold">{t("tables.title")}</h1>
+          <p className="text-sm text-muted-foreground mt-1">{t("tables.subtitle")}</p>
         </div>
         {!isCreating && (
           <button
             onClick={() => setIsCreating(true)}
             className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-5 py-2.5 rounded-full text-sm font-bold shadow-md hover:shadow-lg transition-all active:scale-95"
           >
-            <Plus className="size-4" /> Add Table
+            <Plus className="size-4" /> {t("tables.addTable")}
           </button>
         )}
       </header>
 
       {isCreating && (
         <div className="bg-card border border-border p-6 rounded-2xl mb-8 shadow-sm animate-fade-in">
-          <h2 className="text-lg font-bold mb-4">Create New Table</h2>
+          <h2 className="text-lg font-bold mb-4">{t("tables.createTable")}</h2>
           <form onSubmit={handleCreate} className="flex flex-col sm:flex-row gap-4 items-end">
             <div className="flex-1 w-full">
-              <label className="block text-sm font-medium mb-1.5">Table Name (e.g. Window 1, Patio A)</label>
+              <label className="block text-sm font-medium mb-1.5">{t("tables.tableName")}</label>
               <input
                 type="text"
                 value={newTableName}
                 onChange={(e) => setNewTableName(e.target.value)}
                 required
                 className="w-full px-4 py-2.5 rounded-xl border border-border bg-background focus:ring-2 focus:ring-primary/20 focus:outline-none"
-                placeholder="Table Name"
+                placeholder={t("tables.tableNamePlaceholder")}
               />
             </div>
             <div className="flex-1 w-full">
-              <label className="block text-sm font-medium mb-1.5">Table Number</label>
+              <label className="block text-sm font-medium mb-1.5">{t("tables.tableNumber")}</label>
               <input
                 type="number"
                 value={newTableNumber}
                 onChange={(e) => setNewTableNumber(e.target.value ? Number(e.target.value) : "")}
                 required
                 className="w-full px-4 py-2.5 rounded-xl border border-border bg-background focus:ring-2 focus:ring-primary/20 focus:outline-none"
-                placeholder="Number"
+                placeholder={t("tables.numberPlaceholder")}
               />
             </div>
             <div className="flex gap-2 w-full sm:w-auto mt-4 sm:mt-0">
               <button type="button" onClick={() => setIsCreating(false)} className="flex-1 px-5 py-2.5 rounded-xl font-medium border border-border hover:bg-muted transition-colors">
-                Cancel
+                {t("tables.cancel")}
               </button>
               <button type="submit" disabled={createTable.isPending} className="flex-1 px-5 py-2.5 rounded-xl font-medium bg-primary text-primary-foreground disabled:opacity-50 transition-colors">
-                {createTable.isPending ? "Creating..." : "Save"}
+                {createTable.isPending ? t("tables.creating") : t("tables.save")}
               </button>
             </div>
           </form>
@@ -141,8 +143,8 @@ function TablesPage() {
       ) : tables.length === 0 ? (
         <div className="text-center py-16 bg-muted/30 border border-dashed border-border rounded-2xl">
           <TableIcon className="size-12 text-muted-foreground/50 mx-auto mb-4" />
-          <h3 className="font-display font-bold text-lg mb-1">No tables yet</h3>
-          <p className="text-muted-foreground text-sm max-w-sm mx-auto">Create tables to generate dedicated QR codes for your customers.</p>
+          <h3 className="font-display font-bold text-lg mb-1">{t("tables.empty")}</h3>
+          <p className="text-muted-foreground text-sm max-w-sm mx-auto">{t("tables.emptyHint")}</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -156,6 +158,7 @@ function TablesPage() {
 }
 
 function TableCard({ table, origin, restaurantSlug, onDelete, onToggleActive }: any) {
+  const { t } = useTranslation();
   const ref = useRef<HTMLDivElement>(null);
   const url = `${origin}/menu/${restaurantSlug}?table=${table.qr_identifier}`;
 
@@ -216,10 +219,10 @@ function TableCard({ table, origin, restaurantSlug, onDelete, onToggleActive }: 
       
       <div className="grid grid-cols-2 gap-2 mt-auto">
         <button onClick={download} disabled={!table.is_active} className="inline-flex justify-center items-center gap-2 bg-muted text-foreground px-3 py-2 rounded-xl text-xs font-medium hover:bg-muted/80 transition-colors disabled:opacity-50">
-          <Download className="size-3.5" /> Download
+          <Download className="size-3.5" /> {t("tables.download")}
         </button>
         <button onClick={printQr} disabled={!table.is_active} className="inline-flex justify-center items-center gap-2 bg-muted text-foreground px-3 py-2 rounded-xl text-xs font-medium hover:bg-muted/80 transition-colors disabled:opacity-50">
-          <Printer className="size-3.5" /> Print
+          <Printer className="size-3.5" /> {t("tables.print")}
         </button>
       </div>
     </div>

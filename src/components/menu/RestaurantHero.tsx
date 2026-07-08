@@ -2,6 +2,7 @@ import React from "react";
 import { Info, Table as TableIcon, Search } from "lucide-react";
 import { LangSwitcher } from "@/components/LangSwitcher";
 import { useSignedImage } from "@/lib/use-signed-image";
+import { useTranslation } from "react-i18next";
 
 interface RestaurantHeroProps {
   restaurant: any;
@@ -16,13 +17,14 @@ export function RestaurantHero({
   onOpenInfo,
   onToggleSearch,
 }: RestaurantHeroProps) {
+  const { t } = useTranslation();
   const cover = useSignedImage(restaurant.cover_image_url);
   const logo = useSignedImage(restaurant.logo_url);
 
   const rating = restaurant.rating || "4.8";
   const reviewsCount = restaurant.reviews_count || "230+";
   const deliveryTime = restaurant.delivery_time || "25-35 min";
-  const deliveryFee = restaurant.delivery_fee || "Free Delivery";
+  const deliveryFee = restaurant.delivery_fee || t("menu.freeDelivery");
 
   return (
     <div className="relative min-h-[16rem] sm:min-h-[20rem] flex flex-col justify-end bg-muted pt-24 pb-12 sm:pb-16 overflow-hidden">
@@ -76,11 +78,11 @@ export function RestaurantHero({
             {restaurant.is_open ? (
               <span className="flex items-center gap-1.5 text-[10px] sm:text-xs font-bold uppercase tracking-wider text-green-400 bg-green-500/20 px-2 py-1 rounded-full backdrop-blur-md">
                 <span className="size-1.5 sm:size-2 rounded-full bg-green-400 animate-pulse" />{" "}
-                Open
+                {t("menu.open")}
               </span>
             ) : (
               <span className="flex items-center gap-1.5 text-[10px] sm:text-xs font-bold uppercase tracking-wider text-red-400 bg-red-500/20 px-2 py-1 rounded-full backdrop-blur-md">
-                <span className="size-1.5 sm:size-2 rounded-full bg-red-400" /> Closed
+                <span className="size-1.5 sm:size-2 rounded-full bg-red-400" /> {t("menu.closed")}
               </span>
             )}
             {restaurant.cuisine_type && (

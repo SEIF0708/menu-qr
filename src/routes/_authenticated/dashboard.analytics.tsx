@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { useQuery } from "@tanstack/react-query";
 import { useMyRestaurant } from "@/lib/use-restaurant";
@@ -10,7 +10,7 @@ import {
   getTimeAnalytics,
   getPromotionStats
 } from "@/lib/analytics-service";
-import { BarChart3, TrendingUp, Eye, ShoppingCart, Percent, Box, Clock, Users, Activity, Tag, MousePointerClick } from "lucide-react";
+import { BarChart3, TrendingUp, Eye, ShoppingCart, Percent, Box, Clock, Users, Activity, Tag, MousePointerClick, Lock } from "lucide-react";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart as RechartsBarChart, Bar } from "recharts";
 import { useMemo } from "react";
 
@@ -92,13 +92,33 @@ function AnalyticsDashboard() {
 
   const overallConversion = overview?.views ? ((overview.orders / overview.views) * 100).toFixed(1) : "0.0";
 
+  if (restaurant?.subscription_status === "unpaid") {
+    return (
+      <div className="max-w-md mx-auto mt-12 text-center bg-card border border-border p-8 rounded-3xl shadow-sm animate-fade-up">
+        <div className="size-16 bg-primary/10 text-primary rounded-full flex items-center justify-center mx-auto mb-6">
+          <Lock className="size-8" />
+        </div>
+        <h1 className="text-2xl font-display font-bold mb-3">{t("analytics_dashboard.lockedTitle", "Analytics Locked")}</h1>
+        <p className="text-muted-foreground mb-6">
+          {t("analytics_dashboard.lockedDesc", "Upgrade to a paid subscription to access detailed analytics, top products, category performance, and hourly activity.")}
+        </p>
+        <Link 
+          to="/dashboard/subscription" 
+          className="inline-flex items-center justify-center bg-primary text-primary-foreground font-bold px-6 py-3 rounded-full hover:brightness-110 transition-all"
+        >
+          {t("nav.subscription")}
+        </Link>
+      </div>
+    );
+  }
+
   return (
     <div className="max-w-6xl mx-auto space-y-8 animate-fade-up">
       <header className="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
-          <p className="text-xs font-mono text-muted-foreground uppercase tracking-widest mb-1">Intelligence</p>
+          <p className="text-xs font-mono text-muted-foreground uppercase tracking-widest mb-1">{t("analytics_dashboard.eyebrow")}</p>
           <h1 className="text-3xl md:text-4xl font-display font-bold flex items-center gap-3">
-            <BarChart3 className="size-8 text-primary" /> Analytics V2
+            <BarChart3 className="size-8 text-primary" /> {t("analytics_dashboard.title")}
           </h1>
         </div>
       </header>
@@ -107,26 +127,26 @@ function AnalyticsDashboard() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
         <KPI 
           icon={<Eye className="size-5" />} 
-          label="Total Menu Views" 
+          label={t("analytics_dashboard.totalViews")} 
           value={overview?.views?.toLocaleString() || "0"} 
           loading={loadingOverview} 
         />
         <KPI 
           icon={<ShoppingCart className="size-5" />} 
-          label="Total Orders Sent" 
+          label={t("analytics_dashboard.totalOrders")} 
           value={overview?.orders?.toLocaleString() || "0"} 
           loading={loadingOverview} 
         />
         <KPI 
           icon={<Percent className="size-5" />} 
-          label="Avg Conversion Rate" 
+          label={t("analytics_dashboard.conversionRate")} 
           value={`${overallConversion}%`} 
           loading={loadingOverview} 
           accent 
         />
         <KPI 
           icon={<Clock className="size-5" />} 
-          label="Peak Activity Hour" 
+          label={t("analytics_dashboard.peakHour")} 
           value={peakTime} 
           loading={loadingTime} 
         />
@@ -137,12 +157,12 @@ function AnalyticsDashboard() {
         <div className="bg-card border border-border rounded-3xl p-6 shadow-sm">
           <div className="flex items-center gap-2 mb-6">
             <TrendingUp className="size-5 text-accent" />
-            <h2 className="text-xl font-display font-bold">Top Products</h2>
+            <h2 className="text-xl font-display font-bold">{t("analytics_dashboard.topProducts")}</h2>
           </div>
           {loadingProducts ? (
             <div className="h-40 grid place-items-center"><div className="size-6 border-2 border-primary border-t-transparent rounded-full animate-spin"></div></div>
           ) : topProducts?.length === 0 ? (
-            <p className="text-muted-foreground text-sm text-center py-8">No data available yet.</p>
+            <p className="text-muted-foreground text-sm text-center py-8">{t("analytics_dashboard.noData")}</p>
           ) : (
             <div className="space-y-4">
               {topProducts?.map((product, i) => (
@@ -170,12 +190,12 @@ function AnalyticsDashboard() {
         <div className="bg-card border border-border rounded-3xl p-6 shadow-sm flex flex-col">
           <div className="flex items-center gap-2 mb-6">
             <Box className="size-5 text-blue-500" />
-            <h2 className="text-xl font-display font-bold">Category Performance</h2>
+            <h2 className="text-xl font-display font-bold">{t("analytics_dashboard.categoryPerformance")}</h2>
           </div>
           {loadingCategories ? (
             <div className="flex-1 grid place-items-center"><div className="size-6 border-2 border-primary border-t-transparent rounded-full animate-spin"></div></div>
           ) : topCategories?.length === 0 ? (
-            <p className="text-muted-foreground text-sm text-center py-8">No data available yet.</p>
+            <p className="text-muted-foreground text-sm text-center py-8">{t("analytics_dashboard.noData")}</p>
           ) : (
             <>
               <div className="h-48 w-full mb-6">
@@ -215,7 +235,7 @@ function AnalyticsDashboard() {
       <div className="bg-card border border-border rounded-3xl p-6 shadow-sm">
         <div className="flex items-center gap-2 mb-6">
           <Activity className="size-5 text-purple-500" />
-          <h2 className="text-xl font-display font-bold">Hourly Activity (24h)</h2>
+          <h2 className="text-xl font-display font-bold">{t("analytics_dashboard.hourlyActivity")}</h2>
         </div>
         {loadingTime ? (
           <div className="h-64 grid place-items-center"><div className="size-6 border-2 border-primary border-t-transparent rounded-full animate-spin"></div></div>
@@ -246,27 +266,27 @@ function AnalyticsDashboard() {
         <div className="bg-card border border-border rounded-3xl p-6 shadow-sm">
           <div className="flex items-center gap-2 mb-6">
             <Users className="size-5 text-emerald-500" />
-            <h2 className="text-xl font-display font-bold">Active Tables</h2>
+            <h2 className="text-xl font-display font-bold">{t("analytics_dashboard.activeTables")}</h2>
           </div>
           {loadingTables ? (
             <div className="h-40 grid place-items-center"><div className="size-6 border-2 border-primary border-t-transparent rounded-full animate-spin"></div></div>
           ) : topTables?.length === 0 ? (
-            <p className="text-muted-foreground text-sm text-center py-8">No data available yet.</p>
+            <p className="text-muted-foreground text-sm text-center py-8">{t("analytics_dashboard.noData")}</p>
           ) : (
             <div className="grid sm:grid-cols-2 gap-3">
               {topTables?.map((table) => (
                 <div key={table.table_id} className="p-4 rounded-2xl border border-border/50 bg-muted/20 hover:bg-muted/40 transition-colors flex flex-col">
                   <div className="flex items-center justify-between mb-3">
                     <span className="font-display font-bold text-lg">{table.name}</span>
-                    <span className="text-xs bg-emerald-100 text-emerald-700 font-bold px-2 py-0.5 rounded-full">{table.sessions} Sessions</span>
+                    <span className="text-xs bg-emerald-100 text-emerald-700 font-bold px-2 py-0.5 rounded-full">{table.sessions} {t("analytics_dashboard.sessions")}</span>
                   </div>
                   <div className="grid grid-cols-2 gap-2 mt-auto">
                     <div className="bg-background rounded-xl p-2.5 border border-border/50">
-                      <p className="text-[10px] text-muted-foreground font-semibold uppercase mb-0.5">Orders</p>
+                      <p className="text-[10px] text-muted-foreground font-semibold uppercase mb-0.5">{t("analytics_dashboard.orders")}</p>
                       <p className="font-bold text-primary">{table.orders}</p>
                     </div>
                     <div className="bg-background rounded-xl p-2.5 border border-border/50">
-                      <p className="text-[10px] text-muted-foreground font-semibold uppercase mb-0.5">Requests</p>
+                      <p className="text-[10px] text-muted-foreground font-semibold uppercase mb-0.5">{t("analytics_dashboard.requests")}</p>
                       <p className="font-bold">{table.requests}</p>
                     </div>
                   </div>
@@ -280,12 +300,12 @@ function AnalyticsDashboard() {
         <div className="bg-card border border-border rounded-3xl p-6 shadow-sm">
           <div className="flex items-center gap-2 mb-6">
             <Tag className="size-5 text-orange-500" />
-            <h2 className="text-xl font-display font-bold">Promotion Performance</h2>
+            <h2 className="text-xl font-display font-bold">{t("analytics_dashboard.promotionPerformance")}</h2>
           </div>
           {loadingPromotions ? (
             <div className="h-40 grid place-items-center"><div className="size-6 border-2 border-primary border-t-transparent rounded-full animate-spin"></div></div>
           ) : promotionStats?.length === 0 ? (
-            <p className="text-muted-foreground text-sm text-center py-8">No active promotions tracked yet.</p>
+            <p className="text-muted-foreground text-sm text-center py-8">{t("analytics_dashboard.noPromotions")}</p>
           ) : (
             <div className="space-y-3">
               {promotionStats?.map((promo) => (

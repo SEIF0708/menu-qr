@@ -78,25 +78,25 @@ function ReferralsPage() {
       <div className="max-w-4xl mx-auto space-y-8">
         <div>
           <h1 className="text-3xl font-display font-bold flex items-center gap-2">
-            <Gift className="size-8 text-primary" /> Partner Program
+            <Gift className="size-8 text-primary" /> {t("referrals.title")}
           </h1>
-          <p className="text-muted-foreground mt-2">Refer other restaurants and earn money for each successful subscription.</p>
+          <p className="text-muted-foreground mt-2">{t("referrals.subtitle")}</p>
         </div>
 
         <div className="bg-card border border-border rounded-3xl p-8 sm:p-12 text-center max-w-2xl mx-auto shadow-sm">
           <div className="size-20 bg-primary/10 text-primary rounded-full flex items-center justify-center mx-auto mb-6">
             <Sparkles className="size-10" />
           </div>
-          <h2 className="text-2xl font-bold mb-4">Become a MenuFlow Partner</h2>
+          <h2 className="text-2xl font-bold mb-4">{t("referrals.becomePartner")}</h2>
           <p className="text-muted-foreground mb-8">
-            Get your unique referral code. When a restaurant uses your code, they get a 50 DT discount (paying only 250 DT), and you earn a 50 DT commission once they subscribe!
+            {t("referrals.partnerDesc")}
           </p>
           <button 
             onClick={() => generateCode.mutate()}
             disabled={generateCode.isPending}
             className="bg-primary text-primary-foreground px-8 py-3.5 rounded-xl font-bold hover:brightness-110 transition-all disabled:opacity-50"
           >
-            {generateCode.isPending ? "Generating..." : "Join the Partner Program"}
+            {generateCode.isPending ? t("referrals.generating") : t("referrals.join")}
           </button>
         </div>
       </div>
@@ -112,14 +112,14 @@ function ReferralsPage() {
     <div className="max-w-5xl mx-auto space-y-8">
       <div>
         <h1 className="text-3xl font-display font-bold flex items-center gap-2">
-          <Gift className="size-8 text-primary" /> Partner Program
+          <Gift className="size-8 text-primary" /> {t("referrals.title")}
         </h1>
-        <p className="text-muted-foreground mt-2">Share your code and track your earnings.</p>
+        <p className="text-muted-foreground mt-2">{t("referrals.subtitleAlt")}</p>
       </div>
 
       <div className="grid md:grid-cols-3 gap-6">
         <div className="bg-card border border-border rounded-2xl p-6 shadow-sm md:col-span-3 lg:col-span-1">
-          <p className="text-sm font-medium text-muted-foreground mb-2">Your Referral Code</p>
+          <p className="text-sm font-medium text-muted-foreground mb-2">{t("referrals.yourCode")}</p>
           <div className="flex items-center gap-3">
             <div className="bg-muted px-4 py-3 rounded-xl font-mono text-xl font-bold text-foreground flex-1 text-center tracking-wider border border-border/50">
               {codeQuery.data.code}
@@ -132,14 +132,14 @@ function ReferralsPage() {
             </button>
           </div>
           <p className="text-xs text-muted-foreground mt-4 text-center">
-            Share this code. They get 50 DT off, you get 50 DT.
+            {t("referrals.shareHint")}
           </p>
         </div>
 
         <div className="bg-card border border-border rounded-2xl p-6 shadow-sm flex flex-col justify-center">
           <div className="flex items-center gap-2 text-emerald-600 mb-2">
             <Banknote className="size-5" />
-            <p className="text-sm font-medium">Total Paid</p>
+            <p className="text-sm font-medium">{t("referrals.totalPaid")}</p>
           </div>
           <p className="text-4xl font-bold font-display">{totalEarned} <span className="text-base text-muted-foreground">DT</span></p>
         </div>
@@ -147,7 +147,7 @@ function ReferralsPage() {
         <div className="bg-card border border-border rounded-2xl p-6 shadow-sm flex flex-col justify-center">
           <div className="flex items-center gap-2 text-amber-500 mb-2">
             <TrendingUp className="size-5" />
-            <p className="text-sm font-medium">Pending Earnings</p>
+            <p className="text-sm font-medium">{t("referrals.pendingEarnings")}</p>
           </div>
           <p className="text-4xl font-bold font-display">{pendingEarned} <span className="text-base text-muted-foreground">DT</span></p>
         </div>
@@ -156,30 +156,30 @@ function ReferralsPage() {
       <div className="bg-card border border-border rounded-2xl overflow-hidden shadow-sm">
         <div className="px-6 py-5 border-b border-border bg-muted/30">
           <h3 className="font-semibold flex items-center gap-2">
-            <Users className="size-4 text-primary" /> Referral History ({referralCount})
+            <Users className="size-4 text-primary" /> {t("referrals.history")} ({referralCount})
           </h3>
         </div>
         <div className="divide-y divide-border">
           {payouts.length === 0 ? (
             <div className="p-8 text-center text-muted-foreground">
-              You haven't referred any restaurants yet. Share your code to start earning!
+              {t("referrals.emptyHistory")}
             </div>
           ) : (
             payouts.map(p => (
               <div key={p.id} className="p-4 sm:px-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-background">
                 <div>
-                  <p className="font-bold">{p.restaurant?.name || "Unknown Restaurant"}</p>
-                  <p className="text-xs text-muted-foreground mt-1">Referred on {new Date(p.created_at).toLocaleDateString()}</p>
+                  <p className="font-bold">{p.restaurant?.name || t("referrals.unknownRestaurant")}</p>
+                  <p className="text-xs text-muted-foreground mt-1">{t("referrals.referredOn")} {new Date(p.created_at).toLocaleDateString()}</p>
                 </div>
                 <div className="flex items-center gap-4">
                   <p className="font-bold">{p.amount} DT</p>
                   {p.status === "paid" ? (
                     <span className="px-3 py-1 bg-emerald-500/10 text-emerald-600 rounded-full text-xs font-bold uppercase flex items-center gap-1">
-                      <Check className="size-3" /> Paid
+                      <Check className="size-3" /> {t("referrals.paid")}
                     </span>
                   ) : (
                     <span className="px-3 py-1 bg-amber-500/10 text-amber-600 rounded-full text-xs font-bold uppercase">
-                      Pending
+                      {t("referrals.pending")}
                     </span>
                   )}
                 </div>

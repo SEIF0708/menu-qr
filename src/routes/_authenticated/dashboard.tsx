@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useMyRestaurant } from "@/lib/use-restaurant";
 import { supabase } from "@/integrations/supabase/client";
 import { LangSwitcher } from "@/components/LangSwitcher";
-import { LayoutGrid, FolderKanban, UtensilsCrossed, QrCode, Settings, LogOut, ExternalLink, Menu, X, CreditCard, AlertTriangle, Shield, Gift, Table, ShoppingBag, BarChart3, Tag } from "lucide-react";
+import { LayoutGrid, FolderKanban, UtensilsCrossed, QrCode, Settings, LogOut, ExternalLink, Menu, X, CreditCard, AlertTriangle, Shield, Gift, Table, ShoppingBag, BarChart3, Tag, Lock } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { cn } from "@/lib/utils";
@@ -25,15 +25,15 @@ function DashboardLayout() {
 
   const navItems = [
     { to: "/dashboard", label: t("nav.overview"), icon: LayoutGrid, exact: true },
-    { to: "/dashboard/analytics", label: "Analytics", icon: BarChart3 },
+    { to: "/dashboard/analytics", label: t("nav.analytics"), icon: BarChart3, pro: true },
     { to: "/dashboard/categories", label: t("nav.categories"), icon: FolderKanban },
     { to: "/dashboard/products", label: t("nav.products"), icon: UtensilsCrossed },
-    { to: "/dashboard/promotions", label: "Promotions", icon: Tag },
+    { to: "/dashboard/promotions", label: t("nav.promotions"), icon: Tag },
     { to: "/dashboard/qr", label: t("nav.qr"), icon: QrCode },
-    { to: "/dashboard/orders", label: "Orders", icon: ShoppingBag },
-    { to: "/dashboard/tables", label: "Tables", icon: Table },
-    { to: "/dashboard/subscription", label: "Subscription", icon: CreditCard },
-    { to: "/dashboard/referrals", label: "Partner Program", icon: Gift },
+    { to: "/dashboard/orders", label: t("nav.orders"), icon: ShoppingBag },
+    { to: "/dashboard/tables", label: t("nav.tables"), icon: Table },
+    { to: "/dashboard/subscription", label: t("nav.subscription"), icon: CreditCard },
+    { to: "/dashboard/referrals", label: t("nav.referrals"), icon: Gift },
     { to: "/dashboard/settings", label: t("nav.settings"), icon: Settings },
   ];
 
@@ -46,7 +46,7 @@ function DashboardLayout() {
   });
 
   if (session?.user?.email === "saifdaba19@gmail.com") {
-    navItems.push({ to: "/admin", label: "Admin Panel", icon: Shield } as any);
+    navItems.push({ to: "/admin", label: t("nav.admin") || "Admin Panel", icon: Shield } as any);
   }
 
   const signOut = async () => {
@@ -92,7 +92,7 @@ function DashboardLayout() {
       <div className="flex flex-1">
         {/* Sidebar - desktop */}
         <aside className="hidden md:flex flex-col w-60 border-r border-border p-3 gap-1">
-          {navItems.map(({ to, label, icon: Icon, exact }) => (
+          {navItems.map(({ to, label, icon: Icon, exact, pro }: any) => (
             <Link
               key={to} to={to}
               className={cn(
@@ -103,6 +103,7 @@ function DashboardLayout() {
               )}
             >
               <Icon className="size-4" /> {label}
+              {pro && restaurant?.subscription_status === "unpaid" && <Lock className="size-3 ml-auto opacity-50" />}
             </Link>
           ))}
         </aside>
@@ -111,7 +112,7 @@ function DashboardLayout() {
         {mobileOpen && (
           <div className="md:hidden fixed inset-0 z-40 bg-background/60 backdrop-blur-sm" onClick={() => setMobileOpen(false)}>
             <aside className="absolute top-14 inset-x-0 bg-card border-b border-border p-3 gap-1 flex flex-col" onClick={(e) => e.stopPropagation()}>
-              {navItems.map(({ to, label, icon: Icon, exact }) => (
+              {navItems.map(({ to, label, icon: Icon, exact, pro }: any) => (
                 <Link
                   key={to} to={to} onClick={() => setMobileOpen(false)}
                   className={cn(
@@ -120,6 +121,7 @@ function DashboardLayout() {
                   )}
                 >
                   <Icon className="size-4" /> {label}
+                  {pro && restaurant?.subscription_status === "unpaid" && <Lock className="size-3 ml-auto opacity-50" />}
                 </Link>
               ))}
             </aside>
@@ -131,12 +133,12 @@ function DashboardLayout() {
             <div className="mb-6 bg-destructive/10 border border-destructive/20 text-destructive px-4 py-3 rounded-lg flex items-start gap-3">
               <AlertTriangle className="size-5 mt-0.5 shrink-0" />
               <div>
-                <p className="font-medium text-sm">Your menu is currently hidden from the public.</p>
+                <p className="font-medium text-sm">{t("subscriptionWarning.title")}</p>
                 <p className="text-xs opacity-80 mt-1">
-                  You are on the free tier (max 3 categories, 9 products). Upgrade your plan to unlock unlimited products and make your QR code live.
+                  {t("subscriptionWarning.desc")}
                 </p>
                 <Link to="/dashboard/subscription" className="inline-block mt-2 text-xs font-bold underline">
-                  View Subscription Options &rarr;
+                  {t("subscriptionWarning.link")} &rarr;
                 </Link>
               </div>
             </div>

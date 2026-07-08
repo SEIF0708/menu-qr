@@ -65,7 +65,7 @@ function Overview() {
             <div className="absolute inset-0 bg-gradient-to-r from-primary to-accent opacity-90 group-hover:opacity-100 transition-opacity" />
             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 ease-in-out" />
             <ExternalLink className="size-4 relative z-10 text-white" /> 
-            <span className="relative z-10 text-white drop-shadow-sm">View Live Menu</span>
+            <span className="relative z-10 text-white drop-shadow-sm">{t("nav.viewMenu")}</span>
           </a>
           <Link to="/dashboard/products" className="inline-flex items-center justify-center gap-2 bg-muted text-foreground border border-border px-5 py-2.5 rounded-full font-bold text-sm hover:bg-muted/80 transition-all active:scale-95">
             <Plus className="size-4" /> {t("overview.addProduct") || "Add Product"}
@@ -97,8 +97,8 @@ function Overview() {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <QuickAction to="/dashboard/categories" icon={FolderPlus} label={t("overview.addCategory") || "Add Category"} />
         <QuickAction to="/dashboard/qr" icon={QrCode} label={t("overview.generateQr") || "QR Builder"} />
-        <QuickAction to="/dashboard/analytics" icon={BarChart3} label="Analytics" />
-        <QuickAction to="/dashboard/settings" icon={Settings} label="Settings" />
+        <QuickAction to="/dashboard/analytics" icon={BarChart3} label={t("nav.analytics")} />
+        <QuickAction to="/dashboard/settings" icon={Settings} label={t("nav.settings")} />
       </div>
 
       <div className="bg-card border border-border rounded-3xl overflow-hidden shadow-sm">
@@ -107,7 +107,7 @@ function Overview() {
             <TrendingUp className="size-5 text-accent" /> {t("overview.recent") || "Recently Added"}
           </h3>
           <Link to="/dashboard/products" className="text-sm font-bold text-primary hover:underline flex items-center gap-1">
-            View All &rarr;
+            {t("common.all")} &rarr;
           </Link>
         </div>
         {stats.data?.recent.length === 0 ? (
@@ -151,6 +151,7 @@ function QuickAction({ to, icon: Icon, label }: { to: string; icon: any; label: 
 }
 
 function RecentRow({ product, lang, currency }: { product: any; lang: string; currency: string }) {
+  const { t } = useTranslation();
   const img = useSignedImage(product.image_url);
   return (
     <div className="px-6 py-4 flex items-center gap-4 hover:bg-muted/20 transition-colors">
@@ -167,11 +168,11 @@ function RecentRow({ product, lang, currency }: { product: any; lang: string; cu
       </div>
       {product.is_available ? (
         <span className="px-3 py-1 rounded-full bg-emerald-100 border border-emerald-200 text-[10px] font-bold text-emerald-700 uppercase tracking-wider flex items-center gap-1.5 shrink-0">
-          <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse" /> Active
+          <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse" /> {t("common.active")}
         </span>
       ) : (
         <span className="px-3 py-1 rounded-full bg-muted border border-border text-[10px] font-bold text-muted-foreground uppercase tracking-wider shrink-0">
-          Draft
+          {t("common.inactive")}
         </span>
       )}
     </div>

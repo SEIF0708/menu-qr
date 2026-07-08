@@ -30,26 +30,26 @@ function PromotionsDashboard() {
       <div>
         <h1 className="text-3xl font-bold flex items-center gap-2">
           <Sparkles className="w-8 h-8 text-amber-500" />
-          Promotions & Upselling
+          {t("promotions.title")}
         </h1>
         <p className="text-muted-foreground mt-2">
-          Manage featured items, special combos, happy hours, and upselling rules.
+          {t("promotions.subtitle")}
         </p>
       </div>
 
       <Tabs defaultValue="banners" className="w-full">
         <TabsList className="flex flex-wrap h-auto">
           <TabsTrigger value="banners" className="gap-2">
-            <Megaphone className="w-4 h-4" /> Banners
+            <Megaphone className="w-4 h-4" /> {t("promotions.banners")}
           </TabsTrigger>
           <TabsTrigger value="combos" className="gap-2">
-            <Tag className="w-4 h-4" /> Combos
+            <Tag className="w-4 h-4" /> {t("promotions.combos")}
           </TabsTrigger>
           <TabsTrigger value="happy_hour" className="gap-2">
-            <Clock className="w-4 h-4" /> Happy Hour
+            <Clock className="w-4 h-4" /> {t("promotions.happyHour")}
           </TabsTrigger>
           <TabsTrigger value="upselling" className="gap-2">
-            <ArrowUpRight className="w-4 h-4" /> Upselling Rules
+            <ArrowUpRight className="w-4 h-4" /> {t("promotions.upselling")}
           </TabsTrigger>
         </TabsList>
 
@@ -71,6 +71,7 @@ function PromotionsDashboard() {
 }
 
 function BannersTab({ restaurantId }: { restaurantId?: string }) {
+  const { t } = useTranslation();
   const { data: banners, isLoading } = useAdminPromotions(restaurantId, 'banner');
   const deleteMutation = useDeletePromotion();
   const createMutation = useCreatePromotion();
@@ -96,18 +97,18 @@ function BannersTab({ restaurantId }: { restaurantId?: string }) {
     <Card>
       <CardHeader className="flex flex-row items-center justify-between">
         <div>
-          <CardTitle>Promotional Banners</CardTitle>
-          <CardDescription>Display a banner at the top of your menu.</CardDescription>
+          <CardTitle>{t("promotions.bannerTitle")}</CardTitle>
+          <CardDescription>{t("promotions.bannerDesc")}</CardDescription>
         </div>
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
             <Button size="sm" className="gap-2">
-              <Plus className="w-4 h-4" /> Create Banner
+              <Plus className="w-4 h-4" /> {t("promotions.createBanner")}
             </Button>
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Create Banner</DialogTitle>
+              <DialogTitle>{t("promotions.createBanner")}</DialogTitle>
             </DialogHeader>
             <div className="grid gap-4 py-4">
               <div className="space-y-2">
@@ -121,7 +122,7 @@ function BannersTab({ restaurantId }: { restaurantId?: string }) {
             </div>
             <DialogFooter>
               <Button onClick={handleCreate} disabled={!title || createMutation.isPending}>
-                {createMutation.isPending ? "Creating..." : "Create Banner"}
+                {createMutation.isPending ? "Creating..." : t("promotions.createBanner")}
               </Button>
             </DialogFooter>
           </DialogContent>
@@ -132,7 +133,7 @@ function BannersTab({ restaurantId }: { restaurantId?: string }) {
           <p>Loading...</p>
         ) : banners?.length === 0 ? (
           <div className="text-center py-8 text-muted-foreground">
-            No banners active. Create one to highlight a special offer.
+            {t("promotions.emptyBanners")}
           </div>
         ) : (
           <div className="space-y-4">
@@ -160,6 +161,7 @@ function BannersTab({ restaurantId }: { restaurantId?: string }) {
 }
 
 function CombosTab({ restaurantId }: { restaurantId?: string }) {
+  const { t } = useTranslation();
   const { data: combos, isLoading } = useAdminPromotions(restaurantId, 'combo');
   const deleteMutation = useDeletePromotion();
   const createMutation = useCreatePromotion();
@@ -188,18 +190,18 @@ function CombosTab({ restaurantId }: { restaurantId?: string }) {
     <Card>
       <CardHeader className="flex flex-row items-center justify-between">
         <div>
-          <CardTitle>Combo Meals</CardTitle>
-          <CardDescription>Group items together for a special price.</CardDescription>
+          <CardTitle>{t("promotions.comboTitle")}</CardTitle>
+          <CardDescription>{t("promotions.comboDesc")}</CardDescription>
         </div>
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
             <Button size="sm" className="gap-2">
-              <Plus className="w-4 h-4" /> Create Combo
+              <Plus className="w-4 h-4" /> {t("promotions.createCombo")}
             </Button>
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Create Combo</DialogTitle>
+              <DialogTitle>{t("promotions.createCombo")}</DialogTitle>
             </DialogHeader>
             <div className="grid gap-4 py-4">
               <div className="space-y-2">
@@ -217,7 +219,7 @@ function CombosTab({ restaurantId }: { restaurantId?: string }) {
             </div>
             <DialogFooter>
               <Button onClick={handleCreate} disabled={!title || !price || createMutation.isPending}>
-                {createMutation.isPending ? "Creating..." : "Create Combo"}
+                {createMutation.isPending ? "Creating..." : t("promotions.createCombo")}
               </Button>
             </DialogFooter>
           </DialogContent>
@@ -228,7 +230,7 @@ function CombosTab({ restaurantId }: { restaurantId?: string }) {
           <p>Loading...</p>
         ) : combos?.length === 0 ? (
           <div className="text-center py-8 text-muted-foreground">
-            No combos created yet.
+            {t("promotions.emptyCombos")}
           </div>
         ) : (
           <div className="space-y-4">
@@ -251,6 +253,7 @@ function CombosTab({ restaurantId }: { restaurantId?: string }) {
 }
 
 function HappyHourTab({ restaurantId }: { restaurantId?: string }) {
+  const { t } = useTranslation();
   const { data: happyHours, isLoading } = useAdminPromotions(restaurantId, 'happy_hour');
   const deleteMutation = useDeletePromotion();
   const createMutation = useCreatePromotion();
@@ -291,18 +294,18 @@ function HappyHourTab({ restaurantId }: { restaurantId?: string }) {
     <Card>
       <CardHeader className="flex flex-row items-center justify-between">
         <div>
-          <CardTitle>Happy Hours</CardTitle>
-          <CardDescription>Automatically discount items during specific hours.</CardDescription>
+          <CardTitle>{t("promotions.happyHourTitle")}</CardTitle>
+          <CardDescription>{t("promotions.happyHourDesc")}</CardDescription>
         </div>
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
             <Button size="sm" className="gap-2">
-              <Plus className="w-4 h-4" /> Create Happy Hour
+              <Plus className="w-4 h-4" /> {t("promotions.createHappyHour")}
             </Button>
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Create Happy Hour</DialogTitle>
+              <DialogTitle>{t("promotions.createHappyHour")}</DialogTitle>
             </DialogHeader>
             <div className="grid gap-4 py-4">
               <div className="space-y-2">
@@ -326,7 +329,7 @@ function HappyHourTab({ restaurantId }: { restaurantId?: string }) {
             </div>
             <DialogFooter>
               <Button onClick={handleCreate} disabled={!title || !discount || !startHour || !endHour || createMutation.isPending}>
-                {createMutation.isPending ? "Creating..." : "Create Happy Hour"}
+                {createMutation.isPending ? "Creating..." : t("promotions.createHappyHour")}
               </Button>
             </DialogFooter>
           </DialogContent>
@@ -337,7 +340,7 @@ function HappyHourTab({ restaurantId }: { restaurantId?: string }) {
           <p>Loading...</p>
         ) : happyHours?.length === 0 ? (
           <div className="text-center py-8 text-muted-foreground">
-            No happy hours scheduled.
+            {t("promotions.emptyHappyHours")}
           </div>
         ) : (
           <div className="space-y-4">
@@ -364,6 +367,7 @@ function HappyHourTab({ restaurantId }: { restaurantId?: string }) {
 
 
 function UpsellingTab({ restaurantId }: { restaurantId?: string }) {
+  const { t } = useTranslation();
   const { data: recs, isLoading } = useAdminRecommendations(restaurantId);
   const deleteMutation = useDeleteRecommendation();
   const createMutation = useCreateRecommendation();
@@ -396,18 +400,18 @@ function UpsellingTab({ restaurantId }: { restaurantId?: string }) {
     <Card>
       <CardHeader className="flex flex-row items-center justify-between">
         <div>
-          <CardTitle>Upselling Rules</CardTitle>
-          <CardDescription>Suggest "You may also like" products to customers.</CardDescription>
+          <CardTitle>{t("promotions.upsellingTitle")}</CardTitle>
+          <CardDescription>{t("promotions.upsellingDesc")}</CardDescription>
         </div>
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
             <Button size="sm" className="gap-2">
-              <Plus className="w-4 h-4" /> Add Rule
+              <Plus className="w-4 h-4" /> {t("promotions.addRule")}
             </Button>
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Add Upselling Rule</DialogTitle>
+              <DialogTitle>{t("promotions.addRule")}</DialogTitle>
             </DialogHeader>
             <div className="grid gap-4 py-4">
               <div className="space-y-2">
@@ -429,7 +433,7 @@ function UpsellingTab({ restaurantId }: { restaurantId?: string }) {
             </div>
             <DialogFooter>
               <Button onClick={handleCreate} disabled={!primaryId || !recId || createMutation.isPending}>
-                {createMutation.isPending ? "Adding..." : "Add Rule"}
+                {createMutation.isPending ? "Adding..." : t("promotions.addRule")}
               </Button>
             </DialogFooter>
           </DialogContent>
@@ -440,7 +444,7 @@ function UpsellingTab({ restaurantId }: { restaurantId?: string }) {
           <p>Loading...</p>
         ) : recs?.length === 0 ? (
           <div className="text-center py-8 text-muted-foreground">
-            No upselling rules defined. Start recommending sides or drinks!
+            {t("promotions.emptyUpselling")}
           </div>
         ) : (
           <div className="space-y-4">

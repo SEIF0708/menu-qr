@@ -2,6 +2,7 @@ import React from "react";
 import { Flame, Star, Plus } from "lucide-react";
 import { pickLocalized, formatPrice } from "@/lib/format";
 import { useSignedImage } from "@/lib/use-signed-image";
+import { useTranslation } from "react-i18next";
 
 interface FeaturedProductsProps {
   products: any[];
@@ -20,13 +21,14 @@ export function FeaturedProducts({
   onSelectProduct,
   onAddToCart,
 }: FeaturedProductsProps) {
+  const { t } = useTranslation();
   if (!products || products.length === 0) return null;
 
   return (
     <div className="mt-8">
       <div className="flex items-center gap-2 mb-4 px-4 sm:px-6">
         <Flame className="size-5 text-orange-500" />
-        <h2 className="text-xl font-display font-bold">Featured & Popular</h2>
+        <h2 className="text-xl font-display font-bold">{t("menu.featured")}</h2>
       </div>
       <div className="flex gap-4 overflow-x-auto no-scrollbar pb-4 px-4 sm:px-6 snap-x">
         {products.map((p) => {
@@ -38,6 +40,7 @@ export function FeaturedProducts({
               lang={lang}
               currency={currency}
               finalPrice={finalPrice}
+              t={t}
               onClick={() => onSelectProduct(p)}
               onAdd={(e) => {
                 e.stopPropagation();
@@ -58,6 +61,7 @@ function FeaturedCard({
   finalPrice,
   onClick,
   onAdd,
+  t,
 }: any) {
   const img = useSignedImage(product.image_url);
   const name = pickLocalized(product, "name", lang) || "—";
@@ -67,7 +71,7 @@ function FeaturedCard({
   return (
     <div
       onClick={onClick}
-      className="w-48 sm:w-56 flex-shrink-0 snap-start cursor-pointer group bg-card border border-border rounded-2xl p-3 shadow-sm hover:shadow-md transition-shadow"
+      className="w-48 sm:w-56 flex-shrink-0 snap-start cursor-pointer group bg-card border border-border rounded-2xl p-3 shadow-sm hover:shadow-md transition-shadow flex flex-col"
     >
       <div className="aspect-square bg-muted rounded-xl overflow-hidden mb-3 relative">
         {img ? (
@@ -80,7 +84,7 @@ function FeaturedCard({
         ) : null}
         {product.chef_recommendation && (
           <div className="absolute top-2 left-2 bg-yellow-400 text-yellow-950 text-[10px] font-bold px-2 py-1 rounded-md flex items-center gap-1 shadow-sm">
-            <Star className="size-3 fill-current" /> Chef's Choice
+            <Star className="size-3 fill-current" /> {t("menu.chefsChoice")}
           </div>
         )}
       </div>
@@ -90,7 +94,7 @@ function FeaturedCard({
           {desc}
         </p>
       )}
-      <div className="mt-3 flex items-center justify-between">
+      <div className="flex items-center justify-between mt-auto pt-3">
         <div className="flex flex-col">
           <span className="text-sm font-display font-bold text-primary">
             {formatPrice(finalPrice, currency, lang)}
@@ -101,11 +105,12 @@ function FeaturedCard({
             </span>
           )}
         </div>
-        <button
+        <button 
           onClick={onAdd}
-          className="bg-primary/10 text-primary hover:bg-primary/20 size-8 rounded-full grid place-items-center transition-colors"
+          className="flex items-center gap-1.5 bg-primary text-primary-foreground px-3 py-1.5 rounded-full text-xs font-bold hover:brightness-110 active:scale-95 transition-all shadow-md shadow-primary/20"
         >
-          <Plus className="size-4" />
+          <Plus className="size-3" />
+          <span>{t("menu.addToCart")}</span>
         </button>
       </div>
     </div>

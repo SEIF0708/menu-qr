@@ -215,8 +215,8 @@ function MenuPage() {
            <div className="size-20 bg-muted rounded-full flex items-center justify-center mb-6">
               <Lock className="size-8 text-muted-foreground" />
            </div>
-           <h1 className="text-2xl font-display font-bold mb-2">Menu Unavailable</h1>
-           <p className="text-muted-foreground max-w-sm">This restaurant's digital menu is currently inactive. Please check back later.</p>
+           <h1 className="text-2xl font-display font-bold mb-2">{t("menu.unavailableMenu")}</h1>
+           <p className="text-muted-foreground max-w-sm">{t("menu.inactiveMenu")}</p>
         </div>
       );
     }
@@ -229,10 +229,10 @@ function MenuPage() {
   if (tableError) {
     return (
       <div className="min-h-dvh flex flex-col items-center justify-center p-6 text-center bg-background">
-         <div className="size-20 bg-muted rounded-full flex items-center justify-center mb-6">
+           <div className="size-20 bg-muted rounded-full flex items-center justify-center mb-6">
             <X className="size-8 text-muted-foreground" />
          </div>
-         <h1 className="text-2xl font-display font-bold mb-2">QR Code Unavailable</h1>
+         <h1 className="text-2xl font-display font-bold mb-2">{t("menu.unavailableQr")}</h1>
          <p className="text-muted-foreground max-w-sm">{tableError}</p>
       </div>
     );
@@ -260,7 +260,7 @@ function MenuPage() {
         {isIframe && <style>{`::-webkit-scrollbar { display: none; } * { scrollbar-width: none; -ms-overflow-style: none; }`}</style>}
         {restaurant.subscription_status === "unpaid" && isOwner && (
           <div className="bg-orange-500 text-white text-xs sm:text-sm font-bold text-center py-2 px-4 sticky top-0 z-[60] shadow-md flex items-center justify-center gap-2">
-            <Lock className="size-4" /> PREVIEW MODE — This menu is hidden from the public until you activate your subscription.
+            <Lock className="size-4" /> {t("menu.previewMode")}
           </div>
         )}
 
@@ -370,7 +370,7 @@ function MenuPage() {
                   onClick={() => setVisibleCount(v => v + 8)} 
                   className="px-6 py-3 bg-muted text-foreground rounded-full font-bold text-sm hover:bg-muted/80 active:scale-95 transition-all shadow-sm"
                 >
-                  Show more products
+                  {t("menu.showMore")}
                 </button>
               </div>
             )}
@@ -412,40 +412,41 @@ function MenuPage() {
 }
 
 function InfoDrawer({ restaurant, onClose }: any) {
+  const { t } = useTranslation();
   return (
     <BottomSheet onClose={onClose}>
       <div className="p-6 rounded-t-[2rem]">
         <div className="flex justify-between items-center mb-6">
-           <h2 className="text-2xl font-display font-bold">Restaurant Info</h2>
+           <h2 className="text-2xl font-display font-bold">{t("menu.restaurantInfo")}</h2>
         </div>
         <div className="space-y-6 pb-8">
            {restaurant.opening_hours && (
              <div>
-               <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-2">Opening Hours</h4>
+               <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-2">{t("menu.openingHours")}</h4>
                <p className="text-sm font-medium">{restaurant.opening_hours}</p>
              </div>
            )}
            {restaurant.phone && (
              <div>
-               <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-2">Phone</h4>
+               <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-2">{t("menu.phone")}</h4>
                <a href={`tel:${restaurant.phone}`} className="text-sm font-medium text-primary">{restaurant.phone}</a>
              </div>
            )}
            {restaurant.email && (
              <div>
-               <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-2">Email</h4>
+               <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-2">{t("menu.email")}</h4>
                <a href={`mailto:${restaurant.email}`} className="text-sm font-medium text-primary">{restaurant.email}</a>
              </div>
            )}
            {restaurant.website && (
              <div>
-               <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-2">Website</h4>
+               <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-2">{t("menu.website")}</h4>
                <a href={restaurant.website} target="_blank" rel="noreferrer" className="text-sm font-medium text-primary">{restaurant.website}</a>
              </div>
            )}
            {restaurant.social_links && Object.keys(restaurant.social_links).length > 0 && (
              <div>
-               <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-2">Social</h4>
+               <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-2">{t("menu.social")}</h4>
                <div className="flex gap-4">
                  {restaurant.social_links.instagram && <a href={restaurant.social_links.instagram} target="_blank" rel="noreferrer" className="text-sm font-medium text-primary">Instagram</a>}
                  {restaurant.social_links.facebook && <a href={restaurant.social_links.facebook} target="_blank" rel="noreferrer" className="text-sm font-medium text-primary">Facebook</a>}

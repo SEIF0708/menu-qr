@@ -1,6 +1,7 @@
 import React from "react";
 import { Tag as TagIcon, Plus } from "lucide-react";
 import { pickLocalized, formatPrice } from "@/lib/format";
+import { useTranslation } from "react-i18next";
 
 interface ComboSectionProps {
   combos: any[];
@@ -15,13 +16,14 @@ export function ComboSection({
   currency,
   onAddToCart,
 }: ComboSectionProps) {
+  const { t } = useTranslation();
   if (!combos || combos.length === 0) return null;
 
   return (
-    <div className="mt-8">
+    <div className="pt-8">
       <div className="flex items-center gap-2 mb-4 px-4 sm:px-6">
         <TagIcon className="size-5 text-indigo-500" />
-        <h2 className="text-xl font-display font-bold">Special Combos</h2>
+        <h2 className="text-xl font-display font-bold">{t("menu.combos")}</h2>
       </div>
       <div className="flex flex-col gap-4 px-4 sm:px-6">
         {combos.map((c) => {
@@ -52,11 +54,15 @@ export function ComboSection({
                   </p>
                 </div>
                 <div className="mt-4 flex items-center justify-between">
-                  <span className="font-display font-bold text-lg text-primary">
+                  <span className="font-bold text-primary">
                     {formatPrice(price, currency, lang)}
                   </span>
-                  <button className="bg-primary text-primary-foreground px-4 py-2 rounded-full text-xs font-bold flex items-center gap-1 shadow-md shadow-primary/20 hover:brightness-110 active:scale-95 transition-all">
-                    <Plus className="size-3.5" /> Add
+                  <button 
+                    onClick={(e) => { e.stopPropagation(); onAddToCart(c); }}
+                    className="flex items-center gap-1.5 bg-primary/10 text-primary hover:bg-primary hover:text-primary-foreground px-3 py-1.5 rounded-full text-xs font-bold transition-colors"
+                  >
+                    <Plus className="size-3" />
+                    <span>{t("menu.addToCart")}</span>
                   </button>
                 </div>
               </div>

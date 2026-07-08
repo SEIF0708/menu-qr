@@ -46,7 +46,7 @@ export function ProductCard({
             <div className="flex flex-wrap gap-1.5 mt-2">
               {product.popular && (
                 <span className="text-[10px] font-bold bg-orange-100 text-orange-700 px-2 py-0.5 rounded-full">
-                  Popular
+                  {t("menu.popular")}
                 </span>
               )}
               {product.badges?.map((b: string) => (

@@ -21,5 +21,5 @@ export function pickLocalized<T extends Record<string, any>>(
   if (!obj) return "";
   const key = `${field}_${lang}`;
   const fb = `${field}_${fallbackLang}`;
-  return (obj as any)[key] || (obj as any)[fb] || (obj as any)[`${field}_en`] || (obj as any)[`${field}_fr`] || (obj as any)[`${field}_ar`] || "";
+  return (obj as any)[key] || (obj as any)[fb] || (obj as any)[`${field}_en`] || (obj as any)[`${field}_fr`] || (obj as any)[`${field}_ar`] || (obj as any)[`${field}_tr`] || "";
 }
