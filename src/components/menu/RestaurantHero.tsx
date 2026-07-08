@@ -23,8 +23,6 @@ export function RestaurantHero({
 
   const rating = restaurant.rating || "4.8";
   const reviewsCount = restaurant.reviews_count || "230+";
-  const deliveryTime = restaurant.delivery_time || "25-35 min";
-  const deliveryFee = restaurant.delivery_fee || t("menu.freeDelivery");
 
   return (
     <div className="relative min-h-[16rem] sm:min-h-[20rem] flex flex-col justify-end bg-muted pt-24 pb-12 sm:pb-16 overflow-hidden">
@@ -111,12 +109,12 @@ export function RestaurantHero({
             <span className="flex items-center gap-1 whitespace-nowrap">
               <span className="text-yellow-400">★</span> {rating} ({reviewsCount})
             </span>
-            <span className="hidden sm:inline">•</span>
-            <span className="whitespace-nowrap">{deliveryTime}</span>
-            <span className="hidden sm:inline">•</span>
-            <span className="whitespace-nowrap flex items-center gap-1">
-              {deliveryFee}
-            </span>
+            {restaurant.opening_hours && (
+              <>
+                <span className="hidden sm:inline">•</span>
+                <span className="whitespace-nowrap">{restaurant.opening_hours}</span>
+              </>
+            )}
           </div>
         </div>
 
