@@ -103,7 +103,10 @@ function MenuPage() {
   const [showSplash, setShowSplash] = useState(true);
 
   const [activeOrderId, setActiveOrderId] = useState<string | null>(() => {
-    return localStorage.getItem(`menuflow_active_order_${restaurant.id}`);
+    if (typeof window !== "undefined") {
+      return localStorage.getItem(`menuflow_active_order_${restaurant.id}`);
+    }
+    return null;
   });
 
   useEffect(() => {
