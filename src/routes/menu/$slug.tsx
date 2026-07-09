@@ -102,13 +102,15 @@ function MenuPage() {
   // Fast animated splash screen guaranteed for a premium feel
   const [showSplash, setShowSplash] = useState(true);
 
-  const [activeOrderId, setActiveOrderId] = useState<string | null>(() => {
-    if (typeof window !== "undefined") {
-      return localStorage.getItem(`menuflow_active_order_${restaurant.id}`);
-    }
-    return null;
-  });
+  const [activeOrderId, setActiveOrderId] = useState<string | null>(null);
   const [isTrackerOpen, setIsTrackerOpen] = useState(false);
+
+  useEffect(() => {
+    const saved = localStorage.getItem(`menuflow_active_order_${restaurant.id}`);
+    if (saved) {
+      setActiveOrderId(saved);
+    }
+  }, [restaurant.id]);
 
   useEffect(() => {
     // Show splash for at least 2.5 seconds to allow the progress bar and messages to be appreciated
