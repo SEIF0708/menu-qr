@@ -138,10 +138,8 @@ function AuthPage() {
       <div className="w-full max-w-md">
         <div className="flex items-center justify-between mb-8">
           <Link to="/" className="flex items-center gap-2">
-            <div className="size-8 bg-primary rounded grid place-items-center">
-              <span className="text-primary-foreground font-display font-bold italic text-sm">M</span>
-            </div>
-            <span className="font-display font-bold text-lg">MenuFlow</span>
+            <img src="/logo.png" alt="Bon Plan" className="h-8 w-auto object-contain drop-shadow-sm" />
+            <span className="font-display font-bold text-lg">Bon Plan</span>
           </Link>
           <LangSwitcher />
         </div>

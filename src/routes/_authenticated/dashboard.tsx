@@ -66,10 +66,8 @@ function DashboardLayout() {
             {mobileOpen ? <X className="size-5" /> : <Menu className="size-5" />}
           </button>
           <Link to="/dashboard" className="flex items-center gap-2.5">
-            <div className="size-8 bg-primary rounded grid place-items-center">
-              <span className="text-primary-foreground font-display font-bold italic text-sm">M</span>
-            </div>
-            <span className="font-display font-bold text-lg hidden sm:inline">MenuFlow</span>
+            <img src="/logo.png" alt="Bon Plan" className="size-8 object-contain drop-shadow-sm" />
+            <span className="font-display font-bold text-lg hidden sm:inline">Bon Plan</span>
           </Link>
         </div>
         <div className="flex items-center gap-3">

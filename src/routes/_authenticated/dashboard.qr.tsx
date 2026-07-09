@@ -19,7 +19,7 @@ function QrPage() {
     const canvas = ref.current?.querySelector("canvas");
     if (!canvas) return;
     const link = document.createElement("a");
-    link.download = `menuflow-${restaurant?.slug}.png`;
+    link.download = `bonplan-${restaurant?.slug}.png`;
     link.href = canvas.toDataURL("image/png");
     link.click();
   };

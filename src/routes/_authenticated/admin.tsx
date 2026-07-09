@@ -10,7 +10,7 @@ export const Route = createFileRoute("/_authenticated/admin")({
 });
 
 // IMPORTANT: Add your admin email(s) here
-const ADMIN_EMAILS = ["admin@menuflow.com"];
+const ADMIN_EMAILS = ["admin@bonplan.com"];
 
 function AdminDashboard() {
   const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
@@ -21,7 +21,7 @@ function AdminDashboard() {
       const { data } = await supabase.auth.getUser();
       // For development/testing, if ADMIN_EMAILS is not configured, we just let them in.
       // In production, enforce this!
-      if (data.user && (ADMIN_EMAILS.includes(data.user.email!) || ADMIN_EMAILS[0] === "admin@menuflow.com")) {
+      if (data.user && (ADMIN_EMAILS.includes(data.user.email!) || ADMIN_EMAILS[0] === "admin@bonplan.com")) {
         setIsAdmin(true);
       } else {
         setIsAdmin(false);

@@ -28,7 +28,7 @@ export interface AnalyticsEventParams {
 
 // Generate or retrieve a persistent session ID (expires in 24 hours)
 export function getAnalyticsSessionId(): string {
-  const SESSION_KEY = "menuflow_analytics_session";
+  const SESSION_KEY = "bonplan_analytics_session";
   const stored = localStorage.getItem(SESSION_KEY);
   
   if (stored) {

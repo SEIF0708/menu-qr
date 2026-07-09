@@ -25,7 +25,7 @@
   "mockupUpdateValue": "Anında",
   "mockupUpdateSubtitle": "Fiyat değişiklikleri gerçek zamanlı senkronize olur",
   "mockupLive": "Canlı",
-  "mockupTitle": "MenuFlow Mobil",
+  "mockupTitle": "Bon Plan Mobil",
   "mockupSubtitle": "Restoran önizleme",
   "mockupMenuTitle": "Le Jardin des Légumes",
   "mockupMenuSubtitle": "Fine dining • Mevsimsel menü",
@@ -92,13 +92,13 @@
   "analyticsSide3Value": "%41",
   "partnersEyebrow": "Tavsiye Programı",
   "partnersTitle": "Restoran Tavsiye Ederek Para Kazanın",
-  "partnersIntro": "Restoranları MenuFlow'a getirin ve abone olduklarında tekrarlayan komisyon kazanın. Bu, yaratıcılar, ajanslar ve konaklama ortakları için oluşturulmuş temiz bir bağlı kuruluş büyüme döngüsüdür.",
+  "partnersIntro": "Restoranları Bon Plan'a getirin ve abone olduklarında tekrarlayan komisyon kazanın. Bu, yaratıcılar, ajanslar ve konaklama ortakları için oluşturulmuş temiz bir bağlı kuruluş büyüme döngüsüdür.",
   "partnersStep1": "Siz",
   "partnersStep1Hint": "Tavsiye bağlantınızı paylaşın",
   "partnersStep2": "Restoran",
   "partnersStep2Hint": "Platforma katılır",
   "partnersStep3": "Abone Olur",
-  "partnersStep3Hint": "MenuFlow'u kullanmaya başlar",
+  "partnersStep3Hint": "Bon Plan'u kullanmaya başlar",
   "partnersStep4": "Komisyon Kazanın",
   "partnersStep4Hint": "Tekrarlayan ödüller alın",
   "partnersCta": "Ortak Olun",
@@ -162,5 +162,5 @@
   "pricingPartnerEx2": "10 tavsiye = <strong>500 DT</strong>",
   "pricingPartnerEx3": "20 tavsiye = <strong>1000 DT</strong>",
   "pricingPartnerCta": "Ortak Olun",
-  "pricingPlanWaText": "Merhaba, restoranım için MenuFlow'a abone olmak istiyorum."
+  "pricingPlanWaText": "Merhaba, restoranım için Bon Plan'a abone olmak istiyorum."
 }

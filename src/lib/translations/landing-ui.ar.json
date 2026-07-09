@@ -25,7 +25,7 @@
   "mockupUpdateValue": "فوري",
   "mockupUpdateSubtitle": "تتزامن الأسعار في الوقت الحقيقي",
   "mockupLive": "مباشر",
-  "mockupTitle": "MenuFlow Mobile",
+  "mockupTitle": "Bon Plan Mobile",
   "mockupSubtitle": "معاينة المطعم",
   "mockupMenuTitle": "Le Jardin des Légumes",
   "mockupMenuSubtitle": "مطبخ فاخر • قائمة موسمية",
@@ -92,13 +92,13 @@
   "analyticsSide3Value": "41%",
   "partnersEyebrow": "برنامج الإحالة",
   "partnersTitle": "اكسب المال من ترشيح المطاعم",
-  "partnersIntro": "أدخل المطاعم إلى MenuFlow واكسب عمولة متكررة عندما يشتركوا. حلقة نمو نظيفة على طريقة الشراكات، مصممة للمبدعين والوكالات وشركاء الضيافة.",
+  "partnersIntro": "أدخل المطاعم إلى Bon Plan واكسب عمولة متكررة عندما يشتركوا. حلقة نمو نظيفة على طريقة الشراكات، مصممة للمبدعين والوكالات وشركاء الضيافة.",
   "partnersStep1": "أنت",
   "partnersStep1Hint": "شارك رابط الإحالة",
   "partnersStep2": "المطعم",
   "partnersStep2Hint": "ينضم إلى المنصة",
   "partnersStep3": "يشترك",
-  "partnersStep3Hint": "يبدأ استخدام MenuFlow",
+  "partnersStep3Hint": "يبدأ استخدام Bon Plan",
   "partnersStep4": "اكسب العمولة",
   "partnersStep4Hint": "استلم مكافآت متكررة",
   "partnersCta": "كن شريكًا",
@@ -162,5 +162,5 @@
   "pricingPartnerEx2": "10 إحالات = <strong>500 د.ت</strong>",
   "pricingPartnerEx3": "20 إحالة = <strong>1000 د.ت</strong>",
   "pricingPartnerCta": "أصبح شريكاً",
-  "pricingPlanWaText": "مرحباً، أود الاشتراك في MenuFlow لمطعمي."
+  "pricingPlanWaText": "مرحباً، أود الاشتراك في Bon Plan لمطعمي."
 }

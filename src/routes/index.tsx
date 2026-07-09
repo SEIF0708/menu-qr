@@ -44,7 +44,7 @@ export const Route = createFileRoute("/")({
     const copy = { en: landingEn, fr: landingFr, ar: landingAr }[lang] ?? landingEn;
     return {
       meta: [
-        { title: `MenuFlow — ${copy.heroTitle}` },
+        { title: `Bon Plan — ${copy.heroTitle}` },
         { name: "description", content: copy.heroSubtitle },
       ],
     };
@@ -106,10 +106,10 @@ function Landing() {
         return;
       }
       
-      const message = t("landing.waMsgReferred") || `Hello, I want to subscribe to MenuFlow for my restaurant. I have the referral code ${data.code}, so my price is 250 DT.`;
+      const message = t("landing.waMsgReferred") || `Hello, I want to subscribe to Bon Plan for my restaurant. I have the referral code ${data.code}, so my price is 250 DT.`;
       // In case translation doesn't exist, default is used.
       // But we must interpolate the code.
-      const finalMessage = message.includes("{{code}}") ? message.replace("{{code}}", data.code) : `Hello, I want to subscribe to MenuFlow for my restaurant. I have the referral code ${data.code}, so my price is 250 DT.`;
+      const finalMessage = message.includes("{{code}}") ? message.replace("{{code}}", data.code) : `Hello, I want to subscribe to Bon Plan for my restaurant. I have the referral code ${data.code}, so my price is 250 DT.`;
       
       const encoded = encodeURIComponent(finalMessage);
       window.open(`https://api.whatsapp.com/send?phone=21629710282&text=${encoded}`, "_blank");
@@ -162,12 +162,10 @@ function Landing() {
       <header className="sticky top-0 z-30 border-b border-border/70 bg-background/85 backdrop-blur-xl">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 lg:px-8">
           <Link to="/" className="flex items-center gap-3">
-            <div className="grid size-10 place-items-center rounded-2xl border border-border bg-primary text-primary-foreground shadow-[0_18px_50px_rgba(74,29,31,0.22)]">
-              <span className="font-display text-lg font-bold italic">M</span>
-            </div>
+            <img src="/logo.png" alt="Bon Plan" className="h-10 w-auto object-contain drop-shadow-sm" />
             <div>
-              <div className="font-display text-lg font-semibold leading-none">{t("brand")}</div>
-              <div className="mt-1 text-[11px] uppercase tracking-[0.28em] text-muted-foreground">QR Menu Platform</div>
+              <div className="font-display text-lg font-semibold leading-none text-foreground">Bon Plan</div>
+              <div className="mt-1 text-[10px] uppercase tracking-[0.28em] text-muted-foreground">QR Menu Platform</div>
             </div>
           </Link>
 
@@ -752,7 +750,7 @@ function Landing() {
                 ))}
               </ul>
               <a
-                href={`https://api.whatsapp.com/send?phone=21629710282&text=${encodeURIComponent(t("landing.pricingPlanWaText", { defaultValue: "Hello, I would like to subscribe to MenuFlow for my restaurant." }))}`}
+                href={`https://api.whatsapp.com/send?phone=21629710282&text=${encodeURIComponent(t("landing.pricingPlanWaText", { defaultValue: "Hello, I would like to subscribe to Bon Plan for my restaurant." }))}`}
                 target="_blank"
                 rel="noreferrer"
                 className="mt-auto block w-full rounded-xl bg-primary px-4 py-3.5 text-center text-sm font-semibold text-primary-foreground shadow-sm hover:brightness-110 transition-all"

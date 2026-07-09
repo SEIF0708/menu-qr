@@ -2,12 +2,12 @@ import { formatPrice, pickLocalized } from "./format";
 import type { CartItem } from "./cart";
 
 const dict: Record<string, any> = {
-  en: { order: "New Order", total: "Total", powered: "Powered by MenuFlow", size: "Size" },
-  fr: { order: "Nouvelle Commande", total: "Total", powered: "Propulsé par MenuFlow", size: "Taille" },
-  ar: { order: "طلب جديد", total: "المجموع", powered: "بدعم من MenuFlow", size: "الحجم" },
-  es: { order: "Nuevo Pedido", total: "Total", powered: "Desarrollado por MenuFlow", size: "Tamaño" },
-  it: { order: "Nuovo Ordine", total: "Totale", powered: "Offerto da MenuFlow", size: "Dimensione" },
-  de: { order: "Neue Bestellung", total: "Gesamt", powered: "Unterstützt von MenuFlow", size: "Größe" }
+  en: { order: "New Order", total: "Total", powered: "Powered by Bon Plan", size: "Size" },
+  fr: { order: "Nouvelle Commande", total: "Total", powered: "Propulsé par Bon Plan", size: "Taille" },
+  ar: { order: "طلب جديد", total: "المجموع", powered: "بدعم من Bon Plan", size: "الحجم" },
+  es: { order: "Nuevo Pedido", total: "Total", powered: "Desarrollado por Bon Plan", size: "Tamaño" },
+  it: { order: "Nuovo Ordine", total: "Totale", powered: "Offerto da Bon Plan", size: "Dimensione" },
+  de: { order: "Neue Bestellung", total: "Gesamt", powered: "Unterstützt von Bon Plan", size: "Größe" }
 };
 
 export function buildOrderMessage(

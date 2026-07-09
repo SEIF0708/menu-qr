@@ -12,7 +12,7 @@ export type CartItem = {
   selectedMods?: any[];
 };
 
-const KEY = (slug: string) => `menuflow_cart_${slug}`;
+const KEY = (slug: string) => `bonplan_cart_${slug}`;
 
 function read(slug: string): CartItem[] {
   if (typeof window === "undefined") return [];

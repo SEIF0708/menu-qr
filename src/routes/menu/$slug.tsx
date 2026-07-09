@@ -106,7 +106,7 @@ function MenuPage() {
   const [isTrackerOpen, setIsTrackerOpen] = useState(false);
 
   useEffect(() => {
-    const saved = localStorage.getItem(`menuflow_active_order_${restaurant.id}`);
+    const saved = localStorage.getItem(`bonplan_active_order_${restaurant.id}`);
     if (saved) {
       setActiveOrderId(saved);
     }
@@ -120,7 +120,7 @@ function MenuPage() {
 
   useEffect(() => {
     trackEvent({ restaurant_id: restaurant.id, event_type: "menu_view" });
-    if (restaurant.default_language && !localStorage.getItem("menuflow_lang")) {
+    if (restaurant.default_language && !localStorage.getItem("bonplan_lang")) {
       i18n.changeLanguage(restaurant.default_language);
     }
 
@@ -138,7 +138,7 @@ function MenuPage() {
 
   useEffect(() => {
     const tableParam = searchParams.table;
-    const storageKey = `menuflow_table_${restaurant.id}`;
+    const storageKey = `bonplan_table_${restaurant.id}`;
     
     if (tableParam) {
       supabase
@@ -424,7 +424,7 @@ function MenuPage() {
           currency={restaurant.currency || "USD"}
           onOrderSubmitted={(orderId) => {
             setActiveOrderId(orderId);
-            localStorage.setItem(`menuflow_active_order_${restaurant.id}`, orderId);
+            localStorage.setItem(`bonplan_active_order_${restaurant.id}`, orderId);
             setIsTrackerOpen(true);
           }}
         />
@@ -456,7 +456,7 @@ function MenuPage() {
               onDone={() => {
                 setActiveOrderId(null);
                 setIsTrackerOpen(false);
-                localStorage.removeItem(`menuflow_active_order_${restaurant.id}`);
+                localStorage.removeItem(`bonplan_active_order_${restaurant.id}`);
               }}
             />
           )}

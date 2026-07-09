@@ -17,10 +17,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "MenuFlow — Digital menus for modern restaurants" },
+      { title: "Bon Plan — Digital menus for modern restaurants" },
       { name: "description", content: "Create a beautiful multilingual QR-code menu in under 10 minutes." },
     ],
     links: [
+      { rel: "icon", type: "image/png", href: "/logo.png" },
       { rel: "stylesheet", href: appCss },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },

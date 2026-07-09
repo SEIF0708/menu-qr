@@ -43,7 +43,7 @@ if (!i18n.isInitialized) {
       detection: {
         order: ["localStorage", "navigator"],
         caches: ["localStorage"],
-        lookupLocalStorage: "menuflow_lang",
+        lookupLocalStorage: "bonplan_lang",
       },
       lng: getInitialLanguage(),
     });

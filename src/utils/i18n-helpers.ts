@@ -10,7 +10,7 @@ export function getInitialLanguage(): string {
     const documentLang = document.documentElement.lang?.split("-")[0];
     if (documentLang) return documentLang;
 
-    const stored = localStorage.getItem("menuflow_lang");
+    const stored = localStorage.getItem("bonplan_lang");
     if (stored) return stored;
     return navigator.language.split("-")[0] ?? "en";
   }
